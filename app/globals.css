@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #083a83;
+  --color-secondary: #6fe35e;
+
+  --animate-shake: shake 2s linear infinite;
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25%, 75% { transform: translateX(5px); }
+    50% { transform: translateX(-5px); }
+  }
+
+  --animate-fade: fade 1s ease-in-out infinite;
+  @keyframes fade {
+    0%, 100% {opacity: 1;}
+    50% {opacity: 0;}
+  }
+}
