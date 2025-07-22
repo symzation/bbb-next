@@ -9,12 +9,7 @@ export async function GET(request: NextRequest) {
         connection.end()
         return NextResponse.json({data: results})
     } catch (err) {
-        const response = {
-            error: (err as Error).message,
-            status: 200,
-            data: [],
-        }
-
+        const response = {error: (err as Error).message, data: []}
         return NextResponse.json(response)
     }
 }

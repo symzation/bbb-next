@@ -3,7 +3,7 @@ import { styles } from "@/constants/constants"
 import { cn } from "@/utils"
 
 async function getProducts() {
-  const res = await fetch('http://localhost:3000/api/mysql/products')
+  const res = await fetch('http://localhost:3000/api/data/products')
   if (!res.ok) {
     throw new Error('Failed to fetch posts')
   }

@@ -11,7 +11,6 @@ export async function GET(request: NextRequest) {
     } catch (err) {
         const response = {
             error: (err as Error).message,
-            status: 200,
             data: [],
         }
 
