@@ -1,8 +1,13 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
 @theme {
-  --color-primary: #083a83;
-  --color-secondary: #6fe35e;
+  --color-primary: #4d3d2d;
+  --color-secondary: #8d7053;
+  --color-third: #fefaea;
+  --color-fourth: #c3cea1;
+  --color-fifth: #606c38;
+  --color-error: #c90707;
 
   --animate-shake: shake 2s linear infinite;
   @keyframes shake {

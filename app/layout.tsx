@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import { styles } from "@/constants/constants"
 import { cn } from "@/utils"
+import Header from "@/components/Header/Header"
 import Footer from "@/components/Footer/Footer"
 import "./globals.css"
 
@@ -20,7 +21,8 @@ export default function RootLayout({
   return (
     <html lang="en">
     <body className={cn(styles.body, inter.className)}>
-      <main className='flex-auto w-full'>
+      <Header />
+      <main className='flex-auto w-full min-h-screen pb-5'>
         {children}
       </main>
       <Footer />

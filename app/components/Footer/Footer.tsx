@@ -2,17 +2,15 @@ import { FC } from "react"
 import { styles } from "@/constants/constants"
 import { cn } from "@/utils"
 
-const Footer: FC = () => {
+export default function Footer() {
     const getCopyRightText = () => {
         const currentYear = new Date().getFullYear()
-        return `${currentYear} ${process.env.SITENAME}, LLC`
+        return `${currentYear} ${process.env.SITENAME} - All rights reserved.`
     }
 
     return (
-        <div className={cn(styles.footer, 'bg-primary text-secondary h-14')}>
+        <footer className={cn(styles.footer, 'bg-primary text-secondary h-14')}>
             <div> &copy;{getCopyRightText()}</div> 
-        </div>
+        </footer>
     )
 }
-
-export default Footer 

@@ -1,28 +1,27 @@
 //import { FC, useEffect, useState } from "react"
+import Image from "next/image"
 import { styles } from "@/constants/constants"
 import { cn } from "@/utils"
+import ParticleComponent from "@/components/Particles/particles"
+import BlogLatest from "@/components/Blog/BlogLatest"
 
-async function getProducts() {
-  const res = await fetch('http://localhost:3000/api/data/products')
-  if (!res.ok) {
-    throw new Error('Failed to fetch posts')
-  }
-  return res.json() || []
-}
+import heroBg from "/public/particleBg.svg"
 
 export default async function Home() {
-  const products = await getProducts()
-
   return (
-    <div className={cn(styles.pageClass, 'flex flex-col items-center justify-center w-full')}>
-      <h1>Home</h1>
-      {products.data.map((product: any) => (
-        <div key={product.id} className="border p-4 m-2 rounded-lg shadow-md w-80">
-          <h2 className="text-xl font-bold">{product.name}</h2>
-          <p className="text-gray-700">{product.description}</p>
-          <p className="text-lg font-semibold">{product.notes}</p>
+    <div className={cn(styles.pageClass, 'flex flex-col items-center justify-center')}>
+      <div className="flex justify-center items-center space-x-2 w-full h-[430px] -mt-20 relative border-b border-b-secondary">
+        <ParticleComponent />
+        <div className="absolute top-[50%] mx-auto text-black text-center w-full h-8 py-1">
+          <div className="text-2xl md:text-4xl font-bold tracking-wide px-2">
+            Welcome to Bourbon Brew & Bites!
+          </div>
+          <div className="text-lg font-bold tracking-wide px-2">
+            Explore our latest reviews and recommendations.
+          </div>
         </div>
-      ))}
+      </div>
+      <BlogLatest />
       {/* <p className="text-gray-500 mt-4">Welcome to Bourbon Brew & Bites!</p>
       <p className="text-gray-500">Explore our collection of fine bourbons and delicious bites.</p>
       <p className="text-gray-500">Join us for a unique culinary experience that tantalizes your taste buds.</p>
@@ -36,5 +35,6 @@ export default async function Home() {
       <p className="text-gray-500">Experience the warmth and hospitality of Bourbon Brew & Bites.</p>
       <p className="text-gray-500">Join us for tastings, events, and special offers.</p> */}
     </div>
+
   )
 }
