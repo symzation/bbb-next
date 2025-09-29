@@ -50,7 +50,7 @@ export default function LoggedInMenu() {
           </DropdownMenuItem>
           <DropdownMenuItem className="hover:bg-gray-100">
             Settings
-          </DropdownMenuItem>
+          </DropdownMenuItem>. 
           <DropdownMenuSub>
             <DropdownMenuSubTrigger className="hover:bg-gray-100">
               More Options
