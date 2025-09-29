@@ -2,7 +2,6 @@ import { headers } from 'next/headers'
 import BlogList from "@/components/Blog/BlogList"
 
 export default async function Reviews() {
-  
   const pathname = (await headers()).get('x-current-pathname')
   console.log('Current pathname:', pathname?.replace('/', ''))
 

@@ -1,4 +1,15 @@
-export type HeroImageProps = {
+export type AuthContextProps = {
+  user?: {
+    name?: string | null
+    email?: string | null
+    image?: string | null
+  }
+  expires?: string
+  status?: "authenticated" | "loading" | "unauthenticated"
+  isAuthenticated?: boolean
+} | null
+
+/* export type HeroImageProps = {
   caption: string
   id: number
   imageUrl: string
@@ -84,3 +95,4 @@ export type BlogPostPageProps = {
     slug: string
   }
 }
+ */

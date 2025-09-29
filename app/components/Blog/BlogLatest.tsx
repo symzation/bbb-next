@@ -46,9 +46,9 @@ export default async function BlogList({
           <div key={blogPostId} className={cn(styles.blogGridItem, idx === 0 ? styles.blogGridFirstItem : '')}>
             {blogPostImage && (
               <Link href={blogPostUrl}>
-                <img 
-                  src={`https:${blogPostImage.fields.file.url}`} 
-                  alt={blogPostImage.fields.title} 
+                <img
+                  src={`https:${blogPostImage.fields.file.url}`}
+                  alt={blogPostImage.fields.title}
                   className={cn(
                     'aspect-video object-cover w-full block rounded-lg rounded-b-none',
                     idx > 0 ? 'h-auto md:h-64' : 'h-full rounded-r-none'
@@ -56,27 +56,27 @@ export default async function BlogList({
                 />
               </Link>
             )}
-            <div 
+            <div
               className={cn(
                 "w-full px-4 pb-5 border-b border-b-fifth grow",
                 idx > 0 ? '' : 'md:rounded-r-lg'
               )}
             >
               <h3 className="text-primary text-xl font-bold uppercase pt-5 pb-0.5">
-                <Link 
+                <Link
                   href={blogPostUrl}
                   className={cn(styles.linkClass, 'hover:text-xsvg-primary no-underline')}
                 >
                   {blogFields?.newsTitle}
                 </Link>
-              </h3>   
+              </h3>
               <h5 className='text-base text-primary pb-5 pl-0.5 flex items-center'>
-                <FaUserCircle className='w-5 h-5 mr-2 relative inline-block' /> 
+                <FaUserCircle className='w-5 h-5 mr-2 relative inline-block' />
                 <span>{blogFields?.newsAuthor ?? 'Ronald J. Black'}</span>
               </h5>
-              <p 
+              <p
                 className={cn(
-                  styles.paragraph, 
+                  styles.paragraph,
                   'text-primary h-auto mr-1.5 mb-5 inline after:content-["..."]'
                 )}
               >

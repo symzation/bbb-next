@@ -2,6 +2,9 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import { styles } from "@/constants/constants"
 import { cn } from "@/utils"
+//import { LoginProvider } from "@/providers/LoginProvider"
+import SessionProvider from "@/providers/SessionProvider"
+import AuthProvider from "@/providers/AuthProvider"
 import Header from "@/components/Header/Header"
 import Footer from "@/components/Footer/Footer"
 import "./globals.css"
@@ -16,17 +19,21 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
     <html lang="en">
-    <body className={cn(styles.body, inter.className)}>
-      <Header />
-      <main className='flex-auto w-full min-h-screen pb-5'>
-        {children}
-      </main>
-      <Footer />
-    </body>
-  </html>
+      <body className={cn(styles.body, inter.className)}>
+        <SessionProvider>
+          <AuthProvider>
+            <Header />
+            <main className='flex-auto w-full min-h-screen pb-5'>
+              {children}
+            </main>
+            <Footer />
+          </AuthProvider>
+        </SessionProvider>
+      </body>
+    </html>
   );
 }
