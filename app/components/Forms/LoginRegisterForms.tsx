@@ -1,12 +1,13 @@
 "use client"
 
 import { useRef, useState } from "react"
+import Image from "next/image"
 import { styles } from "@/constants/constants"
 import { cn } from "@/utils"
 import { Button } from "@/components/ui/button"
-import Login from "@/components/LoginRegisterForms/Login"
-import Register from "@/components/LoginRegisterForms/Register"
-import ForgotPassword from "@/components/LoginRegisterForms/ForgotPassword"
+import Login from "@/components/Forms/Login/Login"
+import Register from "@/components/Forms/Register/Register"
+import ForgotPassword from "@/components/Forms/ForgotPassword/ForgotPassword"
 
 type LoginRegisterFormsProps = {
   loginLinkRef: React.RefObject<HTMLButtonElement | null>
@@ -18,8 +19,6 @@ export default function LoginRegisterForms({
   const [isLoginOpen, setIsLoginOpen] = useState(false)
   const [isRegisterOpen, setIsRegisterOpen] = useState(false)
   const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false)
-
-
 
   const openLogin = () => {
     setIsRegisterOpen(false) // Close the register dialog
@@ -46,7 +45,13 @@ export default function LoginRegisterForms({
         className={cn(styles.secondaryNavClass, 'mt-[5px] font-bold')}
         onClick={() => setIsLoginOpen(true)}
       >
-        Login
+        <Image
+          src="/default-avatar.png"
+          alt="User Avatar"
+          width={64}
+          height={64}
+          className={cn(styles.avatarClass, "-mt-1")}
+        />
       </Button>
 
       <Login

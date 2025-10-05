@@ -4,8 +4,15 @@ import { useActionState, useEffect } from "react"
 import { styles } from "@/constants/constants"
 import { cn } from "@/utils"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { forgotPasswordAction } from "@/components/LoginRegisterForms/ForgotPaswordAction"
+import { 
+  Dialog, 
+  DialogOverlay, 
+  DialogContent, 
+  DialogDescription, 
+  DialogHeader, 
+  DialogTitle 
+} from "@/components/ui/dialog"
+import { forgotPasswordAction } from "@/components/Forms/ForgotPassword/ForgotPaswordAction"
 
 type ForgotPasswordProps = {
   isOpen: boolean
@@ -26,7 +33,8 @@ export default function ForgotPassword({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px] bg-white text-primary">
+      <DialogOverlay className="bg-primary/90"/>
+      <DialogContent className="max-w-[425px] bg-white text-primary">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">
             Forgot your password?

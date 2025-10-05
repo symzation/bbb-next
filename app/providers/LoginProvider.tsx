@@ -3,8 +3,8 @@
 import { createContext, useContext, useState } from "react"
 
 type LoginState = {
-  isLoggedIn: boolean
-  isAdmin: boolean
+  provider?: string
+  isAdmin?: boolean
 }
 
 type LoginContextProps = {
@@ -13,7 +13,7 @@ type LoginContextProps = {
 }
 
 export const defaultLoginState: LoginState = {
-  isLoggedIn: false,
+  provider: '',
   isAdmin: false
 }
 
@@ -24,7 +24,7 @@ export const defaultLoginContext: LoginContextProps = {
 
 export const LoginContext = createContext<LoginContextProps>(defaultLoginContext)
 
-export const LoginProvider = ({ children }: { children: React.ReactNode }) => {
+export function LoginProvider({ children }: { children: React.ReactNode }) {
   const [loginState, setLoginState] = useState<LoginState>(defaultLoginState)
 
   const updateLoginState = (newState: LoginState) => {
@@ -38,4 +38,4 @@ export const LoginProvider = ({ children }: { children: React.ReactNode }) => {
   )
 }
 
-//export const useLoginContext = () => useContext(LoginContext)
+export const useLoginContext = () => useContext(LoginContext)

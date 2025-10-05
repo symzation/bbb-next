@@ -4,8 +4,8 @@ import { useActionState, useEffect } from "react"
 import { styles } from "@/constants/constants"
 import { cn } from "@/utils"
 import { Button } from "@/components/ui/button"
-import DateOfBirth from "@/components/Form/DateOfBirth"
-import { registerAction } from "@/components/LoginRegisterForms/RegisterAction"
+import DateOfBirth from "@/components/FormElements/DateOfBirth"
+import { registerAction } from "@/components/Forms/Register/RegisterAction"
 
 
 type RefgisterFormProps = {
@@ -34,7 +34,7 @@ export default function RegisterForm({
             placeholder="Name" className={cn(styles.formInput)}
           />
           {formState?.errors && typeof formState.errors === "object" && !Array.isArray(formState.errors) && "name" in formState.errors && (
-            <span className="text-error text-sm italic">{(formState.errors as { name?: string[] }).name}</span>
+            <span className="text-error text-sm italic mt-1">{(formState.errors as { name?: string[] }).name}</span>
           )}
         </div>
         <div className="flex flex-col">
@@ -45,16 +45,16 @@ export default function RegisterForm({
             placeholder="Email" className={cn(styles.formInput)}
           />
           {formState?.errors && typeof formState.errors === "object" && !Array.isArray(formState.errors) && "email" in formState.errors && (
-            <span className="text-error text-sm italic">{(formState.errors as { email?: string[] }).email}</span>
+            <span className="text-error text-sm italic mt-1">{(formState.errors as { email?: string[] }).email}</span>
           )}
         </div>
-        <div className="flex flex-col hidden">
+        {/* <div className="flex flex-col hidden">
           <DateOfBirth dobValue={formState?.data?.dateOfBirth} />
           {formState?.errors && typeof formState.errors === "object" && !Array.isArray(formState.errors) && "dateOfBirth" in formState.errors && (
-            <span className="text-error text-sm italic">{(formState.errors as { dateOfBirth?: string[] }).dateOfBirth}</span>
+            <span className="text-error text-sm italic mt-1">{(formState.errors as { dateOfBirth?: string[] }).dateOfBirth}</span>
           )}
-        </div>
-        <div className="flex flex-col">
+        </div> */}
+        {/* <div className="flex flex-col">
           <label htmlFor="password" className="text-sm font-bold tracking-wide">
             Password
           </label>
@@ -62,7 +62,7 @@ export default function RegisterForm({
             placeholder="Password" className={cn(styles.formInput)}
           />
           {formState?.errors && typeof formState.errors === "object" && !Array.isArray(formState.errors) && "password" in formState.errors && (
-            <span className="text-error text-sm italic">{(formState.errors as { password?: string[] }).password}</span>
+            <span className="text-error text-sm italic mt-1">{(formState.errors as { password?: string[] }).password}</span>
           )}
         </div>
         <div className="flex flex-col">
@@ -73,12 +73,16 @@ export default function RegisterForm({
             placeholder="Confirm Password" className={cn(styles.formInput)}
           />
           {formState?.errors && typeof formState.errors === "object" && !Array.isArray(formState.errors) && "confirmPassword" in formState.errors && (
-            <span className="text-error text-sm italic">{(formState.errors as { confirmPassword?: string[] }).confirmPassword}</span>
+            <span className="text-error text-sm italic mt-1">{(formState.errors as { confirmPassword?: string[] }).confirmPassword}</span>
           )}
-        </div>
+        </div> */}
         <div className="flex-col sm:flex-col sm:justify-center mt-3">
-          <Button type="button" className="w-full text-third tracking-wider py-5 px-12 ring-0 focus:ring-0 ring-offset-0 focus:ring-offset-0 focus-visible:ring-0 outline-none cursor-pointer data-[state=open]:bg-transparent">
-            Register
+          <Button 
+            type="submit" 
+            disabled={isPending}
+            className={cn("w-full text-third tracking-wider py-5 px-12 ring-0 focus:ring-0 ring-offset-0 focus:ring-offset-0 focus-visible:ring-0 outline-none cursor-pointer data-[state=open]:bg-transparent", isPending && "opacity-70 cursor-not-allowed")}
+          >
+            {isPending ? "Registering..." : "Continue"}
           </Button>
         </div>
       </form>

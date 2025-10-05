@@ -1,4 +1,4 @@
-import LoginRegisterForms from "@/components/LoginRegisterForms/LoginRegisterForms"
+import LoginRegisterForms from "@/components/Forms/LoginRegisterForms"
 import LoggedInMenu from "@/components/Header/LoggedInMenu"
 import { useAuthContext } from "@/providers/AuthProvider"
 

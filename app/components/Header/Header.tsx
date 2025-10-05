@@ -6,7 +6,9 @@ import { styles } from "@/constants/constants"
 import { cn } from "@/utils"
 import AuthenticatedButtons from "@/components/Header/AuthenticatedButtons"
 import { useAuthContext } from "@/providers/AuthProvider"
+import { useLoginContext } from "@/providers/LoginProvider"
 import { redirect } from "next/navigation"
+import { getCookie } from "@/lib/cookies"
 
 type HeaderProps = {
 	classNames?: string
@@ -25,14 +27,24 @@ export default function Login({
 	const headerRef = useRef<HTMLDivElement>(null)
 	const loginLinkRef = useRef<HTMLButtonElement>(null)
 
+	const loginContext = useLoginContext()
 	const session = useAuthContext()
-	console.log('AuthContext session:', session);
-
 
 	const navLinkClass = cn(
 		styles.linkClass,
 		"text-xl font-bold text-primary no-underline hover:text-fifth tracking-wide transistion-all duration-300 ease-in-out"
 	)
+
+	useEffect(() => {
+		fetchProvider()
+	}, [])
+
+	const fetchProvider = async () => {
+		if (loginContext.loginState.provider === '') {
+			const providerCookie = await getCookie('login-provider')
+			loginContext.updateLoginState({ provider: providerCookie?.value, isAdmin: false })
+		}
+	}
 
 	useEffect(() => {
 		window.addEventListener("scroll", handleScroll, { passive: true })

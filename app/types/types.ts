@@ -1,13 +1,4 @@
-export type AuthContextProps = {
-  user?: {
-    name?: string | null
-    email?: string | null
-    image?: string | null
-  }
-  expires?: string
-  status?: "authenticated" | "loading" | "unauthenticated"
-  isAuthenticated?: boolean
-} | null
+
 
 /* export type HeroImageProps = {
   caption: string

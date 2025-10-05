@@ -9,14 +9,14 @@ const registerSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }).trim(),
   password: z.string().min(8, { message: "Password must be at least 8 characters" }),
   confirmPassword: z.string().min(8, { message: "Confirm password must be at least 8 characters" }),
-  dateOfBirth: z.string().refine((date) => {
+  /* dateOfBirth: z.string().refine((date) => {
     const [year, month, day] = date.split('-').map(Number)
     const dob = new Date(year, month - 1, day)
     const ageDifMs = Date.now() - dob.getTime()
     const ageDate = new Date(ageDifMs)
     const age = Math.abs(ageDate.getUTCFullYear() - 1970)
     return age >= 21
-  }, { message: "You must be at least 21 years old to register" })
+  }, { message: "You must be at least 21 years old to register" }) */
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords do not match",
   path: ["confirmPassword"], // Specify the field to associate the error with

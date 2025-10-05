@@ -19,6 +19,7 @@ export const apiHeaders = {
     blogGridItem: "flex flex-col border border-secondary h-auto group rounded-lg drop-shadow-lg hover:drop-shadow-none relative mt-5",
     blogGridFirstItem: "md:flex-row md:col-span-full mr-3",
     rankingsWrapper: "flex flex-col md:flex-row justify-between items-center space-x-0 md:space-x-4 space-y-4 md:space-y-0 mt-4 px-6",
-    secondaryNavClass: "text-md text-primary hover:text-primary font-normal no-underline hover:underline tracking-wide block transistion-all duration-300 ease-in-out cursor-pointer"
+    secondaryNavClass: "text-md text-primary hover:text-primary font-normal no-underline hover:underline tracking-wide block transistion-all duration-300 ease-in-out cursor-pointer",
+    avatarClass: "h-8 w-8"
   }
   

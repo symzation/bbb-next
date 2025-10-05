@@ -1,13 +1,20 @@
 import { useState } from "react"
 import Link from "next/link"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { 
+  Dialog, 
+  DialogOverlay, 
+  DialogContent, 
+  DialogDescription, 
+  DialogHeader, 
+  DialogTitle 
+} from "@/components/ui/dialog"
 /* import { jwtDecode } from "jwt-decode"
 import { redirect } from "next/navigation"
 import { createSession } from '@/lib/session' */
 //import { useLoginContext } from "@/providers/LoginProvider"
-import FormButtonLink from "@/components/LoginRegisterForms/FormButtonLink"
-import SocialLoginButtons from "@/components/LoginRegisterForms/SocialLoginButtons"
-import RegisterForm from "@/components/LoginRegisterForms/RegisterForm"
+import FormButtonLink from "@/components/Forms/FormButtonLink"
+import SocialLoginButtons from "@/components/Forms/SocialLoginButtons"
+import RegisterForm from "@/components/Forms/Register/RegisterForm"
 
 type RefgisterProps = {
   isOpen: boolean
@@ -31,19 +38,20 @@ export default function Register({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px] bg-white text-primary">
+      <DialogOverlay className="bg-primary/90"/>
+      <DialogContent className="bg-white text-primary">
         <DialogHeader>
-          <DialogTitle className="text-xl uppercase text-center font-bold mt-6">
-            Join The Tasting Table today!
+          <DialogTitle className="text-2xl text-left font-bold mt-2">
+            Join Bourbon Brew &amp; Bites!
           </DialogTitle>
-          <DialogDescription className="text-sm text-center -mt-1 mb-2.5">
-            Register with Google or Facebook account.
+          <DialogDescription className="text-base text-black text-left -mt-2.5 mb-1">
+            Your seat at the tasting table awaits.
           </DialogDescription>
         </DialogHeader>
         <SocialLoginButtons />
         <div className="flex items-center py-1">
           <div className="flex-grow border-t border-gray-300"></div>
-          <span className="mx-4 text-gray-500">or register with</span>
+          <span className="mx-4 text-gray-500">or sign up with</span>
           <div className="flex-grow border-t border-gray-300"></div>
         </div>
         <RegisterForm onOpenChange={onOpenChange} />

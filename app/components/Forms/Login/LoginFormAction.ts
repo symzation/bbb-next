@@ -1,5 +1,5 @@
 import { z } from "zod"
-//import { cookies } from "next/headers"
+import { credentialsLogin } from "@/actions/loginActions"
 
 type credentialResponseProps = {
   credential: string
@@ -12,14 +12,16 @@ type loginUserInfoProps = {
   password: string
 }
 
-async function checkLoginAgainstDatabase(parsedData: loginUserInfoProps) {
-  console.log('Against DB parsedData: ', parsedData)
-  return true
-}
+const passwordSchema = z.string().regex(
+  /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~ ]).{8,}$/, {
+    message: "Password must contain at least one uppercase letter, one special character, and be at least 8 characters long."
+  }
+)
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }).trim(),
-  password: z.string().min(8, { message: "Invalid password" }),
+  //password: z.string().min(8, { message: "Invalid password" }),
+  password: passwordSchema,
 })
 
 export async function emailLoginAction(prevState: any, formData: FormData) {
@@ -32,13 +34,19 @@ export async function emailLoginAction(prevState: any, formData: FormData) {
       return { success: false, errors: errors }
     }
 
-    const parsedData = loginSchema.parse(formEntries)
+    //const parsedData = loginSchema.parse(formEntries)
 
     // Proceed with login logic (e.g., save to database)
-    const validateLoginData = await checkLoginAgainstDatabase(parsedData)
+    const validateLoginData = await credentialsLogin(formData)
+    console.log('validateLoginData: ', validateLoginData)
+    
+    if (validateLoginData?.error) {
+      throw new Error(validateLoginData.error)
+    } else {
+      console.log("Login successful")
+      return { success: true, data: validateLoginData }
+    }
 
-    console.log("Login successful:", parsedData)
-    return { success: true, data: parsedData }
   } catch (error) {
     if (error instanceof z.ZodError) {
       console.error("Validation errors:", error)

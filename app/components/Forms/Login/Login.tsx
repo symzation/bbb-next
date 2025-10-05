@@ -2,10 +2,17 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import FormButtonLink from "@/components/LoginRegisterForms/FormButtonLink"
-import SocialLoginButtons from "@/components/LoginRegisterForms/SocialLoginButtons"
-import LoginForm from "@/components/LoginRegisterForms/LoginForm"
+import { 
+  Dialog, 
+  DialogOverlay, 
+  DialogContent, 
+  DialogDescription, 
+  DialogHeader, 
+  DialogTitle 
+} from "@/components/ui/dialog"
+import FormButtonLink from "@/components/Forms/FormButtonLink"
+import SocialLoginButtons from "@/components/Forms/SocialLoginButtons"
+import LoginForm from "@/components/Forms/Login/LoginForm"
 
 type LoginProps = {
   isOpen: boolean
@@ -26,13 +33,14 @@ export default function Login({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px] bg-white text-primary">
+      <DialogOverlay className="bg-third/70"/>
+      <DialogContent className="bg-white text-primary overflow-x-auto">
         <DialogHeader className="mb-2">
-          <DialogTitle className="text-2xl font-bold text-center">
+          <DialogTitle className="text-2xl text-left font-bold mt-2">
             Welcome Back, Taster!
           </DialogTitle>
-          <DialogDescription className="text-base text-black -mt-1 text-center">
-            Login with Google or Facebook account.
+          <DialogDescription className="text-base text-black text-left -mt-2.5 mb-1">
+            Your seat at the tasting table is ready.
           </DialogDescription>
         </DialogHeader>
         <SocialLoginButtons />
