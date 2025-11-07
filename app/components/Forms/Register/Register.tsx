@@ -8,10 +8,6 @@ import {
   DialogHeader, 
   DialogTitle 
 } from "@/components/ui/dialog"
-/* import { jwtDecode } from "jwt-decode"
-import { redirect } from "next/navigation"
-import { createSession } from '@/lib/session' */
-//import { useLoginContext } from "@/providers/LoginProvider"
 import FormButtonLink from "@/components/Forms/FormButtonLink"
 import SocialLoginButtons from "@/components/Forms/SocialLoginButtons"
 import RegisterForm from "@/components/Forms/Register/RegisterForm"
@@ -27,19 +23,16 @@ export default function Register({
   onOpenChange,
   onTransitionToLogin
 }: RefgisterProps) {
-  //const { updateLoginState } = useLoginContext()
   const [showRegistrationOptions, setShowRegistrationOptions] = useState(true)
   const [showRegistrationForm, setShowRegistrationForm] = useState(false)
-
-  /*  const handleShowSignInOptions = () => {
-     setShowRegistrationForm(false)
-     setShowRegistrationOptions(true)
-   } */
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogOverlay className="bg-primary/90"/>
-      <DialogContent className="bg-white text-primary">
+      <DialogContent 
+        className="w-[450px] bg-white text-primary"
+        closeButtonClass=" focus:ring-0 focus:ring-offset-0 cursor-pointer"
+      >
         <DialogHeader>
           <DialogTitle className="text-2xl text-left font-bold mt-2">
             Join Bourbon Brew &amp; Bites!

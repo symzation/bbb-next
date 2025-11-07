@@ -1,14 +1,14 @@
 "use client"
 
-import { useEffect, useState, useRef } from "react"
+import { useState, useRef } from "react"
 import Link from "next/link"
 import { styles } from "@/constants/constants"
 import { cn } from "@/utils"
-import AuthenticatedButtons from "@/components/Header/AuthenticatedButtons"
 import { useAuthContext } from "@/providers/AuthProvider"
-import { useLoginContext } from "@/providers/LoginProvider"
 import { redirect } from "next/navigation"
-import { getCookie } from "@/lib/cookies"
+import { setupWindowObservers } from "@/utils/helpers"
+import AnnouncementsBanner from "@/components/Header/AnnouncementsBanner"
+import AuthenticatedButtons from "@/components/Header/AuthenticatedButtons"
 
 type HeaderProps = {
 	classNames?: string
@@ -22,12 +22,11 @@ export default function Login({
 	mobileNavCloseFunc
 }: HeaderProps) {
 	const [isMobile, setisMobile] = useState<boolean>(false)
-	const [scrollPosition, setScrollPosition] = useState<number>(0)
+	const [posValue, setPosValue] = useState<number>(0)
 
 	const headerRef = useRef<HTMLDivElement>(null)
 	const loginLinkRef = useRef<HTMLButtonElement>(null)
-
-	const loginContext = useLoginContext()
+	
 	const session = useAuthContext()
 
 	const navLinkClass = cn(
@@ -35,43 +34,13 @@ export default function Login({
 		"text-xl font-bold text-primary no-underline hover:text-fifth tracking-wide transistion-all duration-300 ease-in-out"
 	)
 
-	useEffect(() => {
-		fetchProvider()
-	}, [])
-
-	const fetchProvider = async () => {
-		if (loginContext.loginState.provider === '') {
-			const providerCookie = await getCookie('login-provider')
-			loginContext.updateLoginState({ provider: providerCookie?.value, isAdmin: false })
-		}
+	const updateScrollValues = (
+		values: { innerWidth: number; innerHeight: number; scrollY: number }
+	) => {
+		setisMobile(values.innerWidth < 768)
+		setPosValue(values.scrollY)
 	}
-
-	useEffect(() => {
-		window.addEventListener("scroll", handleScroll, { passive: true })
-		setisMobile(window.innerWidth < 768)
-		window.addEventListener("resize", handleWindowSizeChange)
-
-		return () => {
-			window.removeEventListener("scroll", handleScroll)
-		}
-	}, [])
-
-	useEffect(() => {
-		setisMobile(window.innerWidth < 768)
-		window.addEventListener("resize", handleWindowSizeChange)
-		return () => {
-			window.removeEventListener("resize", handleWindowSizeChange)
-		}
-	}, [])
-
-	const handleScroll = () => {
-		const position = window.pageYOffset || window.scrollY
-		setScrollPosition(position)
-	}
-
-	const handleWindowSizeChange = () => {
-		setisMobile(window.innerWidth < 768)
-	}
+	setupWindowObservers(updateScrollValues)
 
 	const checkSession = (redirectUrl: string) => {
 		return async () => {
@@ -90,27 +59,19 @@ export default function Login({
 	return (
 		<div
 			ref={headerRef}
-			className={cn(
-				styles.header,
-				scrollPosition > 0 ? styles.headerScrolled : ""
-			)}
+			className={cn(styles.header, posValue > 0 ? styles.headerScrolled : "")}
 		>
-			<div
-				className={cn(
-					"flex justify-end items-center bg-fifth text-fourth text-center py-1.5 text-base tracking-wide pr-6 hidden md:block transition-all duration-200 ease-in-out",
-					scrollPosition > 0 ? "py-2" : ""
-				)}
-			></div>
+			<AnnouncementsBanner />
 			<div className='flex flex-col md:flex-row justify-between items-start'>
-				<div className='flex flex-col md:flex-row items-center space-x-0 md:space-x-6 space-y-4 md:space-y-0 py-2.5 px-6'>
+				<div className='flex flex-col md:flex-row items-center space-x-0 md:space-x-6 space-y-4 md:space-y-0 py-3 px-6'>
 					<div>
 						<Link href='/' className={navLinkClass}>
 							[Logo]
 						</Link>
 					</div>
 					<div>
-						<Link href='#' className={navLinkClass} onClick={checkSession('/reviews')}>
-							Reviews
+						<Link href='#' className={navLinkClass} onClick={checkSession('/articles')}>
+							Articles
 						</Link>
 					</div>
 					<div>

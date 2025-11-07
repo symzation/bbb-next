@@ -56,8 +56,8 @@ export default function AgeConsent() {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className="flex justify-center items-center">
-          <AlertDialogCancel className="cursor-pointer" onClick={notConsented}>I&apos;m under 21</AlertDialogCancel>
-          <AlertDialogAction className="text-white cursor-pointer" onClick={consented}>I&apos;m 21+</AlertDialogAction>
+          <AlertDialogCancel className="cursor-pointer" onClick={notConsented}>Under 21</AlertDialogCancel>
+          <AlertDialogAction className="text-white cursor-pointer" onClick={consented}>Over 21</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

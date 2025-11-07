@@ -4,7 +4,7 @@ import { createContext, useContext, useState } from "react"
 
 type LoginState = {
   provider?: string
-  isAdmin?: boolean
+  role?: "USER" | "ADMIN" | "AUTHOR"
 }
 
 type LoginContextProps = {
@@ -14,7 +14,7 @@ type LoginContextProps = {
 
 export const defaultLoginState: LoginState = {
   provider: '',
-  isAdmin: false
+  role: "USER"
 }
 
 export const defaultLoginContext: LoginContextProps = {

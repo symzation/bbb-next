@@ -1,28 +1,34 @@
 "use server"
 
-import { signIn, signOut } from "@/auth"
+import { signIn, signOut } from "@/lib/auth"
 //import { redirect } from "next/navigation"
+import { cookies } from "next/headers"
+import { redirect } from "next/navigation"
 
 export async function socialLogin(provider: string) {
   await signIn(provider, { redirectTo: '/' })
 }
 
 export async function socialLogout() {
-  const result = await signOut({ redirectTo: '/' })
+  await signOut({ redirectTo: '/' })
 }
 
 export async function credentialsLogin(formData: FormData) {
+  //const csrfToken = cookies().get("authjs.csrf-token")
+
   const response = await signIn("credentials", {
     email: formData.get("email") as string,
     password: formData.get("password") as string,
     redirect: false,
-    //  csrfToken: formData.get("csrfToken") as string,
+    //csrfToken: csrfToken.value as string,
   })
+
   if (!response) {
-    throw new Error("No response from signIn")
+    return { success: false, error: "No response from signIn" }
   }
+
   if (response?.error) {
-    return { error: response.error }
+    return { success: false, error: response.error }
   }
 
   return { success: true }
@@ -37,7 +43,9 @@ export async function credentialsLogin(formData: FormData) {
   if (!csrfToken) {
     throw new Error("No CSRF token found")
   } */
+}
 
-  
+export async function signOutNoRedirect() {
+  await signOut({ redirect: false })
 }
 

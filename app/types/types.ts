@@ -1,3 +1,49 @@
+import { Review } from "@/generated/prisma/client/wasm"
+
+export type UserDataProps = {
+  id: string
+  name: string
+  username?: string
+  email: string
+  emailVerified?: Date
+  password?: string
+  image?: string
+  ageConsent?: boolean
+  role?: string
+  bio?: string
+  provider?: string 
+  suspended?: boolean
+  suspendedAt?: Date
+  createdAt?: Date
+  updatedAt?: Date
+  accounts?: AccountDataProps[]
+  sessions?: SessionDataProps[]
+  reviews?: ReviewDataProps[]
+} & Record<string, any>
+
+export type AccountDataProps = {
+  userId: string
+} & Record<string, any>
+
+export type SessionDataProps = {
+  userId: string
+} & Record<string, any>
+
+export type ReviewDataProps = {
+  userId: string
+} & Record<string, any>
+
+export type ProductDataProps = {
+  name: string
+  productTypeId: number
+  shopId: number
+} & Record<string, any>
+
+export type ShopDataProps = {
+  name: string
+  shopTypeId: number
+} & Record<string, any>
+
 
 
 /* export type HeroImageProps = {

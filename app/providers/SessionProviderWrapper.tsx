@@ -1,9 +1,12 @@
 
 
 import { SessionProvider } from "next-auth/react"
-import { auth } from "@/auth"
+import { auth } from "@/lib/auth"
 
-export async function SessionProviderWrapper({ children }: { children: React.ReactNode }) {
+export async function SessionProviderWrapper(
+  { children }: 
+  { children: React.ReactNode }
+) {
   const session = await auth()
   
   return (

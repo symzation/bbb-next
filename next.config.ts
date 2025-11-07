@@ -21,6 +21,14 @@ const nextConfig: NextConfig = {
       hmrRefreshes: true,
     },
   },
+  async rewrites() {
+    return [
+      /* {
+        source: '/not-authorized',
+        destination: '/notAuthorized', // Maps /not-authorized to /notAuthorized
+      }, */
+    ];
+  },
 };
 
 export default nextConfig;

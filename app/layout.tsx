@@ -4,10 +4,12 @@ import { styles } from "@/constants/constants"
 import { cn } from "@/utils"
 import { SessionProviderWrapper } from "@/providers/SessionProviderWrapper"
 import { AuthProvider } from "@/providers/AuthProvider"
-import { LoginProvider} from "@/providers/LoginProvider"
+//import { LoginProvider} from "@/providers/_LoginProvider"
 import Header from "@/components/Header/Header"
 import Footer from "@/components/Footer/Footer"
 import AgeConsent from "@/components/AgeConsent/AgeConsent"
+import { Toaster } from "@/components/ui/sonner"
+import "./variables.css"
 import "./globals.css"
 
 const inter = Inter({ subsets: ['latin'] })
@@ -25,14 +27,19 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={cn(styles.body, inter.className)}>
+        <Toaster 
+          position="top-center" 
+          expand={true} 
+          richColors 
+          closeButton={true}
+          style={{background: "var(--toastBackground)"}} 
+        />
         <SessionProviderWrapper>
           <AuthProvider>
-            <LoginProvider>
-              <Header />
-              <main className='flex-auto w-full min-h-screen pb-5'>
-                {children}
-              </main>
-            </LoginProvider>
+            <Header />
+            <main className='flex-auto w-full min-h-screen pb-5'>
+              {children}
+            </main>
           </AuthProvider>
         </SessionProviderWrapper>
         <Footer />

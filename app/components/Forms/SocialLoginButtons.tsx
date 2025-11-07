@@ -4,7 +4,6 @@ import { BsTwitterX } from "react-icons/bs"
 import { FaGithub } from "react-icons/fa"
 import { socialLogin } from "@/actions/loginActions"
 import { createCookie } from "@/lib/cookies"
-import { useLoginContext } from "@/providers/LoginProvider"
 
 export const login = async (provider: string) => {
   await socialLogin(provider)

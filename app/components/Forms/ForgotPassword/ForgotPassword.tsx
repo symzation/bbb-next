@@ -34,7 +34,10 @@ export default function ForgotPassword({
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogOverlay className="bg-primary/90"/>
-      <DialogContent className="max-w-[425px] bg-white text-primary">
+      <DialogContent 
+        className="max-w-[425px] bg-white text-primary"
+        closeButtonClass=" focus:ring-0 focus:ring-offset-0 cursor-pointer"
+      >
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">
             Forgot your password?

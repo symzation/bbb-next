@@ -4,33 +4,45 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
-generator client {
-  provider = "prisma-client-js"
-  output   = "../app/generated/prisma"
+datasource db {
+  provider          = "mysql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  //runtime  = "vercel-edge"
 }
 
-datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+generator client {
+  provider = "prisma-client-js"
+  //engineType = "wasm" 
+  //output   = "../app/generated/prisma/client"
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  name      String?
-  email     String?  @unique
-  client    String?
-  image     String?
-  isActive  Boolean  @default(true)
-  role      String   @default("USER") // USER, ADMIN, AUTHOR
-  /**
-   * author    Author?  @relation(fields: [authorId], references: [id])
-   * authorId  Int?
-   * sessions      Session[]
-   * posts         Post[]
-   * comments      Comment[]
-   */
+  id            Int       @id @default(autoincrement())
+  name          String
+  username      String?   @unique
+  email         String    @unique
+  emailVerified DateTime?
+  password      String?
+  image         String?
+  ageConsent    Boolean?  @default(false)
+  role          String?   @default("USER")
+  bio           String?   @default("") @db.Text
+  //provider      String?   
+  suspended     Boolean?  @default(false)
+  suspendedAt   DateTime?
+  createdAt     DateTime? @default(now())
+  updatedAt     DateTime? @updatedAt
+  lastLogin     DateTime?
+
+  accounts      Account[]
+  sessions      Session[]
+  reviews       Review[]
+  // Optional for WebAuthn support
+  Authenticator Authenticator[]
+
+  @@unique([username, email])
+  @@index([id, email, username, role])
 }
 
 enum Role {
@@ -39,73 +51,148 @@ enum Role {
   AUTHOR
 }
 
-/**
- * model Author {
- * id        Int      @id @default(autoincrement())
- * createdAt DateTime @default(now())
- * updatedAt DateTime @updatedAt
- * name      String
- * bio       String?
- * image     String?
- * User      User[]
- * userId    Int      @unique
- * posts         Post[]
- * }
- */
+model Account {
+  id                String  @id @default(cuid())
+  userId            Int
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id") // Important for some databases
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
 
-/**
- * model Session {
- * id           Int       @id @default(autoincrement())
- * createdAt    DateTime  @default(now())
- * updatedAt    DateTime  @updatedAt
- * expires      DateTime
- * sessionToken String    @unique
- * userId       Int
- * user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
- * }
- */
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-/**
- * model Post {
- * id            Int       @id @default(autoincrement())
- * createdAt     DateTime  @default(now())
- * updatedAt     DateTime  @updatedAt
- * title         String
- * content       String
- * published     Boolean   @default(false)
- * authorId      Int
- * author        User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
- * comments      Comment[]
- * }
- */
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
 
-/**
- * model Comment {
- * id            Int       @id @default(autoincrement())
- * createdAt     DateTime  @default(now())
- * updatedAt     DateTime  @updatedAt
- * content       String
- * authorId      Int
- * postId        Int
- * author        User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
- * post          Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
- * }
- */
+model Session {
+  id           Int       @id @default(autoincrement())
+  sessionToken String    @unique
+  userId       Int
+  expires      DateTime
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime? @updatedAt
 
-/**
- * model Shop {
- * id        Int      @id @default(autoincrement())
- * createdAt DateTime @default(now())
- * updatedAt DateTime @updatedAt
- * name      String
- * address   String?
- * city      String?
- * state     String?
- * zip       String?
- * country   String?
- * website   String?
- * phone     String?
- * email     String?
- * // reviews   Review[]
- * }
- */
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// Optional for WebAuthn support
+model Authenticator {
+  credentialID         String  @unique
+  userId               Int
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([credentialID])
+  @@index([userId])
+}
+
+model Product {
+  id            Int       @id @default(autoincrement())
+  name          String
+  productTypeId Int
+  shopId        Int
+  category      String?
+  description   String?
+  imageUrl      String?
+  productUrl    String?
+  rating        Float?    @default(0.0)
+  reviews       Review[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime? @updatedAt
+
+  productType ProductType @relation(fields: [productTypeId], references: [id], onDelete: Cascade)
+  shop        Shop        @relation(fields: [shopId], references: [id], onDelete: Cascade)
+
+  @@index([productTypeId, shopId, name, rating])
+}
+
+model ProductType {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+
+  products Product[]
+
+  @@unique([id, name])
+  @@index([id, name])
+}
+
+model Review {
+  id        Int       @id @default(autoincrement())
+  title     String
+  content   String?   @db.Text
+  userId    Int
+  productId Int
+  shopId    Int
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  shop    Shop    @relation(fields: [shopId], references: [id], onDelete: Cascade)
+
+  @@index([userId, productId, shopId, title, createdAt])
+}
+
+model Shop {
+  id          Int       @id @default(autoincrement())
+  name        String
+  shopTypeId  Int
+  category    String?
+  description String?
+  address1    String?
+  address2    String?
+  city        String?
+  state       String?
+  zip         String?
+  country     String?
+  phone       Int?
+  url         String?
+  rating      Float?    @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
+
+  reviews  Review[]
+  products Product[]
+
+  shopType ShopType @relation(fields: [shopTypeId], references: [id], onDelete: Cascade)
+
+  @@index([shopTypeId])
+  @@index([name, category, rating, createdAt])
+}
+
+model ShopType {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+
+  shops Shop[]
+
+  @@unique([id, name])
+  @@index([id, name])
+}

@@ -12,15 +12,18 @@ type loginUserInfoProps = {
   password: string
 }
 
-const passwordSchema = z.string().regex(
-  /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~ ]).{8,}$/, {
-    message: "Password must contain at least one uppercase letter, one special character, and be at least 8 characters long."
+const stringLength = process.env.PASSWORD_LETTER_LENGTH ? parseInt(process.env.PASSWORD_LETTER_LENGTH) : 8
+const regExString = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+
+const passwordSchema = z.string()
+  .min(8, { message: "Invalid password" })
+  .regex(regExString, {
+    message: `Password must contain at least one uppercase letter, one special character, and be at least ${stringLength} characters long. `
   }
 )
 
 const loginSchema = z.object({
-  email: z.string().email({ message: "Invalid email address" }).trim(),
-  //password: z.string().min(8, { message: "Invalid password" }),
+  email: z.email({ message: "Invalid email address" }).trim(),
   password: passwordSchema,
 })
 
@@ -30,8 +33,10 @@ export async function emailLoginAction(prevState: any, formData: FormData) {
     const result = loginSchema.safeParse(formEntries)
 
     if (!result.success) {
-      const errors = result.error.flatten().fieldErrors
-      return { success: false, errors: errors }
+      return { 
+        success: false, 
+        errors: z.flattenError(result.error).fieldErrors
+      }
     }
 
     //const parsedData = loginSchema.parse(formEntries)

@@ -3,9 +3,11 @@
 import { cookies } from 'next/headers'
 
 const cookiePrefix = process.env.COOKIE_PREFIX
+const defaultExpInDays = Number(process.env.COOKIE_EXPIRATION_DAYS) || 7
 
 export async function createCookie(name: string, value: string, expInDays?: number) {
-  const maxAge = 60 * 60 * 24 * (expInDays ?? 7) * 1000
+  const days = typeof expInDays === 'number' ? expInDays : defaultExpInDays
+  const maxAge = 60 * 60 * 24 * days * 1000
   const expiresAt = new Date(Date.now() + maxAge)
   const cookieStore = await cookies()
 
@@ -34,20 +36,28 @@ export async function createCookie(name: string, value: string, expInDays?: numb
 } */
 
 export async function getCookie(name: string) {
-  const cookie = (await cookies()).get(`${cookiePrefix}${name}`)
-  return cookie ?? null
+  const cookieStore = await cookies()
+  if (!cookieStore) return
+  const cookie = cookieStore.get(`${cookiePrefix}${name}`)
+  return cookie
 }
 
 export async function hasCookie(name: string) {
-  const cookie = (await cookies()).has(`${cookiePrefix}${name}`)
-  return cookie ?? undefined
+  const cookieStore = await cookies()
+  if (!cookieStore) return
+  const cookie = cookieStore.has(`${cookiePrefix}${name}`)
+  return cookie
 }
 
 export async function getAllCookies() {
-  const allCookies = (await cookies()).getAll()
+  const cookieStore = await cookies()
+  if (!cookieStore) return
+  const allCookies = cookieStore.getAll()
   return allCookies
 }
 
 export async function deleteCookie(name: string) {
-  (await cookies()).delete(`${cookiePrefix}${name}'`)
+  const cookieStore = await cookies()
+  if (!cookieStore) return
+  cookieStore.delete(`${cookiePrefix}${name}`)
 }

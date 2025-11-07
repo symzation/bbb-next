@@ -34,7 +34,10 @@ export default function Login({
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogOverlay className="bg-third/70"/>
-      <DialogContent className="bg-white text-primary overflow-x-auto">
+      <DialogContent 
+        className="w-[450px] bg-white text-primary overflow-x-auto"
+        closeButtonClass=" focus:ring-0 focus:ring-offset-0 cursor-pointer"
+      >
         <DialogHeader className="mb-2">
           <DialogTitle className="text-2xl text-left font-bold mt-2">
             Welcome Back, Taster!

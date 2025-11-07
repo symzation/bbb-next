@@ -4,7 +4,7 @@ import { z } from "zod"
 //import { cookies } from "next/headers"
 
 const forgotPasswordSchema = z.object({
-  email: z.string().email({ message: "Invalid email address" }).trim(),
+  email: z.email({ message: "Invalid email address" }).trim(),
 })
 
 export async function forgotPasswordAction(prevState: any, formData: FormData) {
@@ -13,8 +13,10 @@ export async function forgotPasswordAction(prevState: any, formData: FormData) {
     const result = forgotPasswordSchema.safeParse(formEntries)
 
     if (!result.success) {
-      const errors = result.error.flatten().fieldErrors
-      return { success: false, errors: errors }
+      return { 
+        success: false, 
+        errors: z.flattenError(result.error).fieldErrors 
+      }
     }
 
     const parsedData = forgotPasswordSchema.parse(formEntries)

@@ -1,13 +1,11 @@
-"use client"
-
 import { useActionState, useEffect } from "react"
 import { styles } from "@/constants/constants"
 import { cn } from "@/utils"
 import { Button } from "@/components/ui/button"
 import { FaLock, FaUser } from "react-icons/fa"
 import { emailLoginAction } from "@/components/Forms/Login/LoginFormAction"
-import FormButtonLink from "@/components/Forms/FormButtonLink"
 import { redirect } from "next/navigation"
+import FormButtonLink from "@/components/Forms/FormButtonLink"
 
 type LoginFormProps = {
   onOpenChange: (open: boolean) => void
@@ -45,7 +43,7 @@ export default function LoginForm({
               </div>
             )}
           </div>
-          {/* <div className="relative flex flex-col items-center">
+          <div className="relative flex flex-col items-center">
             <div className="flex justify-between items-center w-full absolute -top-8 left-0">
               <label htmlFor="password" className="text-sm font-bold tracking-wide">
                 Password
@@ -68,7 +66,7 @@ export default function LoginForm({
                 {(formState.errors as { password?: string[] }).password}
               </div>
             )}
-          </div> */}
+          </div>
         </div>
         <div className="flex-col sm:flex-col sm:justify-center mt-5">
           <Button 

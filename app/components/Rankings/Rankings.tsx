@@ -1,83 +1,52 @@
-import { headers } from 'next/headers'
+import { headers } from "next/headers"
 import { styles } from "@/constants/constants"
 import { cn } from "@/utils"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import RankingsCard from "@/components/Rankings/RankingsCard"
+import { getProductRankings } from "@/actions/productDataActions"
 
-async function getBourbons(origin: string) {
-  const res = await fetch(`${origin}/api/data/products`)
-  if (!res.ok) {
-    throw new Error('Failed to fetch bourbons')
-  }
-  return res.json() || []
-}
-
-async function getCafes(origin: string) {
-  const res = await fetch(`${origin}/api/data/products`)
-  if (!res.ok) {
-    throw new Error('Failed to fetch cafes')
-  }
-  return res.json() || []
-}
-
-
-async function getBreweries(origin: string) {
-  const res = await fetch(`${origin}/api/data/products`)
-  if (!res.ok) {
-    throw new Error('Failed to fetch cafes')
-  }
-  return res.json() || []
-}
-
-
-async function getBites(origin: string) {
-  const res = await fetch(`${origin}/api/data/products`)
-  if (!res.ok) {
-    throw new Error('Failed to fetch cafes')
-  }
-  return res.json() || []
-}
-
-type RankingProps = {
-}
-
-export default async function Rankings({
-}: RankingProps) {
+/* export async function getRankings() {
   const headersList = await headers()
   const host = headersList.get('host')
   const protocol = headersList.get('x-forwarded-proto') === 'https' ? 'https' : 'http'
   const origin = `${protocol}://${host}`
+  const res = await fetch(`${origin}/api/data/rankings`)
+  return res.json() 
+} */
 
-  const bourbons = await getBourbons(origin)
-  const cafes = await getCafes(origin)
-  const breweries = await getBreweries(origin)
-  const bites = await getBites(origin)
+export default async function Rankings() {
+  const rankings = await getProductRankings()
+  const rankingsData = rankings?.data
+  const ObjectEntries = Object.entries(rankingsData ?? {})
 
   return (
-    <>
-      <div className={styles.rankingsWrapper}>
-        <RankingsCard 
-          products={bourbons?.data ?? []} 
-          cardTitle="Top 5 Bourbons" 
-          errorMsg="No bourbons available" 
-        />
-        <RankingsCard 
-          products={cafes?.data ?? []} 
-          cardTitle="Top 5 Cafe" 
-          errorMsg="No cafes available" 
-        />
-      </div>
-      <div className={styles.rankingsWrapper}>
-        <RankingsCard 
-          products={breweries?.data ?? []} 
-          cardTitle="Top 5 Breweries" 
-          errorMsg="No breweries available" 
-        />
-        <RankingsCard 
-          products={bites?.data ?? []} 
-          cardTitle="Top 5 Bites" 
-          errorMsg="No bites available" 
-        />
-      </div>
-    </>
+    <div className={cn("mt-10 px-2 md:px-6")}> 
+      <Tabs 
+        defaultValue="Whiskey" 
+        className="flex flex-col justify-center items-start space-y-2 md:space-y-0 md:space-x-2 w-full gap-0 md:gap-2"
+      >
+        <TabsList className=" w-full space-x-2 mb-2 flex-wrap h-auto justify-start items-center">
+          {ObjectEntries.map(([key]) => (
+            <TabsTrigger 
+              key={key}
+              value={key} 
+              className="flex text-center cursor-pointer bg-primary text-third hover:bg-secondary hover:text-third data-[state=active]:bg-fifth data-[state=active]:text-white px-3 py-1.5 mr-2 mb-2 rounded-md text-sm font-semibold"
+            >
+              {key}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+        {Object.entries(rankingsData ?? {}).map(([key, value]) => (
+          <TabsContent key={key} value={key} className="w-full px-0 md:px-3">
+            <RankingsCard
+              products={Array.isArray(value) ? value : []}
+              cardTitle={`Top 10 ${key}`}
+              errorMsg={`No ${key} available`}
+              rankingCardClass={cn("my-2 md:my-0 w-full")}
+            />
+          </TabsContent>
+        ))}
+      </Tabs>
+    </div>
   )
 }
