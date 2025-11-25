@@ -60,6 +60,7 @@ export default function LoginForm({
             <FaLock className="absolute top-3 left-[10px] text-base" />
             <input type="password" name="password" defaultValue=""
               placeholder="Password" className={cn(styles.formInput, 'pl-[35px]')}
+              autoComplete=""
             />
             {formState?.errors && typeof formState.errors === "object" && !Array.isArray(formState.errors) && "password" in formState.errors && (
               <div className="text-error text-sm italic mt-1">

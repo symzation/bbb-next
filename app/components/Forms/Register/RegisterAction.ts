@@ -6,6 +6,7 @@ import { getCookie } from "@/lib/cookies"
 import { hashSalt } from "@/lib/salt"
 import { credentialsLogin } from "@/actions/loginActions"
 import { createUser } from "@/actions/userDataActions"
+import { UserDataProps } from "@/types/types"
 
 //const prisma = new PrismaClient()
 

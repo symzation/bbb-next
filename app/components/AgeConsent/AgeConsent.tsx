@@ -15,7 +15,6 @@ import {
   AlertDialogHeader,
   AlertDialogOverlay,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 
 export default function AgeConsent() {

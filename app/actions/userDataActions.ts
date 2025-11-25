@@ -1,29 +1,30 @@
 "use server"
 
-import { PrismaClient } from "@prisma/client"
-import { UserDataProps } from "@/types/types"
+import { prisma } from "@/lib/prisma"
+import { Prisma } from "@/root/prisma/generated/prisma/client"
+import { Role } from "@/types/enums"
+//import type { User, Account } from '@prisma/client'
 
-const prisma = new PrismaClient()
 
-export async function createUser(data: UserDataProps) {
+export async function createUser(data: Prisma.UserCreateInput) {
   const { accounts, ...userData } = data
   const prismaData: any = { ...userData }
-  if (accounts && accounts.length > 0) {
+  if (accounts) {
     prismaData.accounts = {
       create: accounts
     }
   }
-  const newUser = await prisma.user.create({ data: prismaData })
+  const newUser = await prisma.user.create({ data })
   return newUser
 }
 
-export async function deleteUser(id: string) {
+export async function deleteUser(userId: string) {
   await prisma.account.deleteMany({
-    where: { userId: parseInt(id) },
+    where: { userId: parseInt(userId) },
   })
 
   const deletedUser = await prisma.user.delete({
-    where: { id: parseInt(id) },
+    where: { id: parseInt(userId) },
   })
 
   return deletedUser  
@@ -34,9 +35,10 @@ export async function getUsers() {
   return users
 }
 
+
 export async function getUserByEmail(
   email: string, 
-  includes?: { accounts?: boolean; sessions?: boolean; reviews?: boolean }
+  includes?: { accounts?: boolean; sessions?: boolean; reviews?: boolean, author?: boolean }
 ) {
   const user = await prisma.user.findUnique({
     where: { email },
@@ -46,9 +48,9 @@ export async function getUserByEmail(
   return user
 }
 
-export async function getUserById(id: string) {
+export async function getUserById(userId: string) {
   const user = await prisma.user.findFirst({
-    where: { id: parseInt(id) },
+    where: { id: parseInt(userId) },
     //include: { accounts: true, session: true, reviews: true }
   })
 
@@ -57,24 +59,25 @@ export async function getUserById(id: string) {
 
 export async function getUsersByRole(role: string) {
   const users = await prisma.user.findMany({
-    where: { role: role.toUpperCase() },
+    where: { role: Role[role.toUpperCase() as keyof typeof Role] },
   })
 
   return users
 }
 
-export async function deactivateUser(id: string) {
+export async function deactivateUser(userId: string) {
   const deactivatedUser = await prisma.user.update({
-    where: { id: parseInt(id) },
+    where: { id: parseInt(userId) },
     data: { suspended: true, suspendedAt: new Date() },
   })
 
   return deactivatedUser
 }
 
-export async function updateUser(id: string, data: any) {
+export async function updateUser(userId: string, data: any) {
+  console.log('Update User: ', data)
   const updatedUser = await prisma.user.update({
-    where: { id: parseInt(id) },
+    where: { id: parseInt(userId) },
     data,
   })
 

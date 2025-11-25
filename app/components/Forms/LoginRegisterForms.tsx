@@ -50,11 +50,9 @@ export default function LoginRegisterForms({
           alt="User Avatar"
           width={64}
           height={64}
-          className={cn(styles.avatarClass, "-mt-1 hidden")}
+          className={cn("-mt-1 hidden")}
         />
-        <div className="">
-          Login / Register
-        </div>
+        <div> Login / Register</div>
       </Button>
 
       <Login

@@ -9,7 +9,7 @@ export default function BecomeReviewer() {
   const [showForm, setShowForm] = useState(false)
 
   return (
-    <div className={cn(styles.pageClass)}>
+    <div className={cn(styles.pageClass, "px-10")}>
       <h1 className="text-3xl font-bold mb-4">Want To Become A Reviewer</h1>
       <p className={styles.paragraph}>
         Becoming a reviewer for Bourbon Brew & Bites is easier than pouring your first glass. With just a few simple steps, you can join a growing community of enthusiasts who share their love for bourbon, beer, coffee, and delicious small bites from around the country. Whether you're a seasoned taster or someone who simply enjoys a great pour and good company, your voice matters. The process is designed to be effortless — sign up, create your reviewer profile, and start writing reviews about your favorite local spots, distilleries, breweries, coffee shops, or hidden gems in your city or state.

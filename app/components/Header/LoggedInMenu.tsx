@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/sheet"
 import { Separator } from "@/components/ui/separator"
 import { useAuthContext } from "@/providers/AuthProvider"
+import { RiEdit2Line } from "react-icons/ri"
 import { AiOutlineQuestionCircle, AiOutlineSetting } from "react-icons/ai"
 import { MdOutlineRateReview } from "react-icons/md"
 import { GrResources } from "react-icons/gr"
@@ -29,6 +30,7 @@ export default function LoggedInMenu() {
   
   const router = useRouter()
   const sessionData = useAuthContext()
+  console.log('LoggedInMenu - Session Data: ', sessionData)
   
   const seporatorClass = "bg-primary h-1 my-0"
 
@@ -36,6 +38,37 @@ export default function LoggedInMenu() {
     event.preventDefault()
     setIsOpen(false)
     router.push(url)
+  }
+
+  const getSessionLinks = (sessionData: any) => {
+    let links
+
+    if (sessionData?.user?.role === 'AUTHOR') {
+      links = 
+        <>
+          <Link href="#" className={styles.profileMenuLink} 
+            onClick={(e) => assignLink(e, '/compose')}
+          >
+            <RiEdit2Line className={styles.profileMenuLinkIcon} /> Write
+          </Link>
+          <Link href="#" className={styles.profileMenuLink} onClick={(e) => assignLink(e, '/guide')}>
+            <LuNotebookText className={styles.profileMenuLinkIcon} /> Guide
+          </Link>
+          <Link href="#" className={styles.profileMenuLink} onClick={(e) => assignLink(e, '/resources')}>
+            <GrResources className={styles.profileMenuLinkIcon} /> Resources
+          </Link>
+        </>
+    } else if (sessionData?.user?.role === 'USER') {
+      links =
+        <Link href="#" className={styles.profileMenuLink} 
+          onClick={(e) => assignLink(e, '/reviewer-signup')}
+        >
+          <MdOutlineRateReview className={styles.profileMenuLinkIcon} /> Become a Reviewer
+        </Link>
+    }/*  else {
+      links = {}
+    } */
+    return links
   }
 
   return (
@@ -70,20 +103,7 @@ export default function LoggedInMenu() {
         </div>
         <Separator className={seporatorClass} />
         <div className="flex flex-col">
-          {sessionData?.isAuthenticated && sessionData?.user?.role === 'AUTHOR' ? (
-            <>
-              <Link href="#" className={styles.profileMenuLink} onClick={(e) => assignLink(e, '/guide')}>
-                <LuNotebookText className={styles.profileMenuLinkIcon} /> Guide
-              </Link>
-              <Link href="#" className={styles.profileMenuLink} onClick={(e) => assignLink(e, '/resources')}>
-                <GrResources className={styles.profileMenuLinkIcon} /> Resources
-              </Link>
-            </>
-          ) : (
-            <Link href="#" className={styles.profileMenuLink} onClick={(e) => assignLink(e, '/write')}>
-              <MdOutlineRateReview className={styles.profileMenuLinkIcon} /> Become a Reviewer
-            </Link>
-          )}
+          {sessionData?.isAuthenticated && getSessionLinks(sessionData)}
         </div>
         <Separator className={seporatorClass} />
         <div className="flex flex-col">

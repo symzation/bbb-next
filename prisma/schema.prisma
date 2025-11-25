@@ -1,85 +1,95 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
-datasource db {
-  provider          = "mysql"
-  url               = env("DATABASE_URL")
-  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
-  //runtime  = "vercel-edge"
+generator client {
+  provider = "prisma-client"
+  output   = "./generated/prisma"
 }
 
-generator client {
-  provider = "prisma-client-js"
-  //engineType = "wasm" 
-  //output   = "../app/generated/prisma/client"
+datasource db {
+  provider = "mysql"
 }
 
 model User {
-  id            Int       @id @default(autoincrement())
-  name          String
-  username      String?   @unique
-  email         String    @unique
+  id            Int             @id @default(autoincrement())
+  name          String?
+  username      String?         @unique
+  email         String?         @unique
   emailVerified DateTime?
-  password      String?
   image         String?
-  ageConsent    Boolean?  @default(false)
-  role          String?   @default("USER")
-  bio           String?   @default("") @db.Text
-  //provider      String?   
-  suspended     Boolean?  @default(false)
+  password      String?
+  ageConsent    Boolean?        @default(false)
+  role          Role?           @default(USER)
+  suspended     Boolean?        @default(false)
   suspendedAt   DateTime?
-  createdAt     DateTime? @default(now())
-  updatedAt     DateTime? @updatedAt
   lastLogin     DateTime?
-
-  accounts      Account[]
-  sessions      Session[]
-  reviews       Review[]
-  // Optional for WebAuthn support
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  accounts      Account?
   Authenticator Authenticator[]
+  authors       Author?
+  reviews       Review[]
+  sessions      Session[]
 
-  @@unique([username, email])
   @@index([id, email, username, role])
 }
 
-enum Role {
-  USER
-  ADMIN
-  AUTHOR
+model Author {
+  id                 Int       @id @default(autoincrement())
+  userId             Int       @unique
+  penName            String?   @unique
+  bio                String?   @db.Text
+  whyReviewer        String?   @db.Text
+  authorApproved     Boolean?  @default(false) @map("author_approved")
+  authorApprovedAt   DateTime? @map("author_approved_at")
+  authorApprovedById Int?      @map("author_approved_by_id")
+  createdAt          DateTime? @default(now())
+  updatedAt          DateTime? @updatedAt
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  awards             Award[]   @relation("AuthorToAward")
+
+  @@index([id, userId])
+}
+
+model Award {
+  id        Int       @id @default(autoincrement())
+  title     String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  user      Author[]  @relation("AuthorToAward")
+
+  @@index([id, title])
 }
 
 model Account {
-  id                String  @id @default(cuid())
-  userId            Int
-  type              String
-  provider          String
-  providerAccountId String  @map("provider_account_id") // Important for some databases
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String? @db.Text
-  session_state     String?
+  id                       Int      @id @default(autoincrement())
+  userId                   Int      @unique
+  type                     String
+  provider                 String
+  providerAccountId        String   @map("provider_account_id")
+  refresh_token            String?  @db.Text
+  access_token             String?  @db.Text
+  expires_at               Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String?  @db.Text
+  session_state            String?
+  refresh_token_expires_in Int?
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
 
-  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User? @relation(fields: [userId], references: [id])
 
   @@unique([provider, providerAccountId])
   @@index([userId])
 }
 
 model Session {
-  id           Int       @id @default(autoincrement())
-  sessionToken String    @unique
+  id           Int      @id @default(autoincrement())
+  sessionToken String   @unique
   userId       Int
   expires      DateTime
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime? @updatedAt
+  user         User     @relation(fields: [userId], references: [id])
 
-  user User @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([userId])
 }
@@ -92,7 +102,6 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-// Optional for WebAuthn support
 model Authenticator {
   credentialID         String  @unique
   userId               Int
@@ -105,12 +114,11 @@ model Authenticator {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@id([credentialID])
-  @@index([userId])
+  @@id([userId, credentialID])
 }
 
 model Product {
-  id            Int       @id @default(autoincrement())
+  id            Int         @id @default(autoincrement())
   name          String
   productTypeId Int
   shopId        Int
@@ -118,15 +126,15 @@ model Product {
   description   String?
   imageUrl      String?
   productUrl    String?
-  rating        Float?    @default(0.0)
+  rating        Float?      @default(0)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime?   @updatedAt
+  productType   ProductType @relation(fields: [productTypeId], references: [id], onDelete: Cascade)
+  shop          Shop        @relation(fields: [shopId], references: [id], onDelete: Cascade)
   reviews       Review[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime? @updatedAt
-
-  productType ProductType @relation(fields: [productTypeId], references: [id], onDelete: Cascade)
-  shop        Shop        @relation(fields: [shopId], references: [id], onDelete: Cascade)
 
   @@index([productTypeId, shopId, name, rating])
+  @@index([shopId], map: "Product_shopId_fkey")
 }
 
 model ProductType {
@@ -134,8 +142,7 @@ model ProductType {
   name      String    @unique
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
-
-  products Product[]
+  products  Product[]
 
   @@unique([id, name])
   @@index([id, name])
@@ -150,12 +157,13 @@ model Review {
   shopId    Int
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
-
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  shop    Shop    @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  product   Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  shop      Shop      @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, productId, shopId, title, createdAt])
+  @@index([productId], map: "Review_productId_fkey")
+  @@index([shopId], map: "Review_shopId_fkey")
 }
 
 model Shop {
@@ -175,11 +183,9 @@ model Shop {
   rating      Float?    @default(0)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime? @updatedAt
-
-  reviews  Review[]
-  products Product[]
-
-  shopType ShopType @relation(fields: [shopTypeId], references: [id], onDelete: Cascade)
+  products    Product[]
+  reviews     Review[]
+  shopType    ShopType  @relation(fields: [shopTypeId], references: [id], onDelete: Cascade)
 
   @@index([shopTypeId])
   @@index([name, category, rating, createdAt])
@@ -190,9 +196,15 @@ model ShopType {
   name      String    @unique
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
-
-  shops Shop[]
+  shops     Shop[]
 
   @@unique([id, name])
   @@index([id, name])
+}
+
+enum Role {
+  ADMIN
+  AUTHOR
+  AUTHOR_WAITING_APPROVAL
+  USER
 }

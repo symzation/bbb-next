@@ -11,10 +11,9 @@ import {
   ItemMedia,
   ItemTitle,
 } from "@/components/ui/item"
-import { observeWindowScroll } from "@/utils/helpers"
 
 type SettingsItemsListProps = {
-  scrollToElement: (settingName: string) => void
+  scrollToElement?: (settingName: string) => void
   activeSection: string
   itemsList: ItemType[]
 }
@@ -43,7 +42,7 @@ export function SettingsItemsList({
           size="default" 
           data-itemname={item.name} 
           className={cn(itemClass, activeSection === item.name ? "border-primary" : "border-transparent")} 
-          onClick={() => scrollToElement(item.name)}
+          onClick={() => scrollToElement?.(item.name)}
         >
           <ItemHeader 
             className={cn(itemHeader, activeSection === item.name ? itemActiveHeaderClass : "")} 

@@ -31,6 +31,9 @@ lerna-debug.log*
 # System files
 .DS_Store
 Thumbs.db
-/app/generated/prisma
+
+# App
+/app/generated
 /sqlInserts/
 *.sql
+

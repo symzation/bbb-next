@@ -72,6 +72,35 @@ export function setupWindowObservers(
   return values
 }
 
+export function observeElementScroll(
+  elementId: string, 
+  callback: (values: { height: number, scrollY: number }) => void
+) {
+  const element = document.querySelector(`#${elementId}`) as HTMLElement 
+
+  if (!element) {
+    throw new Error(`Element with ID ${elementId} not found.`)
+  }
+
+  const values = {
+    height: element.offsetHeight,
+    scrollY: element.scrollTop,
+  }
+
+  const scrollObserver = new ResizeObserver(entries => {
+    for (let entry of entries) {
+      values.height = (entry.target as HTMLElement).offsetHeight
+      values.scrollY = (entry.target as HTMLElement).scrollTop
+      console.log("Element scrolled:", values)
+      // You can return or use these dimensions as needed
+      if (typeof callback === "function") callback(values)
+    }
+  })
+
+  scrollObserver.observe(element)
+  return values // Return initial dimensions
+}
+
 export function observeElementResize(elementId: string) {
   const element = document.querySelector(`#${elementId}`) as HTMLElement 
 

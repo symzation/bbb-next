@@ -4,6 +4,7 @@ import { useState } from "react"
 import { styles } from "@/constants/constants"
 import { cn } from "@/utils"
 import { SettingsItemsList } from "@/components/Settings/SettingsItemsList"
+//import { observeWindowScroll } from "@/utils/helpers"
 import { useAuthContext } from "@/providers/AuthProvider"
 import AppConnects from "@/components/Settings/AppConnects"
 import CloseSessions from "@/components/Settings/CloseSessions"
@@ -15,15 +16,17 @@ const itemsList = [
   { name: "Account", description: "Manage your account settings." },
   { name: "Publishing", description: "Manage your publishing settings." },
   { name: "Notifications", description: "Manage your notification settings." },
-  { name: "Link Accounts", description: "Manage your linked accounts." },
+  { name: "Connected Account", description: "Manage your linked accounts." },
   { name: "Danger Zone", description: "Danger zone actions and settings." },
 ]
 
 export default function Settings() {
   const [activeSection, setActiveSection] = useState<string>("Account")
 
+  const settingSectionClass = "mb-6"
+
   const scrollToElement = (settingName: string) => {
-    const targetElement = document.getElementById(settingName)
+    const targetElement = document.querySelector(`#${settingName}`)
     
     if (targetElement) {
       targetElement.scrollIntoView({
@@ -47,27 +50,27 @@ export default function Settings() {
           />
         </div>
         <div className="w-full md:w-4/6 h-fit md:h-screen">
-          <div id="Account" className="mb-6">
+          <div id="Account" className={settingSectionClass}>
             <h3 className="text-xl font-bold tracking-wide my-2 mt-0">Account</h3>
             <Profile />
           </div>
           
-          <div id="Publishing" className="mb-6">
+          <div id="Publishing" className={settingSectionClass}>
             <h3 className="text-xl font-bold tracking-wide my-2">Publishing</h3>
           </div>
 
-          <div id="Notifications" className="mb-6">
+          <div id="Notifications" className={settingSectionClass}>
             <h3 className="text-xl font-bold tracking-wide my-2">Notifications</h3>
           </div>
-   
-          <div id="LinkAccounts" className="mb-6">
+
+          <div id="ConnectedAccount" className={settingSectionClass}>
             <h3 className="text-xl font-bold tracking-wide my-2">
-              Link Accounts
+              Connected Account
             </h3>
             <AppConnects />
           </div>
 
-          <div id="DangerZone" className="mb-6 p-2 pt-0 border border-warning">
+          <div id="DangerZone" className={cn(settingSectionClass, "p-2 pt-0 border border-warning")}>
             <h3 className="text-warning text-xl font-bold tracking-wide my-2">
               Danger Zone
             </h3>

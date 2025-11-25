@@ -38,7 +38,7 @@ export default function Login({
 		values: { innerWidth: number; innerHeight: number; scrollY: number }
 	) => {
 		setisMobile(values.innerWidth < 768)
-		setPosValue(values.scrollY)
+		setPosValue(values?.scrollY ?? 0)
 	}
 	setupWindowObservers(updateScrollValues)
 

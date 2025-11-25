@@ -1,9 +1,11 @@
 "use server"
 
-import { PrismaClient } from "@prisma/client"
+//import { PrismaClient } from "@prisma/client"
+import { prisma } from "@/lib/prisma"
+import { Prisma } from "@/root/prisma/generated/prisma/client"
 import { AccountDataProps } from "@/types/types"
 
-const prisma = new PrismaClient()
+//const prisma = new PrismaClient()
 
 export async function createDBAccount(data: AccountDataProps) {
   const newAccount = await prisma.account.create({

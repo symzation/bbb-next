@@ -5,8 +5,8 @@ import { styles } from "@/constants/constants"
 import { cn } from "@/utils"
 import { useAuthContext } from "@/providers/AuthProvider"
 import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
 import ProfileImage from "@/components/ProfileImage/profileImage"
+import TextareaInput from "@/components/Forms/Elements/TextareaInput"
 import { profileFormAction } from "@/components/Settings/ProfileFormAction"
 import { createUsername,getImageDimensions, validateUsername} from "@/utils/helpers"
 
@@ -30,18 +30,17 @@ export default function ProfileForm({
   const [inputName, setInputName] = useState<string>(session?.user?.name ?? "")
   const [inputUsername, setInputUsername] = useState<string>(session?.user?.username ?? "")
   const [inputEmail, setInputEmail] = useState<string>(session?.user?.email ?? "")
-  const [inputBio, setInputBio] = useState<string>(session?.user?.bio ?? "")
   const [inputProfileImage, setInputProfileImage] = useState<File | null>(null)
   
   const fileInputRef = useRef<HTMLInputElement | null>(null)
-  const bioRef = useRef<HTMLTextAreaElement | null>(null)
+/*   const bioRef = useRef<HTMLTextAreaElement | null>(null)
   const bioCountRef = useRef<HTMLSpanElement | null>(null)
   
-  const bioMaxLength = Number(process.env.NEXT_PUBLIC_BIO_MAX_LENGTH)
+  const bioMaxLength = Number(process.env.NEXT_PUBLIC_BIO_MAX_LENGTH) */
   const prevImageUrl = session?.user?.image ?? ""
 
   useEffect(() => {
-    if (session?.user?.email && session?.user?.username === ""   && inputUsername === "") {
+    if (session?.user?.email && session?.user?.username === "" && inputUsername === "") {
       const getUserName = async () => {
         const username = await createUsername(session?.user?.email ?? "")
         setInputUsername(username)
@@ -49,33 +48,20 @@ export default function ProfileForm({
       getUserName()
     }
 
-    bioRef.current?.focus()
-    bioRef.current?.blur()
+    /* bioRef.current?.focus()
+    bioRef.current?.blur() */
   }, [])
 
   useEffect(() => {
     if (formState && formState?.success && onProfileInfoClose) {
       onProfileInfoClose(false)
     }
-  }, [formState])
+  }, [formState, onProfileInfoClose])
 
   const addProfileImg = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     e.preventDefault()
     fileInputRef.current?.focus()
     fileInputRef.current?.click()
-  }
-
-  const updateBioCount = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    e.preventDefault()
-    const bioInput = e.target
-    const bioLength = bioInput.value.length
-
-    bioCountRef.current!.textContent = bioInput.value.slice(0, bioMaxLength).length.toString()
-
-    if (bioLength >= bioMaxLength) {
-      bioInput.value = bioInput.value.slice(0, bioMaxLength)
-      bioCountRef.current?.parentElement?.classList.toggle("text-error")
-    }
   }
 
   const handleProfileImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -180,9 +166,6 @@ export default function ProfileForm({
           />
           {formState?.errors && typeof formState.errors === "object" && !Array.isArray(formState.errors) && "name" in formState.errors && (<div className="text-error text-sm italic mt-1">{(formState.errors as { name?: string }).name}</div>)}
         </div>
-
-
-
         <div className="relative flex flex-col items-start mt-3.5">
           <label htmlFor="username" className="absolute -top-6.5 left-1 text-sm font-bold tracking-wide">
             Username
@@ -193,10 +176,6 @@ export default function ProfileForm({
           />
           {formState?.errors && typeof formState.errors === "object" && !Array.isArray(formState.errors) && "username" in formState.errors && (<div className="text-error text-sm italic mt-1">{(formState.errors as { username?: string[] }).username}</div>)}
         </div>
-
-
-
-
         <div className="relative flex flex-col items-start mt-3.5">
           <label htmlFor="email" className="absolute -top-6.5 left-1 text-sm font-bold tracking-wide">
             Email
@@ -208,31 +187,14 @@ export default function ProfileForm({
           {formState?.errors && typeof formState.errors === "object" && !Array.isArray(formState.errors) && "email" in formState.errors && (<div className="text-error text-sm italic mt-1">{(formState.errors as { email?: string[] }).email}</div>)}
         </div>
       </div>
-      <div className={cn("relative flex flex-col items-start mt-12", session)}>
-        <label htmlFor="bio" className="absolute -top-6.5 left-1 text-sm font-bold tracking-wide">
-          Short Bio
-        </label>
-        <Textarea 
-          ref={bioRef}
-          name="bio"
-          defaultValue={inputBio}
-          placeholder="Type your bio here." 
-          className="focus-visible:ring-0 max-h-40" 
-          onChange={updateBioCount} 
-          onBlur={(e) => {
-            setInputBio(e.target.value);
-            updateBioCount(e);
-          }}
-        />
-        <div 
-          className="flex flex-row justify-end items-center text-muted-foreground text-sm w-full mt-1.5"
-        >
-          <span ref={bioCountRef} className="inline-block">0</span>
-          <span className="inline-block ml-0.5">/{bioMaxLength}</span>
-        </div>
-         {formState?.errors && typeof formState.errors === "object" && !Array.isArray(formState.errors) && "bio" in formState.errors && (<div className="text-error text-sm italic mt-1">{(formState.errors as { bio?: string[] }).bio}</div>)}
-      </div>
-
+      <TextareaInput
+        defaultValue={session?.user?.bio ?? ""} 
+        inputClassName="mt-12 mb-1.5" 
+        inputErrors={formState}   
+        inputName="bio"
+        labelName="Bio"
+        placeholderText="Write a short bio about yourself."
+      />
       <div className="flex-col sm:flex-col sm:justify-center mt-5">
         <Button 
           type="submit" 

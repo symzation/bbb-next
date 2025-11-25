@@ -1,8 +1,6 @@
-import { Review } from "@/generated/prisma/client/wasm"
-
 export type UserDataProps = {
-  id: string
-  name: string
+  id?: string
+  name?: string
   username?: string
   email: string
   emailVerified?: Date
@@ -10,16 +8,38 @@ export type UserDataProps = {
   image?: string
   ageConsent?: boolean
   role?: string
-  bio?: string
   provider?: string 
   suspended?: boolean
   suspendedAt?: Date
   createdAt?: Date
   updatedAt?: Date
-  accounts?: AccountDataProps[]
+/*   accounts?: AccountDataProps[]
   sessions?: SessionDataProps[]
   reviews?: ReviewDataProps[]
+  author?:  */
 } & Record<string, any>
+
+export type AuthorDataType = {
+  id?: string
+  userId?: string
+  penName?: string
+  bio?: string
+  whyReviewer?: string
+  awards?: Award[]   
+  authorApproved?: boolean
+  authorApprovedAt?: Date
+  approvedById?: number
+  createdAt?: Date
+  updatedAt?: Date
+/*   user?: */
+} & Record<string, any>
+
+export type Award = {
+  id: number
+  title: string
+  createdAt?: Date
+  updatedAt?: Date
+}
 
 export type AccountDataProps = {
   userId: string

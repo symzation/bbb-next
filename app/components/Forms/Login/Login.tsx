@@ -27,7 +27,6 @@ export default function Login({
   onTransitionToRegister,
   onTransitionToForgotPassword
 }: LoginProps) {
-  //const { updateLoginState } = useLoginContext()
   const [showSignInOptions, setShowSignInOptions] = useState(true)
   const [showEmailLogin, setShowEmailLogin] = useState(false)
 

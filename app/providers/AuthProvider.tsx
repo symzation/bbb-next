@@ -18,8 +18,7 @@ type AuthContextProps = {
   status?: "authenticated" | "loading" | "unauthenticated"
   isAuthenticated?: boolean
 } | null
-
-export const AuthContext = createContext<AuthContextProps>({})
+const AuthContext = createContext<AuthContextProps>({})
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const session = useSession()

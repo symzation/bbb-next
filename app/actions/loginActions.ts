@@ -1,8 +1,7 @@
 "use server"
 
 import { signIn, signOut } from "@/lib/auth"
-//import { redirect } from "next/navigation"
-import { cookies } from "next/headers"
+//import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 
 export async function socialLogin(provider: string) {
@@ -47,5 +46,14 @@ export async function credentialsLogin(formData: FormData) {
 
 export async function signOutNoRedirect() {
   await signOut({ redirect: false })
+}
+
+export async function signInNoRedirect(provider: string) {
+  await signIn(provider, { redirect: false })
+}
+
+export async function signInRedirectTo(provider: string, redirectUrl: string) {
+  await signIn(provider, { redirect: false })
+  redirect(redirectUrl)
 }
 

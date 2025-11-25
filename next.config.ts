@@ -21,14 +21,18 @@ const nextConfig: NextConfig = {
       hmrRefreshes: true,
     },
   },
-  async rewrites() {
+  rewrites: () => {
     return [
-      /* {
-        source: '/not-authorized',
-        destination: '/notAuthorized', // Maps /not-authorized to /notAuthorized
-      }, */
-    ];
-  },
-};
+      {
+        source: '/become-a-writer',
+        destination: '/author', // Maps /not-authorized to /notAuthorized
+      },
+      {
+        source: '/author-write',
+        destination: '/compose', // Maps /not-authorized to /notAuthorized
+      },
+    ]
+  }
+}
 
 export default nextConfig;
