@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import Link from "next/link"
 import { styles } from "@/constants/constants"
 import { cn } from "@/utils"
@@ -29,6 +29,10 @@ export default function Login({
 	
 	const session = useAuthContext()
 
+	useEffect(() => {
+		setupWindowObservers(updateScrollValues)
+	}, [])
+	
 	const navLinkClass = cn(
 		styles.linkClass,
 		"text-xl font-bold text-primary no-underline hover:text-fifth tracking-wide transistion-all duration-300 ease-in-out"
@@ -40,7 +44,6 @@ export default function Login({
 		setisMobile(values.innerWidth < 768)
 		setPosValue(values?.scrollY ?? 0)
 	}
-	setupWindowObservers(updateScrollValues)
 
 	const checkSession = (redirectUrl: string) => {
 		return async () => {

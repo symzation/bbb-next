@@ -33,7 +33,7 @@ lerna-debug.log*
 Thumbs.db
 
 # App
-/app/generated
-/sqlInserts/
-*.sql
+drizzle
+/sqlInserts
+#*.sql
 

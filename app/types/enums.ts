@@ -1,11 +1,12 @@
-export enum Role {
+export enum ENUM_ROLE {
   ADMIN = 'ADMIN',
   AUTHOR = 'AUTHOR',
   AUTHOR_WAITING_APPROVAL = 'AUTHOR_WAITING_APPROVAL',
   USER = 'USER'
 }
 
-export enum Subscription {
+export enum ENUM_SUBSCRIPTION {
+  FREE = 'FREE',
   BASIC = 'BASIC',
   PREMIUM = 'PREMIUM',
   ELITE = 'ELITE',

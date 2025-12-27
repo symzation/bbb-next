@@ -1,11 +1,10 @@
 "use server"
 
 import { z } from "zod"
-import { deleteUser, getUserByEmail } from "@/actions/userDataActions"
+import { deleteUser, getUserByEmail } from "@/lib/db/users"
 
 export async function deleteAccountAction(
-  prevState: any, 
-  formData: FormData
+  prevState: any, formData: FormData
 ) {
   const deleteUserSchema = z.object({
     deleteInputTerm: z.string().min(1, { message: `Deletion term is invalid ` }),
@@ -24,7 +23,8 @@ export async function deleteAccountAction(
       return { success: false, errors: errors }
     }
 
-    const userToDelete = await getUserByEmail(String(formEntries.userEmail))
+    const usersToDelete = await getUserByEmail(String(formEntries.userEmail))
+    const userToDelete = Array.isArray(usersToDelete) ? usersToDelete[0] : usersToDelete
 
     if (!userToDelete) {
       return { success: false, errors: [{ message: "User to delete not found. " }] }
@@ -34,7 +34,7 @@ export async function deleteAccountAction(
     const deletedUser = await deleteUser(String(userToDelete.id))
 
     if (!deletedUser) {
-      return { success: false, errors: [{ message: "Failed to deletedUser user. " }] }
+      return { success: false, errors: [{ message: "Failed to delete user. " }] }
     }
 
     console.log("Deletion successful:", deletedUser)

@@ -1,28 +1,21 @@
-"use client"
-
 import { useState } from "react"
 import Link from "next/link"
 import { styles } from "@/constants/constants"
 import { cn } from "@/utils"
 import { Button } from "@/components/ui/button"
-import { socialLogout } from "@/actions/loginActions"
+import { logout } from "@/actions/loginActions"
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
+  Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger,
 } from "@/components/ui/sheet"
 import { Separator } from "@/components/ui/separator"
 import { useAuthContext } from "@/providers/AuthProvider"
 import { RiEdit2Line } from "react-icons/ri"
 import { AiOutlineQuestionCircle, AiOutlineSetting } from "react-icons/ai"
-import { MdOutlineRateReview } from "react-icons/md"
+import { MdOutlineRateReview, MdOutlineAdminPanelSettings } from "react-icons/md"
 import { GrResources } from "react-icons/gr"
 import { LuNotebookText } from "react-icons/lu"
 import { GoSignOut } from "react-icons/go"
-import { useRouter } from "next/navigation"
+import { redirect, useRouter } from "next/navigation"
 import ProfileImage from "@/components/ProfileImage/profileImage"
 
 export default function LoggedInMenu() {
@@ -30,8 +23,7 @@ export default function LoggedInMenu() {
   
   const router = useRouter()
   const sessionData = useAuthContext()
-  console.log('LoggedInMenu - Session Data: ', sessionData)
-  
+
   const seporatorClass = "bg-primary h-1 my-0"
 
   const assignLink = (event: React.MouseEvent<HTMLAnchorElement>, url: string) => {
@@ -43,7 +35,12 @@ export default function LoggedInMenu() {
   const getSessionLinks = (sessionData: any) => {
     let links
 
-    if (sessionData?.user?.role === 'AUTHOR') {
+    if (sessionData?.user?.role === 'ADMIN') {
+      links = 
+        <Link href="/admin" className={styles.profileMenuLink} onClick={(e) => assignLink(e, '/admin')}>
+          <MdOutlineAdminPanelSettings className={styles.profileMenuLinkIcon} /> Admin
+        </Link>
+    } else if (sessionData?.user?.role === 'AUTHOR') {
       links = 
         <>
           <Link href="#" className={styles.profileMenuLink} 
@@ -60,15 +57,17 @@ export default function LoggedInMenu() {
         </>
     } else if (sessionData?.user?.role === 'USER') {
       links =
-        <Link href="#" className={styles.profileMenuLink} 
-          onClick={(e) => assignLink(e, '/reviewer-signup')}
-        >
+        <Link href="/author" className={styles.profileMenuLink} onClick={(e) => assignLink(e, '/author')}>
           <MdOutlineRateReview className={styles.profileMenuLinkIcon} /> Become a Reviewer
         </Link>
-    }/*  else {
-      links = {}
-    } */
+    }
+    
     return links
+  }
+
+  const userLogout = async () => {
+    setIsOpen(false)
+    await logout(false, '/')
   }
 
   return (
@@ -115,12 +114,12 @@ export default function LoggedInMenu() {
           </Link>
         </div>
         <Separator className={seporatorClass} />
-        <form action={socialLogout}>
+        <form action={userLogout}>
           <Button
             variant='ghost'
             type='submit'
             className={cn(styles.profileMenuLink, "text-start cursor-pointer w-full hover:no-underline")}
-            onClick={() => socialLogout()}
+            //onClick={userLogout}
           >
             <GoSignOut className={styles.profileMenuLinkIcon} /> Sign out
           </Button>

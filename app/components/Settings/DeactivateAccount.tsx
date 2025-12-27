@@ -13,18 +13,21 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { signOutNoRedirect } from "@/actions/loginActions"
-import { deactivateUser } from "@/actions/userDataActions"
+import { logout } from "@/actions/loginActions"
+import { deactivateUser } from "@/lib/db/queries"
+import { useRouter } from "next/navigation"
 
 export default function deactivateAccount() {
   const session = useAuthContext()
+  const router = useRouter()
 
   const deactivateAccount = async () => {
     const deactivatedUser = await deactivateUser(String(session?.user?.id))
 
-    if (deactivatedUser?.suspended) {
-      await signOutNoRedirect()
-      window.location.assign('/')
+    if (deactivatedUser) {
+      await logout(false)
+      //window.location.assign('/')
+      router.push('/')
     }
   }
 

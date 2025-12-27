@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import AuthorForm from "@/components/Forms/Author/AuthorForm"
-import { useSession } from "next-auth/react"
+import { useAuthContext } from "@/providers/AuthProvider"
 
 type AuthorFormProps = {
   isOpen: boolean
@@ -18,8 +18,8 @@ export default function Author({
   isOpen, 
   onOpenChange 
 }: AuthorFormProps) {
-  const { data: session, update } = useSession();
-  console.log('Author - Session', session)
+  const session = useAuthContext()
+  //console.log('Author - Session', session)
 
   const formChange = (open: boolean) => {
     onOpenChange(false)

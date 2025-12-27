@@ -1,16 +1,11 @@
 "use client"
 
 import { useState } from "react"
-import Image from "next/image"
-import { styles } from "@/constants/constants"
-import { cn } from "@/utils"
 import { useAuthContext } from "@/providers/AuthProvider"
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogOverlay,
   DialogTitle,
@@ -20,10 +15,9 @@ import ProfileForm from "@/components/Settings/ProfileForm"
 import ProfileImage from "@/components/ProfileImage/profileImage"
 
 export default function Profile() {
-  const session = useAuthContext()
-  //console.log('session:', session)
-  
   const [isProfileInfoOpen, setIsProfileInfoOpen] = useState(false)
+  
+  const session = useAuthContext()
 
   return (
     <Dialog open={isProfileInfoOpen} onOpenChange={setIsProfileInfoOpen}>

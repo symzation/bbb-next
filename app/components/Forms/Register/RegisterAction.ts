@@ -2,13 +2,9 @@
 
 import { z } from "zod"
 import { getCookie } from "@/lib/cookies"
-//import { PrismaClient } from "@/generated/prisma/client"
 import { hashSalt } from "@/lib/salt"
 import { credentialsLogin } from "@/actions/loginActions"
-import { createUser } from "@/actions/userDataActions"
-import { UserDataProps } from "@/types/types"
-
-//const prisma = new PrismaClient()
+import { insertUser } from "@/lib/db/users"
 
 const stringLength = process.env.PASSWORD_LETTER_LENGTH ? parseInt(process.env.PASSWORD_LETTER_LENGTH) : 8
 const passwordRegExString = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
@@ -44,7 +40,7 @@ export async function registerAction(prevState: any, formData: FormData) {
     const ageConsent = await getCookie('age-consent')
     const hashedPassword = await hashSalt(formEntries?.password as string)
 
-    const newUser = createUser({
+    const newUser = insertUser({
       name: formEntries.name as string,
       email: formEntries.email as string,
       password: hashedPassword,

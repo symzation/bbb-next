@@ -11,13 +11,13 @@ export default function Write() {
 
   const authorFormBtn = useRef<HTMLButtonElement>(null)
 
-  const openRegister = () => {
+ /*  const openRegister = () => {
     setIsAuthorFormOpen(true)
   }
 
   const openForgotPassword = () => {
     setIsAuthorFormOpen(true)
-  }
+  } */
   
   return (
     <div className={cn(styles.pageClass, "px-4 md:px-20")}>

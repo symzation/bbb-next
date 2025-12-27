@@ -1,23 +1,48 @@
-export type UserDataProps = {
-  id?: string
-  name?: string
-  username?: string
-  email: string
-  emailVerified?: Date
-  password?: string
-  image?: string
-  ageConsent?: boolean
-  role?: string
-  provider?: string 
-  suspended?: boolean
-  suspendedAt?: Date
-  createdAt?: Date
-  updatedAt?: Date
-/*   accounts?: AccountDataProps[]
-  sessions?: SessionDataProps[]
-  reviews?: ReviewDataProps[]
-  author?:  */
-} & Record<string, any>
+import { ENUM_ROLE, ENUM_SUBSCRIPTION } from '@/types/enums'
+
+export type AccountDataProps = {
+  userId: string
+  type: string
+  provider: string
+  providerAccountId: string
+  refresh_token: string
+  access_token: string
+  expires_at: number
+  token_type: string
+  scope: string
+  id_token: string
+  session_state: string
+}
+
+export type AddressDataProps = {
+  id: string
+  address: string
+  address2: string
+  city: string
+  state: string
+  // Accommodates international zip codes
+  postalCode: string 
+  countryId: string // Foreign key reference to countries
+  phone: number
+  createdAt: Date
+  updatedAt: Date
+}
+
+export type AuthContextProps = {
+  user?: {
+    id?: string | undefined
+    name?: string | null
+    username?: string | null
+    email?: string | null
+    image?: string | null
+    bio?: string | null
+    role?: string | null
+    provider?: string | null
+  }
+  expires?: string
+  status?: "authenticated" | "loading" | "unauthenticated"
+  isAuthenticated?: boolean
+} | null
 
 export type AuthorDataType = {
   id?: string
@@ -31,7 +56,6 @@ export type AuthorDataType = {
   approvedById?: number
   createdAt?: Date
   updatedAt?: Date
-/*   user?: */
 } & Record<string, any>
 
 export type Award = {
@@ -41,29 +65,67 @@ export type Award = {
   updatedAt?: Date
 }
 
-export type AccountDataProps = {
-  userId: string
-} & Record<string, any>
+export type ProductDataProps = {
+  id: string
+  productTypeId: string
+  shopId: string
+  name: string
+  description: string
+  image: string
+  productUrl: string
+  rating: number
+  createdAt: Date
+  updatedAt: Date
+}
 
-export type SessionDataProps = {
-  userId: string
-} & Record<string, any>
+export type ProductTypeDataProps = {
+  id: string
+  name: string
+  createdAt: Date
+  updatedAt: Date
+}
 
 export type ReviewDataProps = {
   userId: string
 } & Record<string, any>
 
-export type ProductDataProps = {
-  name: string
-  productTypeId: number
-  shopId: number
+export type SessionDataProps = {
+  sessionToken: string
+  userId: string
+  expires: Date
 } & Record<string, any>
 
 export type ShopDataProps = {
+  id: string
   name: string
+  productTypeId: number
   shopTypeId: number
-} & Record<string, any>
+  addressId: number
+  description: string
+  website: string
+  rating: number
+  createdAt: Date
+  updatedAt: Date
+}
 
+export type UserDataProps = {
+  id?: string
+  name?: string
+  username?: string
+  email: string
+  emailVerified?: Date
+  image?: string
+  password?: string
+  ageConsent?: boolean
+  role?: ENUM_ROLE
+  provider?: string 
+  suspended?: boolean
+  suspendedAt?: Date
+  lastLogin?: Date
+  subscription?: ENUM_SUBSCRIPTION 
+  createdAt?: Date
+  updatedAt?: Date
+}
 
 
 /* export type HeroImageProps = {

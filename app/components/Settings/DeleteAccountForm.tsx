@@ -1,4 +1,6 @@
 
+"use client"
+
 import { useActionState, useEffect, useRef, useState } from "react"
 import { styles } from "@/constants/constants"
 import { cn } from "@/utils"
@@ -13,21 +15,19 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { deleteAccountAction } from "@/components/Settings/DeleteAccountFormAction"
-import { signOutNoRedirect } from "@/actions/loginActions"  
+import { logout } from "@/actions/loginActions"  
+import { useRouter } from "next/navigation"
 
-type deleteAccountFormProps = {
+type DeleteAccountFormProps = {
   deleteTerm: string
-  handleCancelAll: (e: React.MouseEvent<HTMLButtonElement>) => void
   isDeleteForm: boolean
-  setIsDeleteForm: (open: boolean) => void
 }
 
 export default function DeleteAccountForm({
   deleteTerm,
-  handleCancelAll,
   isDeleteForm,
-  setIsDeleteForm,
-}: deleteAccountFormProps) {
+}: DeleteAccountFormProps) {
+  const [open, setOpen] = useState(isDeleteForm)
   const [isDeleteTermValid, setIsDeleteTermValid] = useState<boolean>(false)
   const [formState, formAction, isPending] = useActionState(deleteAccountAction, undefined)
 
@@ -36,18 +36,20 @@ export default function DeleteAccountForm({
 
   const siteName = process.env.NEXT_PUBLIC_SITENAME ?? ""
   
+  const router = useRouter()
   const session = useAuthContext()
 
   useEffect(() => {
     if (formState && formState?.success) {
-      setIsDeleteForm(false)
+      setOpen(false)
       redirectDeletedUser()
     }
   }, [formState])
 
   const redirectDeletedUser = async () => {
-    await signOutNoRedirect()
-    window.location.assign('/')
+    await logout(false)
+    //window.location.assign('/')
+    router.push('/')
   }
   
   const checkDeleteTerm = () => {
@@ -59,7 +61,7 @@ export default function DeleteAccountForm({
   }
 
   return (
-    <Dialog open={isDeleteForm} onOpenChange={setIsDeleteForm}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogOverlay className="bg-primary/90"/>
       <DialogContent className="w-min-[450px] bg-white py-6">
         <DialogHeader>
@@ -103,7 +105,7 @@ export default function DeleteAccountForm({
               variant="default"
               disabled={isPending}
               className={cn("bg-white text-warning hover:bg-white hover:text-warning border border-warning disabled:bg-error/50  tracking-wider py-5 px-12 ring-0 focus:ring-0 ring-offset-0 focus:ring-offset-0 focus-visible:ring-0 outline-none cursor-pointer data-[state=open]:bg-transparent w-full md:w-fit px-5", isPending && "opacity-7 cursor-not-allowed")}
-              onClick={(e) => handleCancelAll(e)}
+              onClick={() => setOpen(false)}
             >
               Cancel
             </Button>

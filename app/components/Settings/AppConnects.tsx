@@ -6,18 +6,17 @@ import { FcGoogle } from "react-icons/fc"
 import { FaFacebook } from "react-icons/fa"
 import { RiTwitterXLine } from "react-icons/ri"
 import { FaGithub } from "react-icons/fa"
-import { signInNoRedirect, signOutNoRedirect, socialLogout } from "@/actions/loginActions"
+import { login, logout } from "@/actions/loginActions"
 import { createCookie } from "@/lib/cookies"
 import { useAuthContext } from "@/providers/AuthProvider"
-import { getUserById } from "@/actions/userDataActions"
+import { getUserById } from "@/lib/db/queries"
 import { signIn, signOut } from "@/lib/auth"
 import { authConfig } from "@/root/auth.config"
-import { redirect } from "next/navigation"
+import { getAuthSession } from '@/actions/sessionActions'
 
 export default function AppConnects() {
   const session = useAuthContext()
-  console.log('session in AppConnects:', session)
-
+  //const session: any = async () => await getAuthSession()
   const loginProvider = session?.user?.provider ?? ''
 
   //const [activeProvider, setActiveProvider] = useState<string>(loginProvider)
@@ -42,16 +41,6 @@ export default function AppConnects() {
     }
   }
 
-  /* const connectUsingProvider = async (providerId: string, loginProvider: string) => {
-    await socialLogout()
-    setTimeout(async () => {
-      console.log(providerId)
-      await signInNoRedirect(providerId)
-      createCookie('login-provider', providerId, 0.5) // expires in ~3 minutes
-      //redirect('/settings') 
-    }, 8000)
-  } */
-
   console.log('authConfig:', authConfig)
   const providerInfo = authConfig.providers.find(provider => provider.id === loginProvider)
   console.log('providerInfo:', providerInfo)
@@ -63,7 +52,7 @@ export default function AppConnects() {
           key={providerInfo.id}
           className={cn(connectWraperClass)} 
           data-state={loginProvider === providerInfo.id ? "active" : ""}
-          //onClick={() => connectUsingProvider(providerInfo.id, loginProvider)}
+         // onClick={() => connectUsingProvider(providerInfo.id, loginProvider)}
         >
           {getProviderIcon(providerInfo.id)}
           <div>

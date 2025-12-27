@@ -16,9 +16,12 @@ import {
   AlertDialogOverlay,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { useRouter } from "next/navigation"
 
 export default function AgeConsent() {
   const [isAgeConsentOpen, setIsAgeConsentOpen] = useState(false)
+
+  const router = useRouter()
 
   const consented = () => {
     createCookie('age-consent', 'true', 4)
@@ -26,7 +29,7 @@ export default function AgeConsent() {
   }
 
   const notConsented = () => {
-    window.location.href = "https://www.responsibility.org/"
+    router.replace("https://www.responsibility.org/")
   }
 
   const checkConsent = async () => {

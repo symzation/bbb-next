@@ -1,16 +1,53 @@
 "use server"
 
 import { signIn, signOut } from "@/lib/auth"
-//import { cookies } from "next/headers"
+import { getAuthSession } from "@/actions/sessionActions" 
+import { deleteDbSessions } from "@/lib/db/queries"
 import { redirect } from "next/navigation"
 
-export async function socialLogin(provider: string) {
-  await signIn(provider, { redirectTo: '/' })
+export async function login(
+  provider: string, 
+  useRedirect: boolean = true, 
+  redirectUrl?: string
+) {
+  if (useRedirect) {
+    await signIn(provider, { redirectTo: '/' })
+  } else {
+    await signIn(provider, { redirect: false })
+    if (redirectUrl) redirect(redirectUrl)
+  }
 }
 
-export async function socialLogout() {
-  await signOut({ redirectTo: '/' })
+/* export async function signInNoRedirect(provider: string) {
+  await signIn(provider, { redirect: false })
+} */
+
+/* export async function signInRedirectTo(provider: string, redirectUrl: string) {
+  await signIn(provider, { redirect: false })
+  redirect(redirectUrl)
+} */
+
+export async function logout(
+  useRedirect: boolean = true, 
+  redirectUrl?: string
+) {
+  const session = await getAuthSession() 
+  if (session?.user) {
+    await deleteDbSessions(session.user.id as string)
+  }
+
+  if (useRedirect) {
+    await signOut({ redirectTo: '/' })
+  } else {
+    await signOut({ redirect: false })
+    if (redirectUrl) redirect(redirectUrl)
+  }
 }
+
+/* export async function signOutNoRedirect() {
+  await signOut({ redirect: false })
+} */
+
 
 export async function credentialsLogin(formData: FormData) {
   //const csrfToken = cookies().get("authjs.csrf-token")
@@ -43,17 +80,3 @@ export async function credentialsLogin(formData: FormData) {
     throw new Error("No CSRF token found")
   } */
 }
-
-export async function signOutNoRedirect() {
-  await signOut({ redirect: false })
-}
-
-export async function signInNoRedirect(provider: string) {
-  await signIn(provider, { redirect: false })
-}
-
-export async function signInRedirectTo(provider: string, redirectUrl: string) {
-  await signIn(provider, { redirect: false })
-  redirect(redirectUrl)
-}
-

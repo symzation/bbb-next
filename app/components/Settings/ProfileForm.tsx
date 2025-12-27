@@ -131,7 +131,7 @@ export default function ProfileForm({
 
   return (
     <form action={formAction} className="mt-2 mb-2">
-      <input type="hidden" name="profileId" value={Number(session?.user?.id)} />
+      <input type="hidden" name="profileId" value={session?.user?.id} />
       <div className="flex flex-col space-y-8">
         <div className="relative flex flex-col items-start p-2 rounded-md border">
           <div className="text-sm font-bold tracking-wide">Photo</div>
@@ -187,14 +187,15 @@ export default function ProfileForm({
           {formState?.errors && typeof formState.errors === "object" && !Array.isArray(formState.errors) && "email" in formState.errors && (<div className="text-error text-sm italic mt-1">{(formState.errors as { email?: string[] }).email}</div>)}
         </div>
       </div>
-      <TextareaInput
+      {/* <TextareaInput
+        ref={bioRef}
         defaultValue={session?.user?.bio ?? ""} 
         inputClassName="mt-12 mb-1.5" 
         inputErrors={formState}   
         inputName="bio"
         labelName="Bio"
         placeholderText="Write a short bio about yourself."
-      />
+      /> */}
       <div className="flex-col sm:flex-col sm:justify-center mt-5">
         <Button 
           type="submit" 

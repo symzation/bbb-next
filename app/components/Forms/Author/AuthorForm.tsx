@@ -1,3 +1,5 @@
+"use client"
+
 import { useActionState, useEffect, useRef, useState } from "react"
 import { styles } from "@/constants/constants"
 import { cn } from "@/lib/utils"
@@ -6,7 +8,6 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import TextareaInput from "@/components/Forms/Elements/TextareaInput"
 import { authorFormAction } from "@/components/Forms/Author/AuthorFormAction"
-
 
 type AuthorFormProps = {
   formChange: (open: boolean) => void

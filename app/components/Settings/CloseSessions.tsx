@@ -1,7 +1,7 @@
 
 import { useAuthContext } from "@/providers/AuthProvider"
 import { toast } from "sonner"
-import { deleteDbSessions } from "@/actions/sessionDataActions"
+import { deleteDbSessions } from "@/lib/db/queries"
 
 export default function CloseSessions() {
   const session = useAuthContext()
@@ -14,7 +14,7 @@ export default function CloseSessions() {
     toast.promise(sessions, {
       loading: 'Loading...',
       success: (sessions) => {  
-        return sessions?.count
+        return sessions
           ? 'Successfully signed out of all other sessions.' 
           : 'No other sessions to sign out from.'
       },

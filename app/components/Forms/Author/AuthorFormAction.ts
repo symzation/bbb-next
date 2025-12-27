@@ -1,10 +1,9 @@
-import { z } from "zod"
-import { updateUser } from "@/actions/userDataActions"
-import { createAuthor } from "@/actions/authorDataActions"
-import { getAuthSession, updateAuthSession } from "@/actions/sessionActions"
+"use server"
 
-/* const session = await getAuthSession()
-console.log('session in authorFormAction:', session) */
+import { z } from "zod"
+import { updateUser, createAuthor } from "@/lib/db/queries"
+import { getAuthSession, updateAuthSession } from "@/actions/sessionActions"
+import { ENUM_ROLE } from '@/types/enums'
 
 const maxLength = Number(process.env.NEXT_PUBLIC_BIO_MAX_LENGTH)
 
@@ -60,19 +59,21 @@ export async function authorFormAction(prevState: any, formData: FormData) {
       return { success: false, errors: [{ message: "User session not found" }] }
     }
 
-    const userId = session.user.id
+    const userId = String(session.user.id)
 
-    await updateUser(String(userId), { role: "AUTHOR_WAITING_APPROVAL" })
+    await updateUser(userId, { role: ENUM_ROLE.AUTHOR_WAITING_APPROVAL})
 
     const newAuthor = await createAuthor({
-      userId: Number(userId),
+      userId: userId,
       whyReviewer: parsedData.data.whyReviewer,
     })
     
     console.log("Author Form - Updated user:", newAuthor)
     
-    /* const sessionUpdated = await updateAuthSession(updateUser)
-    console.log("Author Form - Updated session:", sessionUpdated) */
+    const sessionUpdated = await updateAuthSession({
+      role: ENUM_ROLE.AUTHOR_WAITING_APPROVAL
+    })
+    console.log("Author Form - Updated session:", sessionUpdated)
 
     return { success: true, data: newAuthor, errors: [] }
   } catch (error) {

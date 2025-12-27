@@ -13,6 +13,13 @@ type LoginRegisterFormsProps = {
   loginLinkRef: React.RefObject<HTMLButtonElement | null>
 }
 
+export const openLoginMenu = () => {
+  const loginLink = document.getElementById("loginLinkRef")
+  if (loginLink) {
+    loginLink.click()
+  }
+}
+
 export default function LoginRegisterForms({
   loginLinkRef
 }: LoginRegisterFormsProps) {

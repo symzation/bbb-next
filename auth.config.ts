@@ -1,64 +1,42 @@
 import type { NextAuthConfig } from "next-auth"
-import { PrismaAdapter } from "@auth/prisma-adapter"
-import { PrismaMariaDb } from '@prisma/adapter-mariadb'
-//import { PrismaClient } from "@prisma/client"
-import { Prisma } from "./prisma/generated/prisma/client"
 import Credentials from "next-auth/providers/credentials"
+import EmailProvider from "next-auth/providers/email"
 import Facebook  from "next-auth/providers/facebook"
-import Github from "next-auth/providers/github"
 import Google from "next-auth/providers/google"
 import Twitter from "next-auth/providers/twitter"
-import { getUserByEmail } from "@/actions/userDataActions"
 import { compareSalt } from "@/lib/salt"
-
-//const prisma = PrismaClient()
-
-const log = {
-  error: console.error,
-  warn: console.warn,
-  debug: console.debug,
-}
+import { DrizzleAdapter } from "@auth/drizzle-adapter"
+import { db } from "@/lib/db/connect"
+import { users, accounts, sessions, verificationTokens } from "@/lib/db/schema"
+import { getUserByEmail, createDbSession, deleteDbSessions, getSessionsByUserId } from "@/lib/db/queries"
+import { updateAuthSession } from "@/actions/sessionActions"
 
 async function verifyUserInDatabase(email: string, password: string) {
-  const user = await getUserByEmail(email, { accounts: true, reviews: true, author: true })
-  console.log('Auth Config - VerifyUserInDatabase: ', user)
-    
-    if (!user) {
-      return { user: null, isMatch: false }
-    } else {
-      const isMatch = await compareSalt(password, user?.password ?? '')
-  
-      return { 
-        user: {
-          id: user.id, 
-          name: user?.name?.split(" ")[0] ?? user?.email?.split("@")[0], 
-          username: user?.username || null,
-          email: user?.email, 
-          image: user?.image || null,
-          reviews: (user as any).reviews || [],
-          accounts: (user as any).accounts || [],
-          role: user?.role
-        }, 
-        isMatch 
-      }
-    }
+  const result = await getUserByEmail(email)
+  const user = Array.isArray(result) ? result[0] : result
+
+  if (!user) {
+    return { user: null, isPasswordValid: false }
+  }
+
+  // Users created via OAuth providers may not have a password hash stored.
+  if (!user.password) {
+    return { user, isPasswordValid: false }
+  }
+
+  const isPasswordValid = await compareSalt(password, user.password)
+  return { user, isPasswordValid }
 }
 
 export const authConfig = { 
   debug: true,
-  logger: {
-    error(code: any, ...message: any[]) {
-      log.error(code, ...message)
-    },
-    /* warn(code: any, ...message: any[]) {
-      log.warn(code, message)
-    },
-    debug(code: any, ...message: any[]) {
-      log.debug(code, message)
-    }, */
-  },
   trustHost: true, // For development purposes only, do not use in production
-  adapter: PrismaAdapter(Prisma),
+  adapter: DrizzleAdapter(db, {
+    usersTable: users,
+    accountsTable: accounts,
+    sessionsTable: sessions, // Only required if you’re using the database session strategy.
+    verificationTokensTable: verificationTokens, // Only required if you’re using a Magic Link provider
+  }),
   secret: process.env.NEXTAUTH_SECRET,
   providers: [
     Credentials({
@@ -76,10 +54,10 @@ export const authConfig = {
 
         try {
           const { email, password } = credentials as { email: string; password: string }
-          const { user, isMatch } = await verifyUserInDatabase(email, password)
+          const { user, isPasswordValid } = await verifyUserInDatabase(email, password)
 
           if (user) {
-            if (isMatch) {
+            if (isPasswordValid) {
               // Ensure id is a string for NextAuth compatibility
               return {
                 ...user,
@@ -101,20 +79,16 @@ export const authConfig = {
       clientId: process.env.AUTH_FACEBOOK_ID,
       clientSecret: process.env.AUTH_FACEBOOK_SECRET,
     }),
-    Github({
-      clientId: process.env.AUTH_GITHUB_ID,
-      clientSecret: process.env.AUTH_GITHUB_SECRET,
-    }),
     Google({
       clientId: process.env.AUTH_GOOGLE_ID,
       clientSecret: process.env.AUTH_GOOGLE_SECRET,
-    /*   authorization: {
+      authorization: {
         params: { 
           prompt: "consent", 
           access_type: "offline", 
           response_type: "code" 
         }
-      }, */
+      },
     }),
     Twitter({
       clientId: process.env.AUTH_TWITTER_ID,
@@ -157,7 +131,7 @@ export const authConfig = {
       { token: any; user?: any; account?: any; profile?: any }
     ) {
       if (user) {
-        token.accessToken = account?.access_token
+        token.accessToken = account.access_token
         token.id = user.id // Add user ID to the token
         token.role = user?.role ?? 'USER' // Add user role to the token
         
@@ -172,18 +146,27 @@ export const authConfig = {
       { session, token }: 
       { session: any; token: any }
     ) {
-      // Pass the custom properties from the token to the session
-      /* console.log('Session callback - token:', token)
-      console.log('Session callback - session before:', session) */
 
-      /* const user = session?.user?.email 
-        ? await getUserByEmail(session?.user?.email as string) : null
-
-      console.log('Session callback - user from DB:', user) */
+      /* console.log('Session callback - session:', session) 
+      console.log('Session callback - token:', token)  */
 
       session.user.id = token.id as string
       session.user.role = token.role as string
       session.user.provider = token.provider as string | null
+
+      const hasSessionInDb = await getSessionsByUserId(token.id as string)
+      
+      if (hasSessionInDb.length === 0) {
+        console.log('Session callback - creating new session in DB')
+        await createDbSession({
+          sessionToken: token.accessToken as string,
+          userId: token.id as string,
+          expires: session.expires ? new Date(session.expires) 
+            : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days
+        })
+      } 
+
+      /* console.log('Session callback - session after:', session) */
 
       const updatedSession = {
         ...session,
@@ -204,6 +187,7 @@ export const authConfig = {
         expires: session.expires // Ensure the 'expires' property is present
       }
       
+      //updateAuthSession(updatedSession)
       return updatedSession
     },
     async signIn({ user: User, account: Account, profile, email: string, credentials  }) {

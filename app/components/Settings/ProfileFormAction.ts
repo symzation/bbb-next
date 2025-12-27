@@ -1,12 +1,14 @@
+"use server"
+
 import { z } from "zod"
 import { getAuthSession } from "@/actions/sessionActions"
-import { updateUser } from "@/actions/userDataActions"
+import { updateUser } from "@/lib/db/users"
 import { profileImageUpload } from "@/actions/profileImageActions"
 import { validateBio, validateUsername} from "@/utils/helpers"
 
 export async function profileFormAction(prevState: any, formData: FormData) {
   //const session = await getAuthSession()
-  const NEXT_PUBLIC_BIO_MAX_LENGTH = Number(process.env.NEXT_PUBLIC_BIO_MAX_LENGTH)
+  //const NEXT_PUBLIC_BIO_MAX_LENGTH = Number(process.env.NEXT_PUBLIC_BIO_MAX_LENGTH)
   const MAX_FILE_SIZE = 512 * 512 * 4 // Approx 1MB for a 512x512 image with 4 bytes per pixel
   const ACCEPTED_MIME_TYPES = ["image/jpeg", "image/png"]
 
@@ -33,7 +35,7 @@ export async function profileFormAction(prevState: any, formData: FormData) {
     })
     .optional()
 
-  const bioSchema = z.string()
+  /* const bioSchema = z.string()
     .max(
       NEXT_PUBLIC_BIO_MAX_LENGTH, 
       { message: `Bio must be at most ${NEXT_PUBLIC_BIO_MAX_LENGTH} characters` }
@@ -43,7 +45,7 @@ export async function profileFormAction(prevState: any, formData: FormData) {
       console.log('Bio RegEx test:', test)
       return test
     }, { message: "Bio cannot contain special characters." })
-    .optional()
+    .optional() */
 
   const usernameSchema = z.string()
     .min(3, { message: "Username must be at least 3 characters" })
@@ -63,7 +65,7 @@ export async function profileFormAction(prevState: any, formData: FormData) {
       .min(1, { message: "Name must be at least 1 character" })
       .max(50, { message: "Name must be at most 50 characters" })
       .trim(),
-    bio: bioSchema,
+    //bio: bioSchema,
     file: fileSchema
   })
 

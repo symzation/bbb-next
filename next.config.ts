@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  transpilePackages: ["next-auth"],
   /* config options here */
   images: {
     remotePatterns: [
@@ -21,18 +22,19 @@ const nextConfig: NextConfig = {
       hmrRefreshes: true,
     },
   },
-  rewrites: () => {
-    return [
-      {
-        source: '/become-a-writer',
-        destination: '/author', // Maps /not-authorized to /notAuthorized
-      },
-      {
-        source: '/author-write',
-        destination: '/compose', // Maps /not-authorized to /notAuthorized
-      },
-    ]
-  }
+  webpack: (config, { isServer }) => {
+    // Only configure this for the client-side bundle
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        tls: false,
+        net: false,
+        // path: false,
+      }
+    }
+    return config
+  },
 }
 
-export default nextConfig;
+module.exports = nextConfig
