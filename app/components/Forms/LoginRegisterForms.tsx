@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useState } from "react"
+import { useState } from "react"
 import Image from "next/image"
 import { styles } from "@/constants/constants"
 import { cn } from "@/utils"
@@ -61,25 +61,21 @@ export default function LoginRegisterForms({
         />
         <div> Login / Register</div>
       </Button>
-
       <Login
         isOpen={isLoginOpen}
         onOpenChange={setIsLoginOpen}
         onTransitionToRegister={openRegister}
         onTransitionToForgotPassword={openForgotPassword}
       />
-
       <ForgotPassword
         isOpen={isForgotPasswordOpen}
         onOpenChange={setIsForgotPasswordOpen}
       />
-
       <Register
         isOpen={isRegisterOpen}
         onOpenChange={setIsRegisterOpen}
         onTransitionToLogin={openLogin}
       />
-
     </>
-  );
+  )
 }

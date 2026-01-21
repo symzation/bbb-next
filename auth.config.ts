@@ -1,4 +1,4 @@
-import type { NextAuthConfig } from "next-auth"
+import type { NextAuthConfig, Account, User } from "next-auth"
 import Credentials from "next-auth/providers/credentials"
 import EmailProvider from "next-auth/providers/email"
 import Facebook  from "next-auth/providers/facebook"
@@ -6,9 +6,9 @@ import Google from "next-auth/providers/google"
 import Twitter from "next-auth/providers/twitter"
 import { compareSalt } from "@/lib/salt"
 import { DrizzleAdapter } from "@auth/drizzle-adapter"
-import { db } from "@/lib/db/connect"
+import { db } from "@/lib/db"
 import { users, accounts, sessions, verificationTokens } from "@/lib/db/schema"
-import { getUserByEmail, createDbSession, deleteDbSessions, getSessionsByUserId } from "@/lib/db/queries"
+import { getUserById, getUserByEmail } from "@/lib/db/actions/index"
 import { updateAuthSession } from "@/actions/sessionActions"
 
 async function verifyUserInDatabase(email: string, password: string) {
@@ -31,12 +31,7 @@ async function verifyUserInDatabase(email: string, password: string) {
 export const authConfig = { 
   debug: true,
   trustHost: true, // For development purposes only, do not use in production
-  adapter: DrizzleAdapter(db, {
-    usersTable: users,
-    accountsTable: accounts,
-    sessionsTable: sessions, // Only required if you’re using the database session strategy.
-    verificationTokensTable: verificationTokens, // Only required if you’re using a Magic Link provider
-  }),
+  adapter: DrizzleAdapter(db),
   secret: process.env.NEXTAUTH_SECRET,
   providers: [
     Credentials({
@@ -101,13 +96,15 @@ export const authConfig = {
       // Map the provider profile to NextAuth's user shape, pulling email from confirmed_email when present
       profile(profile) {
         const data = profile.data as typeof profile.data & { confirmed_email: string | null }
+        const name = data?.name ? data.name.split(" ") : ["", ""]
         return {
           id: data.id,
-          name: data.name,
+          firstName: name[0],
+          lastName: name[1] ?? "",
           email: data.confirmed_email ?? null,
           image: data.profile_image_url ?? null,
           provider: 'twitter',
-        }
+        } 
       }
     })
   ],
@@ -126,47 +123,106 @@ export const authConfig = {
     maxAge: 30 * 24 * 60 * 60, 
   },
   callbacks: {
-    async jwt(
-      { token, user, account, profile }: 
-      { token: any; user?: any; account?: any; profile?: any }
+    /* async jwt(
+      { token, user, account, trigger, session }: 
+      { token: any; user?: any; account?: any; session?: any; trigger?: any }
     ) {
       if (user) {
-        token.accessToken = account.access_token
-        token.id = user.id // Add user ID to the token
-        token.role = user?.role ?? 'USER' // Add user role to the token
-        
-        if (account) {
-          token.role = user?.role ?? 'USER'
-          token.provider = account?.provider ?? null
-        }
+        token.id = String(user.id)
+
+        // Prefer user fields; profile can be missing (Credentials) or shaped differently (providers)
+        console.log("JWT Callback - User:", user)
+        token.name = user.name ?? token.name ?? ""
+        token.username = user.username ?? token.username ?? ""
+        token.role = user.role ?? token.role ?? "USER"
+        token.approved = user.approved ?? token.approved ?? false
+        token.suspended = user.suspended ?? token.suspended ?? false
+        token.suspendedAt = user.suspendedAt ?? token.suspendedAt ?? null
+
+        if (account?.provider) token.provider = account.provider
+
+        // account.access_token only exists for OAuth
+        if (account?.access_token) token.accessToken = account.access_token
+
+        return token
       }
+
+      if (trigger === "update" && session) {
+        // If you send { user: {...} } from update(), merge it in
+        if (session.user) {
+          token.name = session.user.name ?? token.name
+          token.username = (session.user as any).username ?? token.username
+          token.role = (session.user as any).role ?? token.role
+          token.approved = (session.user as any).approved ?? token.approved
+          token.suspended = (session.user as any).suspended ?? token.suspended
+          token.suspendedAt = (session.user as any).suspendedAt ?? token.suspendedAt
+        }
+
+        // If you send any top-level session fields in update(), merge those too (optional)
+        // token.preferences = (session as any).preferences ?? (token as any).preferences
+
+        return token
+      }
+
+      return token
+    }, */
+    async jwt(
+      { token, user, account }: 
+      { token: any; user?: any | null; account?: any | null }
+    ) {
+      if (user) token.id = user.id
+      if (account?.provider) token.provider = account.provider
+      if (account?.access_token) token.accessToken = account.access_token as string
       return token
     },
     async session(
       { session, token }: 
       { session: any; token: any }
     ) {
+      if (!token.id) return session
 
-      /* console.log('Session callback - session:', session) 
-      console.log('Session callback - token:', token)  */
+      const dbUserResult = await getUserById(Number(token.id))
+      const dbUser = Array.isArray(dbUserResult) ? dbUserResult[0] : dbUserResult
 
-      session.user.id = token.id as string
+      if (dbUser) {
+        session.user.id = String(dbUser.id)
+        session.user.name = dbUser.name ?? ""
+        session.user.username = dbUser.username ?? ""
+        session.user.email = dbUser.email ?? ""
+        session.user.image = dbUser.image ?? null
+        session.user.role = dbUser.role ?? 'USER'
+        session.user.provider = token?.provider ?? null
+        session.user.suspended = dbUser.suspended ?? false
+      }
+
+      return session
+
+/*       session.user.id = String(token.id ?? "")
+      session.user.name = (token.name as string) ?? ""
+      session.user.username = (token.username as string) ?? ""
+      session.user.role = (token.role as string) ?? "USER"
+      session.user.approved = (token.approved as boolean) ?? false
+      session.user.provider = (token.provider as string) ?? null
+      session.user.suspended = (token.suspended as boolean) ?? false
+      session.user.suspendedAt = (token.suspendedAt as any) ?? null
+
+    return session */
+      /* session.user.id = token.id as number
+      session.user.name = token.name as string ?? ''
+      session.user.username = token.username as string ?? ''
       session.user.role = token.role as string
       session.user.provider = token.provider as string | null
 
-      const hasSessionInDb = await getSessionsByUserId(token.id as string)
+      const hasSessionInDb = (token?.id) ? await getSessionsByUserId(token.id as number) : []
       
       if (hasSessionInDb.length === 0) {
-        console.log('Session callback - creating new session in DB')
         await createDbSession({
           sessionToken: token.accessToken as string,
-          userId: token.id as string,
-          expires: session.expires ? new Date(session.expires) 
-            : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days
+          userId: token.id as number,
+          expires: session.expires ? new Date(session.expires)
+            : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
         })
       } 
-
-      /* console.log('Session callback - session after:', session) */
 
       const updatedSession = {
         ...session,
@@ -174,10 +230,10 @@ export const authConfig = {
           ...session.user, // Keep existing user properties
           ...{
             id: String(session.user.id), // The user ID from the JWT
-            username: String(session.user?.username) ?? null,
+            username: String(session.user?.username) ?? "",
             role: String(session.user?.role) ?? 'USER',
             approved: session.user?.approved ?? false,
-            bio: String(session.user?.bio) ?? '',
+            //bio: String(session.user?.bio) ?? '',
             provider: session.user && "provider" in session.user ? 
               String((session.user as any).provider) : null,
             suspended: session.user?.suspended ?? false,
@@ -185,12 +241,12 @@ export const authConfig = {
           }
         },
         expires: session.expires // Ensure the 'expires' property is present
-      }
+      } */
       
       //updateAuthSession(updatedSession)
-      return updatedSession
+      //return updatedSession
     },
-    async signIn({ user: User, account: Account, profile, email: string, credentials  }) {
+    async signIn({ user, account, profile, email, credentials  }) {
       // Implement your custom logic here
       // For example, to restrict access to a specific email domain:
       /* if (account.provider === "google") {

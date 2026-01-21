@@ -1,25 +1,22 @@
 "use server"
 
 import { auth, unstable_update } from "@/lib/auth"
-import { UserDataProps } from "@/types/types"
+import { SessionUser } from "@/types/types"
 
 export async function getAuthSession() {
   const session = await auth()
   return session
 }
 
-export const updateAuthSession = async (data: Partial<UserDataProps>) => {
-  const session = await auth() // Get the current session
-  
+export const updateAuthSession = async (newData: Partial<SessionUser>) => {
+  const session = await auth();
   if (session) {
-    const updatedSession = await unstable_update({
+    await unstable_update({
       ...session,
       user: {
         ...session.user,
-        ...data // Merge new data into the user object
+        ...newData,
       },
     })
-
-    return updatedSession
   }
 }

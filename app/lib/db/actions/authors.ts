@@ -1,4 +1,4 @@
-import { db } from "@/lib/db/connect"
+import { db } from "@/lib/db"
 import { authors, users } from "@/lib/db/schema"
 import { eq, sql } from "drizzle-orm"
 import { AuthorDataType } from "@/types/types"
@@ -38,7 +38,7 @@ export async function getAuthorAwaitingApproval() {
 }
 
 export async function updateAuthor(
-  authorId: string, data: Partial<AuthorDataType>
+  authorId: number, data: Partial<AuthorDataType>
 ) {
   try {
     console.log('Update Author: ', data)
@@ -46,9 +46,7 @@ export async function updateAuthor(
       .set(data)
       .where(eq(authors.id, authorId))
 
-    const updatedAuthorRows = (updatedAuthor as any).affectedRows
-    console.log(`Updated ${updatedAuthorRows} rows`)
-
+    const updatedAuthorRows = (updatedAuthor as any)[0]?.affectedRows ?? 0
     return updatedAuthorRows > 0 ? true : false
   } catch (error) {
     console.error("Error updating author:", error)

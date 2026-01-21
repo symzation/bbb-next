@@ -1,7 +1,8 @@
-import { db } from "@/lib/db/connect"
+import { db } from "@/lib/db"
 import { products, productTypes, shops } from "@/lib/db/schema"
-import { asc, desc, eq, sql } from "drizzle-orm"
-import { ProductDataProps, ProductTypeDataProps } from "@/types/types"
+import { asc, desc, eq } from "drizzle-orm"
+import { ProductDataProps } from "@/types/types"
+import { getProductTypes } from "@/lib/db/actions/productTypes"
 
 type NewProducts = typeof products.$inferInsert
 
@@ -15,7 +16,7 @@ export async function createProduct(product: NewProducts) {
   }
 }
 
-export async function deleteProduct(productId: string) {
+export async function deleteProduct(productId: number) {
   try {
     const deletedProduct = await db.delete(products).where(eq(products.id, productId))
     const affectedRows = (deletedProduct as any).affectedRows
@@ -32,6 +33,7 @@ export async function deleteProduct(productId: string) {
     throw error
   }
 }
+
 export async function getProducts() {
   try {
     const allProducts = await db.select().from(products)
@@ -42,7 +44,7 @@ export async function getProducts() {
   }
 }
 
-export async function getProductById(productId: string) {
+export async function getProductById(productId: number) {
   try {
     const product = await db.select().from(products).where(eq(products.id, productId))
     return product
@@ -55,10 +57,10 @@ export async function getProductById(productId: string) {
 export async function getProductRankings() {
   try {
     let results: any = []
-    const ptarr = await getProductTypes()
+    const ptArr = await getProductTypes()
 
-    for (const pt of ptarr) {
-      const ptName = pt?.name
+    for (const ptItem of ptArr) {
+      const ptName = ptItem?.name
 
       if (ptName === null) return
       
@@ -78,9 +80,9 @@ export async function getProductRankings() {
           }
         })
         .from(products)
-        .innerJoin(productTypes, eq(products.productTypeId, pt.id))
+        .innerJoin(productTypes, eq(products.productTypeId, ptItem?.id))
         .innerJoin(shops, eq(products.shopId, shops.id))
-        .where(eq(products.productTypeId, productTypes.id))
+        .where(eq(products.productTypeId, ptItem.id))
         .orderBy(
           desc(products.rating),
           asc(productTypes.name)
@@ -107,7 +109,7 @@ export async function getProductRankings() {
 }
 
 export async function updateProduct(
-  productId: string, data: Partial<ProductDataProps>
+  productId: number, data: Partial<ProductDataProps>
 ) {
   try {
     console.log('Update Product: ', data)
@@ -125,17 +127,3 @@ export async function updateProduct(
   }
 }
 
-/******************************************
-*             PRODUCT TYPES               *
-******************************************/
-
-export async function getProductTypes() {
-  try {
-    return await db.select({ 
-      id: productTypes.id, name: productTypes.name 
-    }).from(productTypes)
-  } catch (error) {
-    console.error("Error getting product types:", error)
-    throw error
-  }
-}

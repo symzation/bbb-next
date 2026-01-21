@@ -1,7 +1,7 @@
 "use server"
 
 import { z } from "zod"
-import { deleteUser, getUserByEmail } from "@/lib/db/users"
+import { deleteUser, getUserByEmail } from "@/lib/db/actions/users"
 
 export async function deleteAccountAction(
   prevState: any, formData: FormData

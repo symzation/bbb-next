@@ -1,6 +1,0 @@
-export * from "@/lib/db/accounts"
-export * from "@/lib/db/authors"
-export * from "@/lib/db/products"
-export * from "@/lib/db/sessions"
-export * from "@/lib/db/shops"
-export * from "@/lib/db/users"

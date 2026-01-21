@@ -1,8 +1,5 @@
-import { FC } from "react"
 import Home from "@/components/Home/Home"
 
-const Site: FC = () => {
+export default function Site() {
   return <Home />
 }
-
-export default Site

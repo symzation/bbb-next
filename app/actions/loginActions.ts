@@ -2,7 +2,7 @@
 
 import { signIn, signOut } from "@/lib/auth"
 import { getAuthSession } from "@/actions/sessionActions" 
-import { deleteDbSessions } from "@/lib/db/queries"
+import { deleteDbSessions } from "@/lib/db/actions/index"
 import { redirect } from "next/navigation"
 
 export async function login(

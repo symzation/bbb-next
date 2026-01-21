@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import AuthorForm from "@/components/Forms/Author/AuthorForm"
-import { useAuthContext } from "@/providers/AuthProvider"
+import { useAuthSession } from "@/providers/AuthSessionProvider"
 
 type AuthorFormProps = {
   isOpen: boolean
@@ -18,7 +18,7 @@ export default function Author({
   isOpen, 
   onOpenChange 
 }: AuthorFormProps) {
-  const session = useAuthContext()
+  const session = useAuthSession()
   //console.log('Author - Session', session)
 
   const formChange = (open: boolean) => {

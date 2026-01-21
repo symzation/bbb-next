@@ -8,22 +8,24 @@ import {
   Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger,
 } from "@/components/ui/sheet"
 import { Separator } from "@/components/ui/separator"
-import { useAuthContext } from "@/providers/AuthProvider"
+import { useAuthSession } from "@/providers/AuthSessionProvider"
 import { RiEdit2Line } from "react-icons/ri"
 import { AiOutlineQuestionCircle, AiOutlineSetting } from "react-icons/ai"
-import { MdOutlineRateReview, MdOutlineAdminPanelSettings } from "react-icons/md"
+import { MdOutlineRateReview, MdOutlineDashboard } from "react-icons/md"
 import { GrResources } from "react-icons/gr"
 import { LuNotebookText } from "react-icons/lu"
 import { GoSignOut } from "react-icons/go"
-import { redirect, useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 import ProfileImage from "@/components/ProfileImage/profileImage"
+import { UserDataProps } from "@/types/types"
 
 export default function LoggedInMenu() {
+  const router = useRouter()
+  const { session } = useAuthSession()
+  console.log("LoggedInMenu - Session:", session)
+
   const [isOpen, setIsOpen] = useState(false)
   
-  const router = useRouter()
-  const sessionData = useAuthContext()
-
   const seporatorClass = "bg-primary h-1 my-0"
 
   const assignLink = (event: React.MouseEvent<HTMLAnchorElement>, url: string) => {
@@ -32,15 +34,17 @@ export default function LoggedInMenu() {
     router.push(url)
   }
 
-  const getSessionLinks = (sessionData: any) => {
+  const getSessionLinks = (user: UserDataProps) => {
     let links
 
-    if (sessionData?.user?.role === 'ADMIN') {
+    if (user?.role === 'ADMIN') {
       links = 
-        <Link href="/admin" className={styles.profileMenuLink} onClick={(e) => assignLink(e, '/admin')}>
-          <MdOutlineAdminPanelSettings className={styles.profileMenuLinkIcon} /> Admin
+        <Link href="#" className={styles.profileMenuLink} 
+          onClick={(e) => assignLink(e, '/dashboard')}
+        >
+          <MdOutlineDashboard className={styles.profileMenuLinkIcon} /> Dashboard
         </Link>
-    } else if (sessionData?.user?.role === 'AUTHOR') {
+    } else if (user?.role === 'AUTHOR') {
       links = 
         <>
           <Link href="#" className={styles.profileMenuLink} 
@@ -48,16 +52,27 @@ export default function LoggedInMenu() {
           >
             <RiEdit2Line className={styles.profileMenuLinkIcon} /> Write
           </Link>
-          <Link href="#" className={styles.profileMenuLink} onClick={(e) => assignLink(e, '/guide')}>
+          <Link href="#" className={styles.profileMenuLink} 
+            onClick={(e) => assignLink(e, '/guide')}
+          >
             <LuNotebookText className={styles.profileMenuLinkIcon} /> Guide
           </Link>
-          <Link href="#" className={styles.profileMenuLink} onClick={(e) => assignLink(e, '/resources')}>
+          <Link href="#" className={styles.profileMenuLink} 
+            onClick={(e) => assignLink(e, '/resources')}
+          >
             <GrResources className={styles.profileMenuLinkIcon} /> Resources
           </Link>
         </>
-    } else if (sessionData?.user?.role === 'USER') {
+    } else if (user?.role === 'AUTHOR_WAITING_APPROVAL') {
+      links = 
+        <div className="text-error text-sm italic px-3">
+          Author account is pending approval
+        </div>
+    } else if (user?.role === 'USER') {
       links =
-        <Link href="/author" className={styles.profileMenuLink} onClick={(e) => assignLink(e, '/author')}>
+        <Link href="/author" className={styles.profileMenuLink} 
+          onClick={(e) => assignLink(e, '/author')}
+        >
           <MdOutlineRateReview className={styles.profileMenuLinkIcon} /> Become a Reviewer
         </Link>
     }
@@ -78,7 +93,7 @@ export default function LoggedInMenu() {
           aria-label="User menu"
         >
           <span className="sr-only">Open user menu</span>
-          <ProfileImage  />
+          <ProfileImage />
         </div>
       </SheetTrigger>
       <SheetContent side="right" className="bg-white text-primary w-64 gap-4">
@@ -96,13 +111,13 @@ export default function LoggedInMenu() {
           </div>
           <div className="text-[16px]">
             Hello, {
-              sessionData?.user?.name ? sessionData?.user.name.split(" ")[0] : "Guest"
+              session?.user?.name ? session?.user.name.split(" ")[0] : "Guest"
             }
           </div>
         </div>
         <Separator className={seporatorClass} />
         <div className="flex flex-col">
-          {sessionData?.isAuthenticated && getSessionLinks(sessionData)}
+          {getSessionLinks(session?.user as UserDataProps)}
         </div>
         <Separator className={seporatorClass} />
         <div className="flex flex-col">

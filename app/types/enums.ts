@@ -1,13 +1,28 @@
+export enum ENUM_CHECK_STATE {
+  AVAILABLE = "available",
+  CHECKING = "checking",
+  ERROR = "error",
+  IDLE = "",
+  INVALID = "invalid",
+  TAKEN = "taken",
+}
+
 export enum ENUM_ROLE {
-  ADMIN = 'ADMIN',
-  AUTHOR = 'AUTHOR',
-  AUTHOR_WAITING_APPROVAL = 'AUTHOR_WAITING_APPROVAL',
-  USER = 'USER'
+  ADMIN = "ADMIN",
+  AUTHOR = "AUTHOR",
+  AUTHOR_WAITING_APPROVAL = "AUTHOR_WAITING_APPROVAL",
+  USER = "USER"
 }
 
 export enum ENUM_SUBSCRIPTION {
-  FREE = 'FREE',
-  BASIC = 'BASIC',
-  PREMIUM = 'PREMIUM',
-  ELITE = 'ELITE',
+  BASIC = "BASIC",
+  ELITE = "ELITE",
+  FREE = "FREE",
+  PREMIUM = "PREMIUM",
+}
+
+export enum ENUM_USER_STATUS {
+  AUTHENTICATED = "authenticated",
+  UNAUTHENTICATED = "unauthenticated",
+  LOADING = "loading"
 }

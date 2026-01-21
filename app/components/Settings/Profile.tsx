@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useAuthContext } from "@/providers/AuthProvider"
+import { useAuthSession } from "@/providers/AuthSessionProvider"
 import {
   Dialog,
   DialogContent,
@@ -13,11 +13,13 @@ import {
 } from "@/components/ui/dialog"
 import ProfileForm from "@/components/Settings/ProfileForm"
 import ProfileImage from "@/components/ProfileImage/profileImage"
+import { UserDataProps } from "@/types/types"
 
 export default function Profile() {
+  const { session } = useAuthSession()
+  const userData = session?.user as UserDataProps
+
   const [isProfileInfoOpen, setIsProfileInfoOpen] = useState(false)
-  
-  const session = useAuthContext()
 
   return (
     <Dialog open={isProfileInfoOpen} onOpenChange={setIsProfileInfoOpen}>
@@ -27,15 +29,14 @@ export default function Profile() {
         >
           <div className="text-sm text-left">
             <div>Profile Information</div>
-            <div className="text-xs">Edit your photo, name, username, short bio, etc.</div>
+            <div className="text-xs">Edit your photo, name, username, etc.</div>
           </div>
           <div className="items-self-end flex flex-col items-end space-y-1">
             <div className="flex flex-row items-center text-sm text-right space-x-5">
-              <div>{session?.user?.name}</div>
+              <div>{userData?.username ?? userData?.name}</div>
               <ProfileImage />
             </div>
-            {/* <div className="text-sm">{session?.user?.username}</div> */}
-            <div className="text-sm">{session?.user?.email}</div>
+            <div className="text-sm">{userData?.email}</div>
           </div>
         </div>
       </DialogTrigger>

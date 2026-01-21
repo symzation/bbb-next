@@ -6,5 +6,5 @@ export const {
   handlers,
   signIn,
   signOut,
-  unstable_update,
+  unstable_update
 } = NextAuth(authConfig)

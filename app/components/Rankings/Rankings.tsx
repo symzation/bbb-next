@@ -3,11 +3,13 @@ import { styles } from "@/constants/constants"
 import { cn } from "@/utils"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import RankingsCard from "@/components/Rankings/RankingsCard"
-import { getProductRankings } from "@/lib/db/queries"
+import { getProductRankings } from "@/lib/db/actions/index"
 
 export default async function Rankings() {
   const rankingsData = await getProductRankings()
   const objEntries = Object.entries(rankingsData ?? {})
+  console.log("objEntries:", objEntries)
+  console.log("rankingsData: ", rankingsData)
   const tabToShow = objEntries[0][0]
   
   return (

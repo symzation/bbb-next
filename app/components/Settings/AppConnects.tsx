@@ -8,14 +8,14 @@ import { RiTwitterXLine } from "react-icons/ri"
 import { FaGithub } from "react-icons/fa"
 import { login, logout } from "@/actions/loginActions"
 import { createCookie } from "@/lib/cookies"
-import { useAuthContext } from "@/providers/AuthProvider"
-import { getUserById } from "@/lib/db/queries"
+import { useAuthSession } from "@/providers/AuthSessionProvider"
+import { getUserById } from "@/lib/db/actions/index"
 import { signIn, signOut } from "@/lib/auth"
 import { authConfig } from "@/root/auth.config"
 import { getAuthSession } from '@/actions/sessionActions'
 
 export default function AppConnects() {
-  const session = useAuthContext()
+  const session = useAuthSession()
   //const session: any = async () => await getAuthSession()
   const loginProvider = session?.user?.provider ?? ''
 
@@ -41,9 +41,7 @@ export default function AppConnects() {
     }
   }
 
-  console.log('authConfig:', authConfig)
   const providerInfo = authConfig.providers.find(provider => provider.id === loginProvider)
-  console.log('providerInfo:', providerInfo)
   
   return (
     <>

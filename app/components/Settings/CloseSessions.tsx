@@ -1,10 +1,10 @@
 
-import { useAuthContext } from "@/providers/AuthProvider"
+import { useAuthSession } from "@/providers/AuthSessionProvider"
 import { toast } from "sonner"
-import { deleteDbSessions } from "@/lib/db/queries"
+import { deleteDbSessions } from "@/lib/db/actions/index"
 
 export default function CloseSessions() {
-  const session = useAuthContext()
+  const session = useAuthSession()
 
   const handleSignOutSessions = async (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault()

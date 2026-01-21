@@ -4,7 +4,7 @@
 import { useActionState, useEffect, useRef, useState } from "react"
 import { styles } from "@/constants/constants"
 import { cn } from "@/utils"
-import { useAuthContext } from "@/providers/AuthProvider"
+import { useAuthSession } from "@/providers/AuthSessionProvider"
 import {
   Dialog,
   DialogContent,
@@ -37,7 +37,7 @@ export default function DeleteAccountForm({
   const siteName = process.env.NEXT_PUBLIC_SITENAME ?? ""
   
   const router = useRouter()
-  const session = useAuthContext()
+  const session = useAuthSession()
 
   useEffect(() => {
     if (formState && formState?.success) {

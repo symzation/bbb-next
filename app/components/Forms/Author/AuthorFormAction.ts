@@ -1,7 +1,7 @@
 "use server"
 
 import { z } from "zod"
-import { updateUser, createAuthor } from "@/lib/db/queries"
+import { updateUser, createAuthor } from "@/lib/db/actions/index"
 import { getAuthSession, updateAuthSession } from "@/actions/sessionActions"
 import { ENUM_ROLE } from '@/types/enums'
 

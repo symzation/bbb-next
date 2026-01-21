@@ -4,7 +4,7 @@ import { z } from "zod"
 import { getCookie } from "@/lib/cookies"
 import { hashSalt } from "@/lib/salt"
 import { credentialsLogin } from "@/actions/loginActions"
-import { insertUser } from "@/lib/db/users"
+import { insertUser } from "@/lib/db/actions/users"
 
 const stringLength = process.env.PASSWORD_LETTER_LENGTH ? parseInt(process.env.PASSWORD_LETTER_LENGTH) : 8
 const passwordRegExString = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
@@ -26,7 +26,7 @@ const registerSchema = z.object({
   path: ["confirmPassword"], // Specify the field to associate the error with
 })
 
-export async function registerAction(prevState: any, formData: FormData) {
+export async function RegisterAction(prevState: any, formData: FormData) {
   try {
     const formEntries = Object.fromEntries(formData)
     const result = registerSchema.safeParse(formEntries)

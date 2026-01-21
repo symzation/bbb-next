@@ -1,4 +1,6 @@
-import { db } from "@/lib/db/connect"
+"use server"
+
+import { db } from "@/lib/db"
 import { users } from "@/lib/db/schema"
 import { eq, sql } from "drizzle-orm"
 import { ENUM_ROLE } from "@/types/enums"
@@ -16,7 +18,7 @@ export async function insertUser(user: NewUser) {
   }
 }
 
-export async function deleteUser(userId: string) {
+export async function deleteUser(userId: number) {
   try {
     const deletedUser = await db.delete(users).where(eq(users.id, userId))
     const affectedRows = (deletedUser as any).affectedRows
@@ -54,7 +56,7 @@ export async function getUserByEmail(email: string) {
   }
 }
 
-export async function getUserById(userId: string) {
+export async function getUserById(userId: number) {
   try {
     const user = await db.select().from(users).where(eq(users.id, userId))
     return user
@@ -75,7 +77,7 @@ export async function getUsersByRole(role: string) {
   }
 }
 
-export async function deactivateUser(userId: string) {
+export async function deactivateUser(userId: number) {
   try {
     const deactivatedUser = await db.update(users)
       .set({ suspended: true, suspendedAt: sql`NOW()` })
@@ -92,19 +94,18 @@ export async function deactivateUser(userId: string) {
 }
 
 export async function updateUser(
-  userId: string, data: Partial<UserDataProps>
+  userId: number, data: Partial<UserDataProps>
 ) {
   try {
     const updatedUser = await db.update(users)
       .set(data)
       .where(eq(users.id, userId))
 
-    const updatedUserRows = (updatedUser as any).affectedRows
-    console.log(`Updated ${updatedUserRows} rows`)
-
-    return updatedUserRows > 0 ? true : false
+      console.log("updateUser - updatedUser:", updatedUser)
+    const affectedRows = (updatedUser as any)[0]?.affectedRows ?? 0
+    return affectedRows > 0 ? true : false
   } catch (error) {
-    console.error("Error updating user:", error)
+    console.error("Error updating user:", error)  
     throw error
   }
 }

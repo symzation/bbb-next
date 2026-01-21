@@ -1,6 +1,6 @@
 "use client"
 
-import { useAuthContext } from "@/providers/AuthProvider"
+import { useAuthSession } from "@/providers/AuthSessionProvider"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,11 +14,11 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { logout } from "@/actions/loginActions"
-import { deactivateUser } from "@/lib/db/queries"
+import { deactivateUser } from "@/lib/db/actions/index"
 import { useRouter } from "next/navigation"
 
 export default function deactivateAccount() {
-  const session = useAuthContext()
+  const session = useAuthSession()
   const router = useRouter()
 
   const deactivateAccount = async () => {

@@ -1,4 +1,4 @@
-import { db } from "@/lib/db/connect"
+import { db } from "@/lib/db"
 import { accounts } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 
@@ -14,10 +14,10 @@ export async function createDBAccount(account: NewAccount) {
   }
 }
 
-export async function deleteDBAccounts(userId: string) {
+export async function deleteDBAccounts(userId: number) {
   try {
     const deletedAccounts = await db.delete(accounts).where(eq(accounts.userId, userId))
-    const affectedRows = (deletedAccounts as any).affectedRows
+    const affectedRows = (deletedAccounts as any)?.affectedRows ?? 0
     
     console.log(
       (affectedRows > 0) ? 

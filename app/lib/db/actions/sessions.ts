@@ -1,4 +1,4 @@
-import { db } from "@/lib/db/connect"
+import { db } from "@/lib/db"
 import { sessions, users } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { SessionDataProps } from "@/types/types"
@@ -15,7 +15,7 @@ export async function createDbSession(data: NewSession) {
   }
 }
 
-export async function deleteDbSessions(userId: string) {
+export async function deleteDbSessions(userId: number) {
   try {
     const deletedSessions = await db.delete(sessions).where(eq(sessions.userId, userId))
     const affectedRows = (deletedSessions as any).affectedRows
@@ -33,9 +33,10 @@ export async function deleteDbSessions(userId: string) {
   }
 }
 
-export async function getSessionsByUserId(userId: string) {
+export async function getSessionsByUserId(userId: number) {
   try {
-    const sessionsByUser = await db.select().from(sessions).where(eq(sessions.userId, userId))
+    const sessionsByUser = await db.select().from(sessions)
+      .where(eq(sessions.userId, userId))
     return sessionsByUser
   } catch (error) {
     console.error("Error getting sessions by user ID:", error)

@@ -1,14 +1,18 @@
 "use server"
 
 import { z } from "zod"
-import { getAuthSession } from "@/actions/sessionActions"
-import { updateUser } from "@/lib/db/users"
+import { getAuthSession, updateAuthSession } from "@/actions/sessionActions"
+import { updateUser } from "@/lib/db/actions/users"
 import { profileImageUpload } from "@/actions/profileImageActions"
 import { validateBio, validateUsername} from "@/utils/helpers"
 
+
 export async function profileFormAction(prevState: any, formData: FormData) {
-  //const session = await getAuthSession()
+  const session = await getAuthSession()
   //const NEXT_PUBLIC_BIO_MAX_LENGTH = Number(process.env.NEXT_PUBLIC_BIO_MAX_LENGTH)
+  const NEXT_PUBLIC_BIO_MAX_LENGTH = Number(process.env.NEXT_PUBLIC_BIO_MAX_LENGTH)
+  const USERNAME_LENGTH_MIN = Number(process.env.USERNAME_LENGTH_MIN) || 3
+  const USERNAME_LENGTH_MAX = Number(process.env.USERNAME_LENGTH_MAX) || 32
   const MAX_FILE_SIZE = 512 * 512 * 4 // Approx 1MB for a 512x512 image with 4 bytes per pixel
   const ACCEPTED_MIME_TYPES = ["image/jpeg", "image/png"]
 
@@ -48,13 +52,20 @@ export async function profileFormAction(prevState: any, formData: FormData) {
     .optional() */
 
   const usernameSchema = z.string()
-    .min(3, { message: "Username must be at least 3 characters" })
-    .max(20, { message: "Username must be at most 20 characters" })
+    .min(
+      USERNAME_LENGTH_MIN, 
+      { message: `Username must be at least ${USERNAME_LENGTH_MIN} characters` }
+    )
+    .max(
+      USERNAME_LENGTH_MAX, 
+      { message: `Username must be at most ${USERNAME_LENGTH_MAX} characters` }
+    )
     .refine((val) => {
       const test = validateUsername(val)
       console.log('Username RegEx test:', test)
+      // Need to add async check for existing username here
       return test
-    }, { message: "Username can only contain letters, numbers, and underscores." })
+    }, { message: "Can only contain letters, numbers, and underscores." })
     .trim()
     .optional()
 
@@ -63,7 +74,7 @@ export async function profileFormAction(prevState: any, formData: FormData) {
     email: z.email({ message: "Invalid email address" }).trim(),
     name: z.string()
       .min(1, { message: "Name must be at least 1 character" })
-      .max(50, { message: "Name must be at most 50 characters" })
+      //.max(50, { message: "Name must be less than 50 characters" })
       .trim(),
     //bio: bioSchema,
     file: fileSchema
@@ -72,7 +83,7 @@ export async function profileFormAction(prevState: any, formData: FormData) {
   try {
     //console.log('profileFormAction - session:', session)
     const formEntries = Object.fromEntries(formData)
-    const userId = String(formEntries.profileId)
+    const userId = Number(session?.user?.id)
     const result = profileSchema.safeParse(formEntries)
     console.log('profileFormAction - validation result:', result)
     
@@ -87,7 +98,7 @@ export async function profileFormAction(prevState: any, formData: FormData) {
     console.log("Validated userId:", userId) */ 
     
     const profileImage = formData.get("profileImage")
-    if (profileImage && profileImage instanceof File) {
+    if (profileImage instanceof File && profileImage.size > 0) {
       const imgUpload = await profileImageUpload(profileImage)
       if (imgUpload?.data?.filename) {
         const folder = process.env.PROFILE_IMAGE_FOLDER
@@ -97,6 +108,7 @@ export async function profileFormAction(prevState: any, formData: FormData) {
     
     delete formEntries.profileId
     delete formEntries.profileImage
+
     const updatedUser = await updateUser(userId, formEntries)
     console.log("Update successful:", updatedUser)
 
@@ -104,7 +116,7 @@ export async function profileFormAction(prevState: any, formData: FormData) {
       return { success: false, errors: [{ message: "User to update not found. " }] }
     }
 
-    return { success: true, data: updatedUser }
+    return { success: true, data: formEntries }
   } catch (error) {
     if (error instanceof z.ZodError) {
       console.error("Validation errors:", error)

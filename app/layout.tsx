@@ -1,9 +1,9 @@
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
+import { Inter, Fraunces, Merriweather_Sans } from "next/font/google"
 import { styles } from "@/constants/constants"
 import { cn } from "@/utils"
 import { SessionProviderWrapper } from "@/providers/SessionProviderWrapper"
-import { AuthProvider } from "@/providers/AuthProvider"
+import { AuthSessionProvider } from "@/providers/AuthSessionProvider"
 import Header from "@/components/Header/Header"
 import Footer from "@/components/Footer/Footer"
 import AgeConsent from "@/components/AgeConsent/AgeConsent"
@@ -12,6 +12,18 @@ import "./variables.css"
 import "./globals.css"
 
 const inter = Inter({ subsets: ['latin'] })
+
+const fraunces = Fraunces({ 
+  subsets: ['latin'], 
+  variable: '--font-fraunces',
+  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'] 
+})
+
+const merriweatherSans = Merriweather_Sans({ 
+  subsets: ['latin'], 
+  variable: '--font-merriweather-sans',
+  weight: ['300', '400', '500', '600', '700', '800'] 
+})
 
 export const metadata: Metadata = {
   title: 'Bourbon Brew & Bites',
@@ -24,7 +36,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${fraunces.variable} ${merriweatherSans.variable}`}>
       <body className={cn(styles.body, inter.className)}>
         <Toaster 
           position="top-center" 
@@ -33,14 +45,14 @@ export default function RootLayout({
           closeButton={true}
           style={{background: "var(--toastBackground)"}} 
         />
-        <SessionProviderWrapper>
-          <AuthProvider>
+        {/* <SessionProviderWrapper> */}
+          <AuthSessionProvider>
             <Header />
-            <main className='flex-auto w-full min-h-screen pb-5'>
+            <main className='flex-auto w-full min-h-screen'>
               {children}
             </main>
-          </AuthProvider>
-        </SessionProviderWrapper>
+          </AuthSessionProvider>
+        {/* </SessionProviderWrapper> */}
         <Footer />
         <AgeConsent />
       </body>

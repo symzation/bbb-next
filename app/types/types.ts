@@ -1,7 +1,7 @@
-import { ENUM_ROLE, ENUM_SUBSCRIPTION } from '@/types/enums'
+import { ENUM_CHECK_STATE, ENUM_ROLE, ENUM_SUBSCRIPTION } from '@/types/enums'
 
 export type AccountDataProps = {
-  userId: string
+  userId: number
   type: string
   provider: string
   providerAccountId: string
@@ -15,14 +15,14 @@ export type AccountDataProps = {
 }
 
 export type AddressDataProps = {
-  id: string
+  id: number
   address: string
   address2: string
   city: string
   state: string
   // Accommodates international zip codes
   postalCode: string 
-  countryId: string // Foreign key reference to countries
+  countryId: number // Foreign key reference to countries
   phone: number
   createdAt: Date
   updatedAt: Date
@@ -30,7 +30,7 @@ export type AddressDataProps = {
 
 export type AuthContextProps = {
   user?: {
-    id?: string | undefined
+    id?: number | null
     name?: string | null
     username?: string | null
     email?: string | null
@@ -45,8 +45,8 @@ export type AuthContextProps = {
 } | null
 
 export type AuthorDataType = {
-  id?: string
-  userId?: string
+  id?: number
+  userId?: number
   penName?: string
   bio?: string
   whyReviewer?: string
@@ -66,9 +66,9 @@ export type Award = {
 }
 
 export type ProductDataProps = {
-  id: string
-  productTypeId: string
-  shopId: string
+  id: number
+  productTypeId: number
+  shopId: number
   name: string
   description: string
   image: string
@@ -79,24 +79,33 @@ export type ProductDataProps = {
 }
 
 export type ProductTypeDataProps = {
-  id: string
+  id: number
   name: string
   createdAt: Date
   updatedAt: Date
 }
 
 export type ReviewDataProps = {
-  userId: string
+  userId: number
 } & Record<string, any>
 
 export type SessionDataProps = {
   sessionToken: string
-  userId: string
+  userId: number
   expires: Date
 } & Record<string, any>
 
+// Extend the User type to include 'username'
+export type SessionUser = {
+  id?: string
+  name?: string
+  email?: string
+  image?: string
+  username?: string
+}
+
 export type ShopDataProps = {
-  id: string
+  id: number
   name: string
   productTypeId: number
   shopTypeId: number
@@ -109,10 +118,10 @@ export type ShopDataProps = {
 }
 
 export type UserDataProps = {
-  id?: string
+  id?: number
   name?: string
-  username?: string
   email: string
+  username?: string
   emailVerified?: Date
   image?: string
   password?: string

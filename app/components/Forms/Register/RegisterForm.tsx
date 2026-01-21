@@ -2,7 +2,7 @@ import { useActionState, useEffect, useState } from "react"
 import { styles } from "@/constants/constants"
 import { cn } from "@/utils"
 import { Button } from "@/components/ui/button"
-import { registerAction } from "@/components/Forms/Register/RegisterAction"
+import { RegisterAction } from "@/components/Forms/Register/RegisterFormAction"
 import { redirect } from "next/navigation"
 
 type RegisterFormProps = {
@@ -16,7 +16,7 @@ export default function RegisterForm({
   const [email, setEmail] = useState<string>("")
   const [password, setPassword] = useState<string>("")
   const [confirmPassword, setConfirmPassword] = useState<string>("")
-  const [formState, formAction, isPending] = useActionState(registerAction, undefined)
+  const [formState, formAction, isPending] = useActionState(RegisterAction, undefined)
 
   useEffect(() => {
     if (formState && formState?.success) {

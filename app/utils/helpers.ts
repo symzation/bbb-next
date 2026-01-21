@@ -1,4 +1,8 @@
 
+export function formatCamelCaseString(str: string) {
+  return str.replace(/([A-Z])/g, ' $1').trim()
+}
+
 export async function createUsername(email: string) {
   if (!email || email === "") return ""
   const randomString = Math.random().toString(36).substring(4, 12)
@@ -34,8 +38,12 @@ export function validateBio(bio: string) {
 }
 
 export function validateUsername(username: string) {
-  const usernameRegEx = /^[a-zA-Z0-9_]{3,20}$/
+  const usernameRegEx = /^[a-zA-Z0-9_]{3,32}$/
   return usernameRegEx.test(username)
+}
+
+export function formatUsername(username: string) {
+  return username.trim().replace(/[^a-zA-Z0-9_]/g, '')
 }
 
 export function setupWindowObservers(

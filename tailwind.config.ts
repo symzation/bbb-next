@@ -18,7 +18,10 @@ const config = {
   		}
   	},
   	extend: {
-
+      fontFamily: {
+        sans: ['var(--font-fraunces)', 'var(--font-inter)', 'sans-serif'],
+        mono: ['var(--font-merriweather-sans)', 'var(--font-roboto-mono)', 'monospace'], 
+      }
   	}
   },
   plugins: [require("tailwindcss-animate")],

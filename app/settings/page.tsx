@@ -5,7 +5,6 @@ import { styles } from "@/constants/constants"
 import { cn } from "@/utils"
 import { SettingsItemsList } from "@/components/Settings/SettingsItemsList"
 //import { observeWindowScroll } from "@/utils/helpers"
-import { useAuthContext } from "@/providers/AuthProvider"
 import AppConnects from "@/components/Settings/AppConnects"
 import CloseSessions from "@/components/Settings/CloseSessions"
 import DeactivateAccount from "@/components/Settings/DeactivateAccount"
@@ -23,7 +22,7 @@ const itemsList = [
 export default function Settings() {
   const [activeSection, setActiveSection] = useState<string>("Account")
 
-  const settingSectionClass = "mb-6"
+  const settingSectionClass = "mb-6 scroll-mt-16"
 
   const scrollToElement = (settingName: string) => {
     const targetElement = document.querySelector(`#${settingName}`)
