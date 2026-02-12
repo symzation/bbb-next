@@ -9,7 +9,7 @@ export async function getAuthSession() {
 }
 
 export const updateAuthSession = async (newData: Partial<SessionUser>) => {
-  const session = await auth();
+  const session = await auth()
   if (session) {
     await unstable_update({
       ...session,

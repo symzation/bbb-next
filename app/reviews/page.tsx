@@ -1,10 +1,7 @@
-import { headers } from 'next/headers'
+
 import BlogList from "@/components/Blog/BlogList"
 
-export default async function Articles() {
-  /* const pathname = (await headers()).get('x-current-pathname')
-  console.log('Current pathname:', pathname?.replace('/', '')) */
-
+export default function Articles() {
   return (
     <div className="flex flex-col">
       <BlogList count={20} />

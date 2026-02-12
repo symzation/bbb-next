@@ -1,8 +1,9 @@
+import { relations } from "drizzle-orm"
 import {
   boolean, int, timestamp, mysqlEnum, mysqlTable, primaryKey, 
   varchar, text, float, date, index, uniqueIndex
 } from "drizzle-orm/mysql-core"
-import type { AdapterAccountType } from "next-auth/adapters"
+import type { AdapterAccount } from "next-auth/adapters"
 
 export const userRolesEnum = ["ADMIN", "AUTHOR", "AUTHOR_WAITING_APPROVAL", "USER"] as const
 export const subTierEnum = ["FREE", "BASIC", "PREMIUM", "ELITE"] as const 
@@ -11,7 +12,7 @@ export const accounts = mysqlTable("account",
   {
     userId: int("userId").notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    type: varchar("type", { length: 255 }).$type<AdapterAccountType>().notNull(),
+    type: varchar("type", { length: 255 }).$type<AdapterAccount>().notNull(),
     provider: varchar("provider", { length: 255 }).notNull(),
     providerAccountId: varchar("providerAccountId", { length: 255 }).notNull(),
     refresh_token: varchar("refresh_token", { length: 255 }),
@@ -23,12 +24,14 @@ export const accounts = mysqlTable("account",
     session_state: varchar("session_state", { length: 255 }),
   },
   (table) => [
-    primaryKey({ name: 'provide_acct_id', columns: [table.provider, table.providerAccountId] })
+    primaryKey({ columns: [table.provider, table.providerAccountId] })
   ]
 )
 
 export const addresses = mysqlTable("addresses", {
   id: int("id").primaryKey().autoincrement(),
+  shopId: int('shopId').notNull()
+    .references(() => shops.id, { onDelete: 'cascade' }),
   address: varchar("address", { length: 255 }).notNull(),
   address2: varchar("address2", { length: 255 }),
   city: varchar("city", { length: 100 }).notNull(),
@@ -59,17 +62,17 @@ export const authenticators = mysqlTable("authenticator",
     transports: varchar("transports", { length: 255 }),
   },
   (table) => [
-    primaryKey({ name: 'cred_user_id', columns: [table.userId, table.credentialID] }),
+    primaryKey({ columns: [table.userId, table.credentialID] }),
   ]
 )
 
 // Need to add reviews relationships with authors
-export const authors = mysqlTable("author", 
+export const authors = mysqlTable("authors", 
   {
     id: int("id").primaryKey().autoincrement(),
     userId: int("userId").notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    penName: varchar("penName", { length: 50 }).unique(),
+    penName: varchar("penName", { length: 50 }).unique("authors_penName_unique"),
     bio: text("bio"),
     whyReviewer: text("whyReviewer"),
     authorApproved: boolean("authorApproved").default(false),
@@ -80,10 +83,7 @@ export const authors = mysqlTable("author",
       .notNull(),
     updatedAt: timestamp("updatedAt", { mode: "date", fsp: 3}).defaultNow()
       .onUpdateNow().notNull(),
-  },
-  (table) => [
-    uniqueIndex("authors_penName_unique").on(table.penName),
-  ]
+  }
 )
 
 export const awardsTypes = mysqlTable("awardType",{
@@ -105,18 +105,18 @@ export const awards = mysqlTable("awards",
     dateReceived: date("dateReceived").notNull(),
   }, 
   (table) => [
-    primaryKey({name: 'user_award_id', columns: [table.userId, table.awardTypeId] }),
+    primaryKey({ columns: [table.userId, table.awardTypeId] }),
   ]
 )
 
-export const products = mysqlTable("product", 
+export const products = mysqlTable("products", 
   {
     id: int("id").primaryKey().autoincrement(),
     productTypeId: int("productTypeId").notNull()
       .references(() => productTypes.id, { onDelete: "cascade" }),
     shopId: int("shopId").notNull()
       .references(() => shops.id, { onDelete: "cascade" }),
-    name: varchar("name", { length: 255 }).unique(),
+    name: varchar("name", { length: 255 }).unique("products_name_unique"),
     description: text("description"),
     image: varchar("image", { length: 255 }),
     productUrl: varchar("productUrl", { length: 255 }),
@@ -125,27 +125,27 @@ export const products = mysqlTable("product",
       .notNull(),
     updatedAt: timestamp("updatedAt", { mode: "date", fsp: 3}).defaultNow()
       .onUpdateNow().notNull(),
-  },
-  (table) => [
-    uniqueIndex("products_name_unique").on(table.name),
-  ]
+  }
 )
 
-export const productTypes = mysqlTable("productType",{
+export const productTypes = mysqlTable("productTypes",{
   id: int("id").primaryKey().autoincrement(),
   name: varchar("name", { length: 255 }).unique(),
   //description: text("description"),
+  //tagline: text("tagline"),
+  //intro: text("intro"),
   createdAt: timestamp("createdAt", { mode: "date", fsp: 3}).defaultNow()
     .notNull(),
   updatedAt: timestamp("updatedAt", { mode: "date", fsp: 3}).defaultNow()
     .onUpdateNow().notNull(),
 })
 
-export const reviews = mysqlTable("review", 
+export const reviews = mysqlTable("reviews", 
   {
     id: int("id").primaryKey().autoincrement(),
     title: varchar("title", { length: 200 }).notNull(),
-    slug: varchar("slug", { length: 255 }).notNull().unique(),
+    slug: varchar("slug", { length: 255 }).notNull()
+      .unique("reviews_slug_unique"),
     // store rich text content as text
     content: text("content"),
     userId: int("userId").notNull()
@@ -158,11 +158,7 @@ export const reviews = mysqlTable("review",
       .notNull(),
     updatedAt: timestamp("updatedAt", { mode: "date", fsp: 3}).defaultNow()
       .onUpdateNow().notNull(),
-  },
-  (table) => [
-    index("reviews_title_idx").on(table.title),
-    uniqueIndex("reviews_slug_unique").on(table.slug),
-  ]
+  }
 )
 
 export const sessions = mysqlTable("session", {
@@ -172,23 +168,23 @@ export const sessions = mysqlTable("session", {
   expires: timestamp("expires", { mode: "date" }).notNull(),
 })
  
-export const shopTypes = mysqlTable("shopType", {
+export const shopTypes = mysqlTable("shopTypes", {
   id: int("id").primaryKey().autoincrement(),
-  name: varchar("name", { length: 255 }).unique(),
+  name: varchar("name", { length: 255 }).unique("shopTypes_name_unique"),
   createdAt: timestamp("createdAt", { mode: "date", fsp: 3}).defaultNow()
     .notNull(),
   updatedAt: timestamp("updatedAt", { mode: "date", fsp: 3}).defaultNow()
     .onUpdateNow().notNull(),
 })
 
-export const shops = mysqlTable("shop", 
+export const shops = mysqlTable("shops", 
   {
     id: int("id").primaryKey().autoincrement(),
-    name: varchar("name", { length: 255 }).unique(),
+    name: varchar("name", { length: 255 }).unique("shops_name_unique"),
     shopTypeId: int("shopTypeId").notNull()
       .references(() => shopTypes.id, { onDelete: "cascade" }),
-    addressId: int("addressId").notNull()
-      .references(() => addresses.id, { onDelete: "cascade" }),
+    /* addressesId: int("addressesId").notNull()
+      .references(() => addresses.id, { onDelete: "cascade" }), */
     description:text("description"),
     website: varchar("website", { length: 255 }),
     rating: float("rating").notNull().default(0.0),
@@ -196,13 +192,10 @@ export const shops = mysqlTable("shop",
       .notNull(),
     updatedAt: timestamp("updatedAt", { mode: "date", fsp: 3}).defaultNow()
       .onUpdateNow().notNull(),
-  },
-  (table) => [
-    uniqueIndex("shops_name_unique").on(table.name),
-  ]
+  }
 )
 
-export const shopsToAddresses = mysqlTable("shops_to_addresses", 
+/* export const shopsToAddresses = mysqlTable("shops_to_addresses", 
   {
     shopId: int("shopId").notNull()
       .references(() => shops.id, { onDelete: "cascade" }),// Foreign key to users
@@ -212,9 +205,9 @@ export const shopsToAddresses = mysqlTable("shops_to_addresses",
   (table) => [
     primaryKey({ name: 'shop_address_id', columns: [table.shopId, table.addressesId] }),
   ]
-)
+) */
 
-export const shopsToUsers = mysqlTable("shops_to_users", 
+/* export const shopsToUsers = mysqlTable("shops_to_users", 
   {
     shopId: int("shopId").notNull()
       .references(() => shops.id, { onDelete: "cascade" }),// Foreign key to shops
@@ -224,14 +217,16 @@ export const shopsToUsers = mysqlTable("shops_to_users",
   (table) => [
     primaryKey({ name: 'shop_user_id', columns: [table.shopId, table.userId] }),
   ]
-)
+) */
 
 export const users = mysqlTable("user", 
   {
     id: int("id").primaryKey().autoincrement(),
     name: varchar("name", { length: 255 }),
-    username: varchar("username", { length: 50 }).notNull().unique(),
-    email: varchar("email", { length: 60 }).unique(),
+    username: varchar("username", { length: 50 }).notNull()
+      .unique("users_username_unique"),
+    email: varchar("email", { length: 60 })
+      .unique("users_email_unique"),
     emailVerified: timestamp("emailVerified", { mode: "date", fsp: 3 }),
     image: varchar("image", { length: 255 }),
     password: varchar("password", { length: 100 }),
@@ -246,11 +241,7 @@ export const users = mysqlTable("user",
       .notNull(),
     updatedAt: timestamp("updatedAt", { mode: "date", fsp: 3}).defaultNow()
       .onUpdateNow().notNull(),
-  },
-  (table) => [
-    uniqueIndex("users_username_unique").on(table.username),
-    uniqueIndex("users_email_unique").on(table.email),
-  ]
+  }
 )
 
 export const verificationTokens = mysqlTable("verificationToken", {
@@ -262,3 +253,17 @@ export const verificationTokens = mysqlTable("verificationToken", {
     primaryKey({ name: 'ident_token_id', columns: [table.identifier, table.token] }),
   ]
 )
+
+/*********************************
+*        TABLE RELATIONS         *
+**********************************/
+/* export const shopsRelations = relations(shops, ({ many }) => ({
+  addresses: many(addresses),
+}));
+
+export const addressesRelations = relations(addresses, ({ one }) => ({
+  shop: one(shops, {
+    fields: [addresses.shopId],
+    references: [shops.id],
+  }),
+})); */

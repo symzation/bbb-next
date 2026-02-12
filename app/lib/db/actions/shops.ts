@@ -1,16 +1,44 @@
 import { db } from "@/lib/db"
-import { shops } from "@/lib/db/schema"
+import { eq, sql, count } from "drizzle-orm"
+import { addresses, shops, shopTypes } from "@/lib/db/schema"
 import { ShopDataProps } from "@/types/types"
-import { eq, sql } from "drizzle-orm"
 
 type NewShop = typeof shops.$inferInsert
 
-export async function createShop(shop: NewShop) {
+export async function createShop(newShopData: NewShop) {
   try {
-    const newShop = await db.insert(shops).values(shop).$returningId()
+    const newShop = await db.insert(shops).values(newShopData).$returningId()
     return newShop
   } catch (error) {
     console.error("Error creating shop:", error)
+    throw error
+  }
+}
+
+export async function countShops() {
+  const result = await db.select({ count: count() }).from(shops)
+  //const total = result[0]?.count ?? 0
+console.log('Shoups Count: ', result)
+  return result
+}
+
+export async function getRandomShop() {
+  /* const totalShops = await db.select({ count: count() }).from(shops)
+  const randomOffset = Math.floor(Math.random() * 20)
+ */
+  try {
+    const randomShop = await db.select().from(shops)
+    //.innerJoin(addresses, eq(shops.addressId, addresses.id))
+    //.innerJoin(shopTypes, eq(shops.shopTypeId, shopTypes.id))
+    //.orderBy(sql`RAND()`)
+    //.limit(1)
+    //.offset(randomOffset)
+
+    console.log('randomShop: ',randomShop)
+    //return randomShop[0] ?? null
+    return randomShop[0] ?? null
+  } catch (error) {
+    console.error("Error getting random shop:", error)
     throw error
   }
 }

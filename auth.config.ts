@@ -1,4 +1,3 @@
-import type { NextAuthConfig, Account, User } from "next-auth"
 import Credentials from "next-auth/providers/credentials"
 import EmailProvider from "next-auth/providers/email"
 import Facebook  from "next-auth/providers/facebook"
@@ -71,12 +70,12 @@ export const authConfig = {
       }
     }),
     Facebook({
-      clientId: process.env.AUTH_FACEBOOK_ID,
-      clientSecret: process.env.AUTH_FACEBOOK_SECRET,
+      clientId: process.env.AUTH_FACEBOOK_ID!,
+      clientSecret: process.env.AUTH_FACEBOOK_SECRET!,
     }),
     Google({
-      clientId: process.env.AUTH_GOOGLE_ID,
-      clientSecret: process.env.AUTH_GOOGLE_SECRET,
+      clientId: process.env.AUTH_GOOGLE_ID!,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET!,
       authorization: {
         params: { 
           prompt: "consent", 
@@ -86,8 +85,8 @@ export const authConfig = {
       },
     }),
     Twitter({
-      clientId: process.env.AUTH_TWITTER_ID,
-      clientSecret: process.env.AUTH_TWITTER_SECRET,
+      clientId: process.env.AUTH_TWITTER_ID!,
+      clientSecret: process.env.AUTH_TWITTER_SECRET!,
       // Opt into OAuth 2.0 so we can request the newer scopes
       // Request the email-capable scope in addition to basic read + offline
       authorization: 'https://x.com/i/oauth2/authorize?scope=users.read%20tweet.read%20offline.access%20users.email',
@@ -95,12 +94,10 @@ export const authConfig = {
       userinfo: 'https://api.x.com/2/users/me?user.fields=confirmed_email,profile_image_url,verified',
       // Map the provider profile to NextAuth's user shape, pulling email from confirmed_email when present
       profile(profile) {
-        const data = profile.data as typeof profile.data & { confirmed_email: string | null }
-        const name = data?.name ? data.name.split(" ") : ["", ""]
+        const data = (profile as any).data ? (profile as any).data : profile
         return {
           id: data.id,
-          firstName: name[0],
-          lastName: name[1] ?? "",
+          name: data?.name,
           email: data.confirmed_email ?? null,
           image: data.profile_image_url ?? null,
           provider: 'twitter',
@@ -246,7 +243,10 @@ export const authConfig = {
       //updateAuthSession(updatedSession)
       //return updatedSession
     },
-    async signIn({ user, account, profile, email, credentials  }) {
+    async signIn(
+      { user, account, profile, email, credentials }: 
+      { user?: any; account?: any; profile?: any; email?: any; credentials?: any }
+    ) {
       // Implement your custom logic here
       // For example, to restrict access to a specific email domain:
       /* if (account.provider === "google") {
@@ -297,4 +297,4 @@ export const authConfig = {
       return true
     },   
   }
-} satisfies NextAuthConfig
+}

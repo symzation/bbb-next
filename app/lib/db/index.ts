@@ -13,24 +13,7 @@ const poolConnection = mysql.createPool({
   connectionLimit: 10 
 })
 
-// Declare a global variable to store the database instance in development
-// This prevents creating a new connection on every hot reload
-declare global {
-  // eslint-disable-next-line no-var
-  var globalDb: any
-}
-
-let db: ReturnType<typeof drizzle<typeof schema>>
-const connection = drizzle({ client: poolConnection as any, schema, mode: 'default' })
-
-if (process.env.NODE_ENV === "production") {
-  db = connection
-} else {
-  if (!globalThis.globalDb) {
-    globalThis.globalDb = connection
-  }
-  db = globalThis.globalDb
-}
+const db = drizzle({ client: poolConnection, schema, mode: 'default' })
 
 //const dbClose = db.$client.end() 
 //export const dbClose = db.$client.end() 

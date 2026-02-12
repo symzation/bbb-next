@@ -1,3 +1,5 @@
+"use client"
+
 //import { FC, useEffect, useState } from "react"
 import Image from "next/image"
 import { styles } from "@/constants/constants"
@@ -15,6 +17,7 @@ import heroBg from "/public/particleBg.svg" */
 
 export default function Home() {
   const { session, isAuthenticated } = useAuthSession()
+
   return (
     <div className="flex flex-col items-center justify-center">
       <WhatMatters />

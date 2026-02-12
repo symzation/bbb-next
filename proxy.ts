@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { getAuthSession } from '@/actions/sessionActions'
 import { ENUM_ROLE } from '@/types/enums'
+export { auth } from "@/lib/auth"
 
 const protectedRoutes: Record<string, string[]> = {
   //'/articles': ['ADMIN', 'AUTHOR', 'AUTHOR_WAITING_APPROVAL', 'USER'],
@@ -10,7 +11,7 @@ const protectedRoutes: Record<string, string[]> = {
   '/compose': ['AUTHOR', 'ADMIN'],
   '/events': ['ADMIN', 'AUTHOR', 'AUTHOR_WAITING_APPROVAL', 'USER'],
   //'/rankings': ['ADMIN', 'AUTHOR', 'AUTHOR_WAITING_APPROVAL', 'USER'],
-  '/reviews': ['ADMIN', 'AUTHOR', 'AUTHOR_WAITING_APPROVAL', 'USER'],
+  //'/reviews': ['ADMIN', 'AUTHOR', 'AUTHOR_WAITING_APPROVAL', 'USER'],
   '/settings': ['ADMIN', 'AUTHOR', 'AUTHOR_WAITING_APPROVAL', 'USER'],
 }
 

@@ -1,14 +1,28 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import Image from "next/image"
 import { styles } from "@/constants/constants"
 import { cn } from "@/utils"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { getRandomShop } from "@/lib/db/actions"
+import { ShopDataProps } from "@/types/types"
 
 import heroBg from "../../../public/whiskey_tasting_photo.jpg"
 
 export default function Featured() {
+  const [shop, setShop] = useState<ShopDataProps | null>(null)
+
+  useEffect(() => {
+    async function fetchRandomShop() {
+      const shop = await getRandomShop()
+      console.log(shop)
+      //setShop(shop[0]?.shop ?? null)
+    }
+
+    fetchRandomShop()
+  }, [])
 
   return (
     <div 
@@ -22,10 +36,10 @@ export default function Featured() {
           Featured Shop
         </h3>
         <h2 className="text-6xl text-whitefont-bold tracking-wide">
-          Shop.name
+          {shop?.name}
         </h2>
         <p className={cn(styles.paragraph, 'text-white')}>
-          Shop.description excerpt
+          {shop?.description}
         </p>
         <div className="flex justify-start items-center space-x-4">
           <Button className="bg-white text-third rounded p-0">

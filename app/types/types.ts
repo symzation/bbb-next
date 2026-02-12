@@ -107,7 +107,6 @@ export type SessionUser = {
 export type ShopDataProps = {
   id: number
   name: string
-  productTypeId: number
   shopTypeId: number
   addressId: number
   description: string
