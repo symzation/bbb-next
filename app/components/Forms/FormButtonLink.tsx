@@ -1,4 +1,4 @@
-import { styles } from "@/constants/constants"
+import { styles } from "@/utils/constants"
 import { cn } from "@/utils"
 import { Button } from "@/components/ui/button"
 

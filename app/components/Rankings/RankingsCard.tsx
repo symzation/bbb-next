@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { styles } from "@/constants/constants"
+import { styles } from "@/utils/constants"
 import { cn } from "@/utils"
 import {
   Table,

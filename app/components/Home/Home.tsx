@@ -2,12 +2,15 @@
 
 //import { FC, useEffect, useState } from "react"
 import Image from "next/image"
-import { styles } from "@/constants/constants"
+import { styles } from "@/utils/constants"
 import { cn } from "@/utils"
 import { useAuthSession } from "@/providers/AuthSessionProvider"
 import WhatMatters from "@/components/Home/WhatMatters"
 import DiscoverFlavors from "@/components/Home/DiscoverFlavors"
 import FeaturedShop from "@/components/Home/FeaturedShop"
+import StepsToJoin from "@/components/Home/StepsToJoin"
+import StayInTheLoop from "@/components/Home/StayInTheLoop"
+import Faq from "@/components/Home/Faq"
 
 
 /* import ParticleComponent from "@/components/Particles/particles"
@@ -24,6 +27,9 @@ export default function Home() {
       {/* Latest Review - May replace What Matters Section */}
       <DiscoverFlavors />
       <FeaturedShop/>
+      <StepsToJoin />
+      <StayInTheLoop />
+      <Faq />
       {/* How to Join */}
       {/* Ready To Share Your Palate - isAuthenticated and user role === "User" to show */}
       {/* Stay In The Loop ???? */}

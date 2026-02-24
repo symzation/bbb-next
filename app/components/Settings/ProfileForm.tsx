@@ -1,7 +1,7 @@
 "use client"
 
 import { useActionState, useEffect, useRef, useState } from "react"
-import { styles } from "@/constants/constants"
+import { styles } from "@/utils/constants"
 import { cn } from "@/utils"
 import { Button } from "@/components/ui/button"
 import ProfileImage from "@/components/ProfileImage/profileImage"

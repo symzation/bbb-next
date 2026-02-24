@@ -1,3 +1,5 @@
+"use server"
+
 import { db } from "@/lib/db"
 import { products, productTypes, shops } from "@/lib/db/schema"
 import { asc, desc, eq } from "drizzle-orm"

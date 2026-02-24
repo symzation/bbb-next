@@ -18,6 +18,11 @@ const reviewerTermsSchema = z.union([
 
 const reviewerSignupSchema = z.object({
   isAtTermsEnd: isAtTermsEndSchema,
+  penName: z.string()
+    .min(3, { message: "Must be at least 3 characters" })
+    .max(30, { message: "Must be at most 30 characters" })
+    .regex(/^[a-zA-Z0-9_]+$/, { message: "Only letters, numbers, and underscores are allowed" })
+    .trim(),
   whyReviewer: z.string()
     .min(20, { message: "Must be at least 20 characters" })
     .max(maxLength, { message: `Must be at most ${maxLength} characters` })
@@ -59,16 +64,18 @@ export async function authorFormAction(prevState: any, formData: FormData) {
       return { success: false, errors: [{ message: "User session not found" }] }
     }
 
-    const userId = String(session.user.id)
+    const userId = Number(session.user.id)
 
     await updateUser(userId, { role: ENUM_ROLE.AUTHOR_WAITING_APPROVAL})
 
     const newAuthor = await createAuthor({
-      userId: userId,
+      userId,
+      penName: parsedData.data.penName,
       whyReviewer: parsedData.data.whyReviewer,
+      authorApprovedByUserId: null
     })
     
-    console.log("Author Form - Updated user:", newAuthor)
+    console.log("Author Form -  Updated user:", newAuthor)
     
     const sessionUpdated = await updateAuthSession({
       role: ENUM_ROLE.AUTHOR_WAITING_APPROVAL

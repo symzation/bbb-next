@@ -60,7 +60,7 @@ export default function TextareaInput({
         name={inputName}
         defaultValue={inputValue ?? ""}
         placeholder={placeholderText}
-        className="focus-visible:ring-0 max-h-40 resize-y" 
+        className="focus-visible:ring-0 w-full h-full resize-y" 
         onChange={updateBioCount} 
         onBlur={(e) => {
           e.preventDefault();

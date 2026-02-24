@@ -6,6 +6,7 @@
   --color-secondary: #d9a24a;
   --color-third: #8b4513;
   --color-fourth: #6abea7;
+  --color-fourth-darker: #2a4c42;
   --color-fifth: #606c38;
   --color-error: #c90707;
   --color-success: #16ab11;
@@ -53,12 +54,133 @@
       display: none;
     }
   }
+  
+  --animate-ringPulse: ringPulse 1s linear infinite;
+  @keyframes ringPulse {
+    0% {
+      opacity: 0.5;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0.5;
+    }
+    
+  }
+
+  --animate-ringSpin: ringSpin 1.5s linear infinite;
+  @keyframes ringSpin {
+    to {
+      transform-origin: center;
+      transform: rotate(360deg);
+    }
+  }
 }
 
-  body {
-    font-family: var(--font-merriweather-sans)
-  }
+body {
+  font-family: var(--font-merriweather-sans)
+}
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-fraunces);
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-fraunces);
+}
+
+.fontFraunces {
+  font-family: var(--font-fraunces);
+}
+
+.fontMerriweatherSans {
+  font-family: var(--font-merriweather-sans);
+}
+
+@keyframes fadeInScaleLeft {
+  from { 
+    opacity: 0; 
+    scale: 0.5;
+    transform: translateX(-50%);
   }
+  to { 
+    opacity: 1; 
+    scale: 1;
+    transform: translateX(0);
+  }
+}
+
+.scrollFadeInScaleLeft {
+  animation: fadeInScaleLeft linear;
+  animation-timeline: view();
+  animation-range: entry 0 cover 40%;
+}
+
+@keyframes fadeInScaleRight {
+  from { 
+    opacity: 0; 
+    scale: 0.5;
+    transform: translateX(50%);
+  }
+  to { 
+    opacity: 1; 
+    scale: 1;
+    transform: translateX(0);
+  }
+}
+
+.scrollFadeInScaleRight {
+  animation: fadeInScaleRight linear;
+  animation-timeline: view();
+  animation-range: entry 0 cover 40%;
+}
+
+@keyframes scrollScale {
+  from { 
+    opacity: 0; 
+    scale: 1.5;
+  }
+  to { 
+    opacity: 1; 
+    scale: 1;
+  }
+}
+
+.scrollScale {
+  animation: scrollScale linear;
+  animation-timeline: view();
+  animation-range: entry 0 cover 40%;
+}
+
+@keyframes rotateScaleBounce {
+  0% { 
+    opacity: 0; 
+    scale: 0;
+  }
+  50% {
+    opacity: 1; 
+    scale: 1.2;
+  }
+  100% { 
+    scale: 1;
+  }
+}
+
+.rotateScaleBounce {
+  animation: rotateScaleBounce linear;
+  animation-timeline: view();
+  animation-range: entry 0 cover 40%;
+}
+
+@keyframes scrollRotateLeft {
+  from { 
+    transform: translateX(-50%) rotate(-360deg);
+
+  }
+  to { 
+    transform: translateX(0) rotate(0deg);
+  }
+}
+
+.scrollRotateLeft {
+  animation: scrollRotateLeft linear;
+  animation-timeline: view();
+  animation-range: entry 0 cover 30%;
+}

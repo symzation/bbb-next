@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { styles } from "@/constants/constants"
+import { styles } from "@/utils/constants"
 import { cn } from "@/utils"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
@@ -14,10 +14,10 @@ export default function WhatMatters() {
     <div 
       className={cn(
         styles.homeSection, 
-        'flex-col-reverse md:flex-row gap-5 md:gap-10 bg-secondary w-full'
+        'flex-col-reverse md:flex-row gap-5 md:gap-10 bg-secondary w-full py-12'
       )}
     >
-      <div className="justify-self-center md:justify-self-start flex-1">
+      <div className="justify-self-end w-full md:w-1/2">
         <h2 className="text-6xl font-bold tracking-wide">
           Taste what matters, read what's honest
         </h2>
@@ -30,7 +30,7 @@ export default function WhatMatters() {
           </Button>
         </div>
       </div>
-      <div className="flex-1 justify-self-center md:justify-self-end md:align-self-start">
+      <div className="justify-self-start w-full md:w-1/2">
         <Image
           src={heroBg}
           alt="Hero Background"

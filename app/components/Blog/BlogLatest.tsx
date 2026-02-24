@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { styles } from "@/constants/constants"
+import { styles } from "@/utils/constants"
 import { cn } from "@/utils/index"
 import { BlogPostProps } from "@/types/types"
 import { FaUserCircle } from "react-icons/fa"

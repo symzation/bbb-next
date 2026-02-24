@@ -19,8 +19,11 @@ const config = {
   	},
   	extend: {
       fontFamily: {
-        sans: ['var(--font-fraunces)', 'var(--font-inter)', 'sans-serif'],
-        mono: ['var(--font-merriweather-sans)', 'var(--font-roboto-mono)', 'monospace'], 
+        sans: ['var(--font-inter)', 'sans-serif'],
+        mono: ['var(--font-roboto-mono)', 'monospace'], 
+        fraunces: ["var(--font-fraunces)"],
+        merriweatherSans: ["var(--font-merriweather-sans)"],
+        
       }
   	}
   },

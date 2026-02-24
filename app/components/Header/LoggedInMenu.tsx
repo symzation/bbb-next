@@ -1,6 +1,6 @@
 import { useState } from "react"
 import Link from "next/link"
-import { styles } from "@/constants/constants"
+import { styles } from "@/utils/constants"
 import { cn } from "@/utils"
 import { Button } from "@/components/ui/button"
 import { logout } from "@/actions/loginActions"
@@ -22,7 +22,7 @@ import { UserDataProps } from "@/types/types"
 export default function LoggedInMenu() {
   const router = useRouter()
   const { session } = useAuthSession()
-  console.log("LoggedInMenu - Session:", session)
+  //console.log("LoggedInMenu - Session:", session)
 
   const [isOpen, setIsOpen] = useState(false)
   

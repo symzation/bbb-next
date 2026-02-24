@@ -1,7 +1,7 @@
 'use client'
 
 import { useParams } from "next/navigation"
-import { styles } from "@/constants/constants"
+import { styles } from "@/utils/constants"
 import { cn } from "@/utils"
 import { notFound } from 'next/navigation'
 import CategoryView from "@/components/Reviews/CategoryView"

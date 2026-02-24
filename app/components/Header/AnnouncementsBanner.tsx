@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { styles } from "@/constants/constants"
+import { styles } from "@/utils/constants"
 import { cn } from "@/utils"
 import { AiOutlineClose } from "react-icons/ai"
 import { getCookie, createCookie } from "@/lib/cookies"

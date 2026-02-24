@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import { Inter, Fraunces, Merriweather_Sans } from "next/font/google"
-import { styles } from "@/constants/constants"
+import { styles } from "@/utils/constants"
 import { cn } from "@/utils"
 import { SessionProviderWrapper } from "@/providers/SessionProviderWrapper"
 import { AuthSessionProvider } from "@/providers/AuthSessionProvider"
@@ -8,6 +8,7 @@ import Header from "@/components/Header/Header"
 import Footer from "@/components/Footer/Footer"
 import AgeConsent from "@/components/AgeConsent/AgeConsent"
 import { Toaster } from "@/components/ui/sonner"
+import { TooltipProvider } from "@/components/ui/tooltip"
 import "./variables.css"
 import "./globals.css"
 
@@ -47,10 +48,12 @@ export default function RootLayout({
         />
         {/* <SessionProviderWrapper> */}
           <AuthSessionProvider>
-            <Header />
-            <main className='flex-auto w-full min-h-screen'>
-              {children}
-            </main>
+            <TooltipProvider>
+              <Header />
+              <main className='flex-auto w-full min-h-screen'>
+                {children}
+              </main>
+            </TooltipProvider>
           </AuthSessionProvider>
         {/* </SessionProviderWrapper> */}
         <Footer />

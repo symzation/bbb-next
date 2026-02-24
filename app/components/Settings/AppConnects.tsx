@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { styles } from "@/constants/constants"
+import { styles } from "@/utils/constants"
 import { cn } from "@/utils"
 import { MdOutlineMailOutline } from "react-icons/md"
 import { FcGoogle } from "react-icons/fc"

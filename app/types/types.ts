@@ -104,13 +104,20 @@ export type SessionUser = {
   username?: string
 }
 
-export type ShopDataProps = {
+export type ShopTypesDataProps = {
   id: number
   name: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+export type ShopDataProps = {
+  id: number
+  name: string | null
   shopTypeId: number
-  addressId: number
-  description: string
-  website: string
+  //addressId?: number
+  description: string | null
+  website: string | null
   rating: number
   createdAt: Date
   updatedAt: Date

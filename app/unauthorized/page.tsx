@@ -1,6 +1,6 @@
 "use client"
 
-import { styles } from "@/constants/constants"
+import { styles } from "@/utils/constants"
 import { cn } from "@/utils"
 
 export default function NotAuthorized() {

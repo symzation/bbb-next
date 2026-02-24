@@ -2,23 +2,30 @@
 
 import { useEffect, useState } from "react"
 import Image from "next/image"
-import { styles } from "@/constants/constants"
+import { styles } from "@/utils/constants"
 import { cn } from "@/utils"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { getRandomShop } from "@/lib/db/actions"
-import { ShopDataProps } from "@/types/types"
+import { PiCaretDoubleRightLight } from "react-icons/pi"
 
 import heroBg from "../../../public/whiskey_tasting_photo.jpg"
 
+type FeaturedShopProps = {
+  id: number
+  name: string | null
+  description: string | null
+  website: string | null
+  typeName: string | null
+}
+
 export default function Featured() {
-  const [shop, setShop] = useState<ShopDataProps | null>(null)
+  const [shopData, setShopData] = useState<FeaturedShopProps | null>(null)
 
   useEffect(() => {
     async function fetchRandomShop() {
-      const shop = await getRandomShop()
-      console.log(shop)
-      //setShop(shop[0]?.shop ?? null)
+      const res = await getRandomShop()
+      setShopData(res[0] ?? null)
     }
 
     fetchRandomShop()
@@ -28,26 +35,44 @@ export default function Featured() {
     <div 
       className={cn(
         styles.homeSection, 
-        'flex-col-reverse md:flex-row md:space-x-14 gap-10 md:gap- bg-third w-full'
+        'flex-col md:flex-row gap-5 md:gap-10 bg-third w-full py-12'
       )}
     >
-      <div className="justify-self-center md:justify-self-start flex-1">
-        <h3 className="text-md text-white font-bold font-merriweather-sans tracking-wider mb-5">
-          Featured Shop
+      <div className="scrollFadeInScaleLeft">
+        <h3 className="text-lg text-white font-bold font-frauncestracking-wider mb-4">
+          Featured {shopData?.typeName} Shop
         </h3>
-        <h2 className="text-6xl text-whitefont-bold tracking-wide">
-          {shop?.name}
-        </h2>
-        <p className={cn(styles.paragraph, 'text-white')}>
-          {shop?.description}
+        <h4 className="text-6xl text-black font-bold tracking-wide mb-1">
+          {shopData?.name}
+        </h4>
+        <p className={cn(styles.paragraph, 'text-white mb-3')}>
+          {shopData?.description}
         </p>
         <div className="flex justify-start items-center space-x-4">
-          <Button className="bg-white text-third rounded p-0">
-            <Link href="/reviews" className="p-4 block">Explore</Link>
+          <Button 
+            className="bg-primary hover:bg-white text-white hover:text-primary rounded p-0 transition-all duration-300 ease-in-out"
+          >
+            <Link href="/reviews?type=shops" className="p-4 block">Explore</Link>
+          </Button>
+          <Button 
+            className="group relative overflow-hidden bg-transparent hover:bg-transparent text-white hover:text-black rounded p-0 transition-all duration-300 ease-in-out"
+          >
+            <Link 
+              href={shopData?.website ?? "#"} 
+              className="p-4 block" 
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
+              <span className="absolute inset-0 w-0 bg-secondary/80 transition-all duration-300 ease-in-out group-hover:w-full"></span>
+              <span className="relative z-[3]">
+                Official Website 
+                <PiCaretDoubleRightLight className="inline-block ml-0.5 font-bold" />
+              </span>
+            </Link>
           </Button>
         </div>
       </div>
-      <div className="flex-1 justify-self-center md:justify-self-end md:align-self-start">
+      <div className="scrollFadeInScaleRight">
         <Image
           src={heroBg}
           alt="Hero Background"

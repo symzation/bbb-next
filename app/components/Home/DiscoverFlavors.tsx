@@ -1,7 +1,7 @@
 
 //import { useEffect, useState } from "react"
 import Image from "next/image"
-import { styles } from "@/constants/constants"
+import { styles } from "@/utils/constants"
 import { cn } from "@/utils"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
@@ -13,9 +13,7 @@ import heroBg from "../../../public/categoriesImage.jpg"
 
 type ProductTypesResult = Awaited<ReturnType<typeof getProductTypes>>
 
-export default function DiscoverFlavors() {
-  //const productTypesData = await getProductTypes()
-  const productTypesData = [
+const productTypesData = [
     {
       name: "Whiskey", 
       description: "Explore bold pours worth savoring",
@@ -42,20 +40,23 @@ export default function DiscoverFlavors() {
     },
   ]
 
+export default function DiscoverFlavors() {
+  //const productTypesData = await getProductTypes()
+
   return (
     <div 
       className={cn(
         styles.homeSection, 
-        'flex-col justify-center items-center gap-4 bg-black/95 text-white w-full'
+        'flex-col justify-center items-center gap-4 bg-black/95 text-white w-full py-12'
       )}
     >
-      <h3 className="text-xl font-bold font-merriweather-sans tracking-wider">
+      <h3 className="text-xl font-bold font-frauncestracking-wider">
         Categories
       </h3>
-      <h2 className="text-6xl font-bold">
+      <h2 className="text-6xl font-bold text-center">
         Flavors To Discover
       </h2>
-      <h4 className="text-xl font-bold font-merriweather-sans tracking-wide">
+      <h4 className="text-xl font-bold font-frauncestracking-wide">
         Browse honest takes on what you drink and eat
       </h4>
       <Marquee pauseOnHover={true} autoFill={true} className="mb-6">
@@ -66,16 +67,16 @@ export default function DiscoverFlavors() {
           >
             <Card 
               key={productType.name} 
-              className="mx-4 w-full md:w-[300px] h-[450px] mt-3 md:mt-8"
+              className="mx-2.5 w-[300px] h-[450px] mt-3 md:mt-8"
             >
               <CardContent className="px-4">
-                <div className="text-sm font-merriweather-sans mb-4 tracking-wide">
+                <div className="text-sm font-frauncesmb-4 tracking-wide">
                   {productType.name}
                 </div>
                 <h3 className="text-2xl font-bold mb-4">
                   {productType.description}
                 </h3>
-                <p className="text-sm font-merriweather-sans tracking-wide">
+                <p className="text-sm font-frauncestracking-wide">
                   {productType.tagline}
                 </p>
                 <div className="py-4">

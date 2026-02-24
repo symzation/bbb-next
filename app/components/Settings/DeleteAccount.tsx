@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { styles } from "@/constants/constants"
+import { styles } from "@/utils/constants"
 import { cn } from "@/utils"
 import { Button } from "@/components/ui/button"
 import { getRandomInt } from "@/utils/helpers"

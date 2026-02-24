@@ -1,6 +1,6 @@
 
 import Image from "next/image"
-import { styles } from "@/constants/constants"
+import { styles } from "@/utils/constants"
 import { cn } from "@/utils"
 import { useAuthSession } from "@/providers/AuthSessionProvider"
 

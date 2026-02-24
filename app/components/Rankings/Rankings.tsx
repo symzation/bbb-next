@@ -1,5 +1,5 @@
 import { headers } from "next/headers"
-import { styles } from "@/constants/constants"
+import { styles } from "@/utils/constants"
 import { cn } from "@/utils"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import RankingsCard from "@/components/Rankings/RankingsCard"

@@ -250,7 +250,7 @@ export const verificationTokens = mysqlTable("verificationToken", {
     expires: timestamp("expires", { mode: "date" }).notNull(),
   },
   (table) => [
-    primaryKey({ name: 'ident_token_id', columns: [table.identifier, table.token] }),
+    primaryKey({ columns: [table.identifier, table.token] }),
   ]
 )
 

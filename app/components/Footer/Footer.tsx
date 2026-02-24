@@ -1,5 +1,5 @@
 import { FC } from "react"
-import { styles } from "@/constants/constants"
+import { styles } from "@/utils/constants"
 import { cn } from "@/utils"
 import Disclaimer from "@/components/Disclaimer/Disclaimer"
 
@@ -13,11 +13,11 @@ export default function Footer() {
 		<footer 
 			className={cn(
 				styles.footer, 
-				"flex flex-col justify-center items-start space-y-6 bg-primary text-secondary py-6 px-4 "
+				"flex flex-col justify-center items-start space-y-6 bg-primary text-white py-6 px-4 "
 			)}
 		>
 			<div 
-				className="flex flex-row justify-between items-start w-full text-third"
+				className="flex flex-row justify-between items-start w-full text-white"
 			>
 				<div className="flex flex-col justify-center items-start">
 					<div className="mb-0.5">{process.env.NEXT_PUBLIC_SITENAME}</div>
@@ -27,7 +27,7 @@ export default function Footer() {
 				<div>[LINKS GO HERE]</div>
 			</div>	
 			<div className="bg-fourth w-full h-[1px]" />
-			<Disclaimer className="text-third" titleClassName="text-third text-xs" textClassName="text-xs" />
+			<Disclaimer className="text-white" titleClassName="text-white text-xs" textClassName="text-xs" />
 		</footer>
 	)
 }

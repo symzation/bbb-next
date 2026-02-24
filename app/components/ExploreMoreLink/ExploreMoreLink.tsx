@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { styles } from "@/constants/constants"
+import { styles } from "@/utils/constants"
 import { cn } from "@/utils/index"
 import Link from 'next/link'
 import { FaLongArrowAltRight,  FaLongArrowAltLeft} from "react-icons/fa"

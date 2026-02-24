@@ -1,5 +1,5 @@
 import { useActionState, useEffect, useState } from "react"
-import { styles } from "@/constants/constants"
+import { styles } from "@/utils/constants"
 import { cn } from "@/utils"
 import { Button } from "@/components/ui/button"
 import { RegisterAction } from "@/components/Forms/Register/RegisterFormAction"
