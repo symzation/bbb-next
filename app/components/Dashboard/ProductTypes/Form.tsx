@@ -4,7 +4,7 @@ import { useActionState, useEffect, useState } from "react"
 import { styles } from "@/utils/constants"
 import { cn } from "@/utils"
 import { Button } from "@/components/ui/button"
-import { useAuthSession } from "@/providers/AuthSessionProvider"
+import { GetAuthSession } from "@/providers/AuthSessionProvider"
 import { ProductTypeDataProps } from "@/types/types"
 import { ProductTypesFormAction } from "@/components/Dashboard/ProductTypes/FormAction"
 
@@ -14,7 +14,7 @@ export default function ProductTypesForm({
   const [name, setName] = useState<string>("")
   const [formState, formAction, isPending] = useActionState(ProductTypesFormAction, undefined)
 
-  const { session } = useAuthSession()
+  const { session } = GetAuthSession()
 
   useEffect(() => {
     if (formState && formState?.success) {

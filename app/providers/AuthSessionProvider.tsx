@@ -50,9 +50,9 @@ export function AuthSessionProvider({
   )
 }
 
-export function useAuthSession() {
+export function GetAuthSession() {
   const ctx = useContext(AuthSessionContext)
-  if (!ctx) throw new Error("useAuthSession must be used within AuthSessionProvider")
+  if (!ctx) throw new Error("getAuthSession must be used within AuthSessionProvider")
   return ctx
 }
 

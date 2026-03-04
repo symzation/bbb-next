@@ -1,7 +1,13 @@
+import { Metadata } from "next"
 import { styles } from "@/utils/constants"
 import { cn } from "@/utils"
 
-export default async function About() {
+export const metadata: Metadata = {
+  title: 'About',
+  description: `Learn about our passion for fine spirits, craft beers, wines, coffees, and great food. Discover the story behind our honest reviews and immersive storytelling at ${process.env.NEXT_PUBLIC_SITENAME}.`,
+}
+
+export default function AboutPage() {
   return (
     <div className="mt-10 px-2 md:px-10">
       <h1 className={styles.pageHeading}>About Us</h1>

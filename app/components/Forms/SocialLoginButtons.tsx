@@ -1,6 +1,7 @@
+import { cn } from "@/utils"
 import { FcGoogle } from "react-icons/fc"
 import { MdFacebook } from "react-icons/md"
-import { BsTwitterX } from "react-icons/bs"
+import { RiTwitterXFill } from "react-icons/ri"
 import { login } from "@/actions/loginActions"
 
 export const appLogin = async (provider: string) => {
@@ -8,20 +9,23 @@ export const appLogin = async (provider: string) => {
 }
 
 export default function SocialLoginButtons() {
+  const buttonClass = "flex justify-center items-center px-2 py-1 border rounded-sm cursor-pointer hover:opacity-70"
+  const buttonIconClass = "w-6 h-6"
+  
   return (
     <div className="flex flex-row justify-center items-center w-full gap-5 my-1">
       {/* Google Login */}
-      <div className="flex justify-center items-center px-6 py-2 border rounded-md cursor-pointer hover:opacity-70" onClick={() => appLogin("google")}>
-        <FcGoogle className="w-6 h-6" />
-      </div>
+      <button className={buttonClass} onClick={() => appLogin("google")}>
+        <FcGoogle className={buttonIconClass} />
+      </button>
       {/* Facebook Login */}
-      <div className="flex justify-center items-center px-6 py-2 border rounded-md cursor-pointer hover:opacity-70" onClick={() => appLogin("facebook")}>
-        <MdFacebook className="w-6.5 h-6.5 rounded-sm text-facebook-blue" />
-      </div>
+      <button className={buttonClass} onClick={() => appLogin("facebook")}>
+        <MdFacebook className={cn(buttonIconClass, "text-facebook-blue")} />
+      </button>
       {/* Twitter Login */}
-      <div className="flex justify-center items-center px-6 py-2 border rounded-md cursor-pointer hover:opacity-70" onClick={() => appLogin("twitter")}>
-        <BsTwitterX className="w-6.5 h-6.5 rounded-sm text-twitter-blue" />
-      </div>
+      <button className={cn(buttonClass)} onClick={() => appLogin("twitter")}>
+        <RiTwitterXFill className={buttonIconClass} />
+      </button>
     </div>
   )
 }

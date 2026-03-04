@@ -4,7 +4,7 @@
 import Image from "next/image"
 import { styles } from "@/utils/constants"
 import { cn } from "@/utils"
-import { useAuthSession } from "@/providers/AuthSessionProvider"
+import { GetAuthSession } from "@/providers/AuthSessionProvider"
 import WhatMatters from "@/components/Home/WhatMatters"
 import DiscoverFlavors from "@/components/Home/DiscoverFlavors"
 import FeaturedShop from "@/components/Home/FeaturedShop"
@@ -19,7 +19,7 @@ import BlogLatest from "@/components/Blog/BlogLatest"
 import heroBg from "/public/particleBg.svg" */
 
 export default function Home() {
-  const { session, isAuthenticated } = useAuthSession()
+  const { session, isAuthenticated } = GetAuthSession()
 
   return (
     <div className="flex flex-col items-center justify-center">

@@ -1,6 +1,6 @@
 "use client"
 
-import { useAuthSession } from "@/providers/AuthSessionProvider"
+import { GetAuthSession } from "@/providers/AuthSessionProvider"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,19 +15,21 @@ import {
 } from "@/components/ui/alert-dialog"
 import { logout } from "@/actions/loginActions"
 import { deactivateUser } from "@/lib/db/actions/index"
-import { useRouter } from "next/navigation"
+//import { useRouter } from "next/navigation"
+import { redirect } from "next/navigation"
 
 export default function deactivateAccount() {
-  const session = useAuthSession()
-  const router = useRouter()
-
+  //const router = useRouter()
+  const session = GetAuthSession()
+  
   const deactivateAccount = async () => {
-    const deactivatedUser = await deactivateUser(String(session?.user?.id))
+    const userId = session?.session?.user?.id
+    const deactivatedUser = await deactivateUser(Number(userId))
 
     if (deactivatedUser) {
       await logout(false)
       //window.location.assign('/')
-      router.push('/')
+      redirect('/')
     }
   }
 

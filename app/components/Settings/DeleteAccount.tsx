@@ -64,7 +64,8 @@ export default function DeleteAccount() {
 
       <DeleteAccountForm 
         deleteTerm={deleteTerm}
-        isDeleteForm={isDeleteForm}
+        deleteFormOpen={isDeleteForm}
+        deleteFormOpenFunc={setIsDeleteForm}
       />
     </div>
   )

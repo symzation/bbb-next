@@ -31,7 +31,7 @@ export async function deleteAccountAction(
     }
 
     console.log("Deleting user: ", userToDelete)
-    const deletedUser = await deleteUser(String(userToDelete.id))
+    const deletedUser = await deleteUser(Number(userToDelete.id))
 
     if (!deletedUser) {
       return { success: false, errors: [{ message: "Failed to delete user. " }] }

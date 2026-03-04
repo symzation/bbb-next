@@ -2,14 +2,10 @@
 
 import { z } from "zod"
 import { updateUser, createAuthor } from "@/lib/db/actions/index"
-import { getAuthSession, updateAuthSession } from "@/actions/sessionActions"
+import { GetAuthSession, updateAuthSession } from "@/actions/sessionActions"
 import { ENUM_ROLE } from '@/types/enums'
 
 const maxLength = Number(process.env.NEXT_PUBLIC_BIO_MAX_LENGTH)
-
-const isAtTermsEndSchema = z.string().refine(val => val === "true", {
-  message: "You must read or scroll down to the end of the reviewer's terms and conditions",
-})
 
 const reviewerTermsSchema = z.union([
   z.string().transform((data) => data === "on" ? true : false),
@@ -17,7 +13,6 @@ const reviewerTermsSchema = z.union([
 ])
 
 const reviewerSignupSchema = z.object({
-  isAtTermsEnd: isAtTermsEndSchema,
   penName: z.string()
     .min(3, { message: "Must be at least 3 characters" })
     .max(30, { message: "Must be at most 30 characters" })
@@ -42,7 +37,7 @@ const reviewerSignupSchema = z.object({
   }
 })
 
-export async function authorFormAction(prevState: any, formData: FormData) {
+export async function AuthorFormAction(prevState: any, formData: FormData) {
   try {
     const formEntries = Object.fromEntries(formData)
     console.log('formEntries:', formEntries)
@@ -57,7 +52,7 @@ export async function authorFormAction(prevState: any, formData: FormData) {
     }
 
     // Proceed with login logic (e.g., save to database)
-    const session = await getAuthSession()
+    const session = await GetAuthSession()
     console.log('session in authorFormAction:', session) 
 
     if (!session || !session.user) {
@@ -72,15 +67,14 @@ export async function authorFormAction(prevState: any, formData: FormData) {
       userId,
       penName: parsedData.data.penName,
       whyReviewer: parsedData.data.whyReviewer,
-      authorApprovedByUserId: null
     })
     
     console.log("Author Form -  Updated user:", newAuthor)
     
-    const sessionUpdated = await updateAuthSession({
+    /* const sessionUpdated = await updateAuthSession({
       role: ENUM_ROLE.AUTHOR_WAITING_APPROVAL
     })
-    console.log("Author Form - Updated session:", sessionUpdated)
+    console.log("Author Form - Updated session:", sessionUpdated) */
 
     return { success: true, data: newAuthor, errors: [] }
   } catch (error) {

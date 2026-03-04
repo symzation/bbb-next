@@ -62,6 +62,7 @@ export default function DiscoverFlavors() {
       <Marquee pauseOnHover={true} autoFill={true} className="mb-6">
         {productTypesData.map((productType) => (
           <Link 
+            key={productType.name}
             href={`/reviews/${productType.name.toLowerCase()}`} 
             className="inline-block"
           >

@@ -1,7 +1,7 @@
 "use server"
 
 import { signIn, signOut } from "@/lib/auth"
-import { getAuthSession } from "@/actions/sessionActions" 
+import { GetAuthSession } from "@/actions/sessionActions" 
 import { deleteDbSessions } from "@/lib/db/actions/index"
 import { redirect } from "next/navigation"
 
@@ -31,9 +31,9 @@ export async function logout(
   useRedirect: boolean = true, 
   redirectUrl?: string
 ) {
-  const session = await getAuthSession() 
+  const session = await GetAuthSession() 
   if (session?.user) {
-    await deleteDbSessions(session.user.id as string)
+    await deleteDbSessions(Number(session.user.id))
   }
 
   if (useRedirect) {

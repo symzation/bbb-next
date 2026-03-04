@@ -3,7 +3,7 @@
 import { auth, unstable_update } from "@/lib/auth"
 import { SessionUser } from "@/types/types"
 
-export async function getAuthSession() {
+export async function GetAuthSession() {
   const session = await auth()
   return session
 }

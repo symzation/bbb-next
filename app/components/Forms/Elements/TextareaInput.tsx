@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react"
+import { styles } from "@/utils/constants"
 import { cn } from "@/utils"
 import { Textarea } from "@/components/ui/textarea"
 
 type TextareaInputProps = {
   bioMaxLength?: number
-  callbackFunc?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void
+  blurFunc?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void
   defaultValue?: string
   inputClassName?: string
   inputErrors?: {
@@ -13,19 +14,21 @@ type TextareaInputProps = {
   inputName: string
   labelName: string
   placeholderText?: string
+  orientation?: "horizontal" | "vertical" | "responsive"
 }
 
 export default function TextareaInput({
   bioMaxLength = Number(process.env.NEXT_PUBLIC_BIO_MAX_LENGTH),
-  callbackFunc,
+  blurFunc,
   defaultValue = "",
   inputClassName,
   inputErrors,
   inputName,
   labelName,
   placeholderText = "",
+  orientation = "horizontal",
 }: TextareaInputProps) {
-  const [inputValue, setInputValue] = useState<string>(defaultValue)
+  const [inputValue, setInputValue] = useState<string>("")
 
   const inputRef = useRef<HTMLTextAreaElement | null>(null)
   const countRef = useRef<HTMLSpanElement | null>(null)
@@ -51,33 +54,31 @@ export default function TextareaInput({
   }
 
   return (
-    <div className={cn("relative flex flex-col items-start", inputClassName)}>
-      <label htmlFor={inputName} className="absolute -top-6.5 left-1 text-sm font-bold tracking-wide">
+    <div className={cn("relative flex flex-col items-start gap-1", inputClassName)}>
+      <label 
+        htmlFor={inputName} 
+        className={cn(styles.formLabel, "text-primary font-bold pb-1 pl-1")}
+      >
         {labelName}
       </label>
       <Textarea 
-        ref={inputRef}
+        ref={inputRef} 
         name={inputName}
-        defaultValue={inputValue ?? ""}
+        defaultValue={defaultValue}
         placeholder={placeholderText}
         className="focus-visible:ring-0 w-full h-full resize-y" 
         onChange={updateBioCount} 
-        onBlur={(e) => {
-          e.preventDefault();
-          setInputValue(e.target.value);
-          updateBioCount(e);
-          if (typeof callbackFunc === "function") {
-            callbackFunc(e);
-          }
-        }}
+        onBlur={blurFunc} 
       />
-      <div 
-        className="flex flex-row justify-end items-center text-muted-foreground text-sm w-full mt-1.5"
-      >
-        <span ref={countRef} className="inline-block">0</span>
-        <span className="inline-block ml-0.5">/{bioMaxLength}</span>
+      <div className="flex justify-between w-full -mt-1.5">
+        <div>
+          {inputErrors?.errors && typeof inputErrors.errors === "object" && !Array.isArray(inputErrors.errors) && inputName in inputErrors.errors && (<div className="text-error text-sm italic mt-1">{(inputErrors.errors as { [key: string]: string[] })[inputName]}</div>)}
+        </div>
+        <div className="justify-self-end text-muted-foreground text-sm mt-1.5 shrink">
+          <span ref={countRef} className="inline-block">0</span>
+          <span className="inline-block ml-0.5">/{bioMaxLength}</span>
+        </div>
       </div>
-        {inputErrors?.errors && typeof inputErrors.errors === "object" && !Array.isArray(inputErrors.errors) && inputName in inputErrors.errors && (<div className="text-error text-sm italic mt-1">{(inputErrors.errors as { [key: string]: string[] })[inputName]}</div>)}
     </div>
   )
 } 

@@ -38,7 +38,7 @@ export default function RankingsCard({
         </TableHeader>
         <TableBody>
           {products.length > 0 ? (products.map((product: any, idx: number) => (
-            <TableRow key={`#${product.id}-${idx}`} className="hover:bg-secondary/50">
+            <TableRow key={`#${product.id}-${product.name}`} className="hover:bg-secondary/50">
               <TableCell className="font-medium text-center">{idx + 1}</TableCell>
               <TableCell className="w-min-32">{product.name}</TableCell>
               <TableCell className="hidden md:table-cell">{product.shopName}</TableCell>

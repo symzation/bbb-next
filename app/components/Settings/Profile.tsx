@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useAuthSession } from "@/providers/AuthSessionProvider"
+import { GetAuthSession } from "@/providers/AuthSessionProvider"
 import {
   Dialog,
   DialogContent,
@@ -16,7 +16,7 @@ import ProfileImage from "@/components/ProfileImage/profileImage"
 import { UserDataProps } from "@/types/types"
 
 export default function Profile() {
-  const { session } = useAuthSession()
+  const { session } = GetAuthSession()
   const userData = session?.user as UserDataProps
 
   const [isProfileInfoOpen, setIsProfileInfoOpen] = useState(false)

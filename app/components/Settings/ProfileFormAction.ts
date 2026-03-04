@@ -1,14 +1,14 @@
 "use server"
 
 import { z } from "zod"
-import { getAuthSession, updateAuthSession } from "@/actions/sessionActions"
+import { GetAuthSession, updateAuthSession } from "@/actions/sessionActions"
 import { updateUser } from "@/lib/db/actions/users"
 import { profileImageUpload } from "@/actions/profileImageActions"
 import { validateBio, validateUsername} from "@/utils/helpers"
 
 
 export async function profileFormAction(prevState: any, formData: FormData) {
-  const session = await getAuthSession()
+  const session = await GetAuthSession()
   //const NEXT_PUBLIC_BIO_MAX_LENGTH = Number(process.env.NEXT_PUBLIC_BIO_MAX_LENGTH)
   const NEXT_PUBLIC_BIO_MAX_LENGTH = Number(process.env.NEXT_PUBLIC_BIO_MAX_LENGTH)
   const USERNAME_LENGTH_MIN = Number(process.env.USERNAME_LENGTH_MIN) || 3

@@ -1,6 +1,7 @@
 "use client"
 
 import { useActionState, useEffect, useRef, useState } from "react"
+import Link from "next/link"
 import { styles } from "@/utils/constants"
 import { cn } from "@/utils"
 import { Button } from "@/components/ui/button"
@@ -9,7 +10,7 @@ import { profileFormAction } from "@/components/Settings/ProfileFormAction"
 import { getImageDimensions, formatUsername} from "@/utils/helpers"
 import { ENUM_CHECK_STATE } from "@/types/enums"
 import { useRouter } from 'next/navigation'
-import { useAuthSession } from "@/providers/AuthSessionProvider"
+import { GetAuthSession } from "@/providers/AuthSessionProvider"
 import { UserDataProps } from "@/types/types"
 
 type ProfileFormProps = {
@@ -40,16 +41,18 @@ function validate(username: string) {
   return { ok: true, state: ENUM_CHECK_STATE.CHECKING as const }
 }
 
-export default function ProfileForm({ onProfileInfoClose }: ProfileFormProps) {
+export default function ProfileForm({ 
+  onProfileInfoClose 
+}: ProfileFormProps) {
   const router = useRouter()
-  const { session, updateSession } = useAuthSession()
+  const { session, updateSession } = GetAuthSession()
   const userData = session?.user as UserDataProps
 
   const [formState, formAction, isPending] = useActionState(profileFormAction, undefined)
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null)
-  const [inputName, setInputName] = useState<string>(userData.name ?? "")
-  const [inputUsername, setInputUsername] = useState<string>(userData.username ?? "")
-  const [inputEmail, setInputEmail] = useState<string>(userData.email ?? "")
+  const [inputName, setInputName] = useState<string>("")
+  const [inputUsername, setInputUsername] = useState<string>("")
+  const [inputEmail, setInputEmail] = useState<string>("")
   const [inputProfileImage, setInputProfileImage] = useState<File | null>(null)
   const [state, setState] = useState<ENUM_CHECK_STATE>()
   const [hasChanged, setHasChanged] = useState<boolean>(false)
@@ -64,11 +67,6 @@ export default function ProfileForm({ onProfileInfoClose }: ProfileFormProps) {
       onFormSave()
     }
   }, [formState])
-
-  const onFormSave = async () => {
-    await updateSession({ user: { ...formState?.data } }) 
-    router.refresh()
-  }
 
   useEffect(() => {
     if (!hasChanged) return
@@ -86,8 +84,12 @@ export default function ProfileForm({ onProfileInfoClose }: ProfileFormProps) {
     }
 
     setState(ENUM_CHECK_STATE.CHECKING)
+    const timer = userNameChecker(u)
+    return () => window.clearTimeout(timer)
+  }, [inputUsername])
 
-    const timer = window.setTimeout(async () => {
+  const userNameChecker = (u: string) => {
+    return window.setTimeout(async () => {
       const controller = new AbortController()
       abortRef.current = controller
 
@@ -106,9 +108,7 @@ export default function ProfileForm({ onProfileInfoClose }: ProfileFormProps) {
         setState(ENUM_CHECK_STATE.ERROR)
       }
     }, 600) // <-- debounce delay
-
-    return () => window.clearTimeout(timer)
-  }, [inputUsername])
+  }
 
   const addProfileImg = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     e.preventDefault()
@@ -178,6 +178,11 @@ export default function ProfileForm({ onProfileInfoClose }: ProfileFormProps) {
     setInputUsername(newUsername)
   }
 
+  const onFormSave = async () => {
+    await updateSession({ user: { ...formState?.data } }) 
+    router.refresh()
+  }
+  
   return (
     <form action={formAction} className="mt-2 mb-2">
       <div className="flex flex-col space-y-8">
@@ -187,12 +192,12 @@ export default function ProfileForm({ onProfileInfoClose }: ProfileFormProps) {
             <ProfileImage />
             <div className="flex flex-col justify-start items-start space-y-1">
               <div className="flex flex-row justify-start items-center space-x-4">
-                <a href="#" className="text-success text-base" onClick={addProfileImg}>
+                <Link href="#" className="text-success text-base" onClick={addProfileImg}>
                   Update
-                </a>
-                <a href="#" className="text-warning text-base" onClick={removeProfileImg}>
+                </Link>
+                <Link href="#" className="text-warning text-base" onClick={removeProfileImg}>
                   Remove
-                </a>
+                </Link>
               </div>
               <div className="text-sm text-gray-500 text-left">
                 We recommend a square image of at least 512x512 pixels in JPG, PNG, or GIF format.
@@ -212,7 +217,7 @@ export default function ProfileForm({ onProfileInfoClose }: ProfileFormProps) {
           <label htmlFor="name" className="absolute -top-6.5 left-1 text-sm font-bold tracking-wide">
             Name
           </label>
-          <input type="text" name="name" defaultValue={inputName}
+          <input type="text" name="name" defaultValue={userData.name ?? ""}
             placeholder="Name" className={cn(styles.formInput)}
             onChange={(e) => setInputName(e.target.value)}
           />
@@ -238,7 +243,7 @@ export default function ProfileForm({ onProfileInfoClose }: ProfileFormProps) {
               <span className="text-sm text-error">Something went wrong. Try again.</span>
             }
           </label>
-          <input type="text" name="username" defaultValue={inputUsername}
+          <input type="text" name="username" defaultValue={userData.username ?? ""}
             placeholder="Username" className={cn(styles.formInput)}
             onChange={(e) => handleUsernameChange(e)}
           />
@@ -248,7 +253,7 @@ export default function ProfileForm({ onProfileInfoClose }: ProfileFormProps) {
           <label htmlFor="email" className="absolute -top-6.5 left-1 text-sm font-bold tracking-wide">
             Email
           </label>
-          <input type="text" name="email" defaultValue={inputEmail}
+          <input type="text" name="email" defaultValue={userData.email ?? ""}
             placeholder="Email" className={cn(styles.formInput)}
             onBlur={(e) => setInputEmail(e.target.value)}
           />

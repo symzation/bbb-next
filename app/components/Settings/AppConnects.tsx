@@ -8,16 +8,16 @@ import { RiTwitterXLine } from "react-icons/ri"
 import { FaGithub } from "react-icons/fa"
 import { login, logout } from "@/actions/loginActions"
 import { createCookie } from "@/lib/cookies"
-import { useAuthSession } from "@/providers/AuthSessionProvider"
+import { GetAuthSession } from "@/providers/AuthSessionProvider"
 import { getUserById } from "@/lib/db/actions/index"
 import { signIn, signOut } from "@/lib/auth"
 import { authConfig } from "@/root/auth.config"
-import { getAuthSession } from '@/actions/sessionActions'
 
 export default function AppConnects() {
-  const session = useAuthSession()
-  //const session: any = async () => await getAuthSession()
-  const loginProvider = session?.user?.provider ?? ''
+  const session = GetAuthSession()
+  //const session: any = async () => await GetAuthSession()
+  // If 'provider' is not part of the User type, fallback to another property or handle gracefully
+  const loginProvider = (session?.session?.user as { provider?: string })?.provider ?? ''
 
   //const [activeProvider, setActiveProvider] = useState<string>(loginProvider)
 

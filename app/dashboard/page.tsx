@@ -1,3 +1,4 @@
+import { Metadata } from "next"
 import { styles } from "@/utils/constants"
 import { cn } from "@/utils"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -5,7 +6,12 @@ import * as schema from '@/lib/db/schema'
 import { formatCamelCaseString } from "@/utils/helpers"
 import ProductTypesDashboard from "@/components/Dashboard/ProductTypes/Dashboard"
 
-export default async function Dashboard() {
+export const metadata: Metadata = {
+  title: 'Dashboard',
+  description: `Manage user preferences and content through the dashboard of ${process.env.NEXT_PUBLIC_SITENAME}.`,
+}
+
+export default async function DashboardPage() {
   const ComponentMap: { [key: string]: React.ComponentType<any> } = {
     productTypes: ProductTypesDashboard,
   }

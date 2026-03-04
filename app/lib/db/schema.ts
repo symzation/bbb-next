@@ -77,7 +77,7 @@ export const authors = mysqlTable("authors",
     whyReviewer: text("whyReviewer"),
     authorApproved: boolean("authorApproved").default(false),
     authorApprovedAt: timestamp("authorApprovedAt", { mode: "date", fsp: 3}),
-    authorApprovedByUserId: int("authorApprovedById").notNull()
+    authorApprovedByUserId: int("authorApprovedById")
       .references(() => users.id, { onDelete: "cascade" }), 
     createdAt: timestamp("createdAt", { mode: "date", fsp: 3}).defaultNow()
       .notNull(),

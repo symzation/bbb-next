@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react"
 import Link from "next/link"
 import { styles } from "@/utils/constants"
 import { cn } from "@/utils"
-import { useAuthSession } from "@/providers/AuthSessionProvider"
+import { GetAuthSession } from "@/providers/AuthSessionProvider"
 //import { redirect } from "next/navigation"
 import { setupWindowObservers } from "@/utils/helpers"
 //import AnnouncementsBanner from "@/components/Header/AnnouncementsBanner"
@@ -22,7 +22,7 @@ export default function Login({
 	mobileLinkStyles,
 	mobileNavCloseFunc
 }: HeaderProps) {
-	const { session, isAuthenticated } = useAuthSession()
+	const { session, isAuthenticated } = GetAuthSession()
 	const [isMobile, setisMobile] = useState<boolean>(false)
 	const [posValue, setPosValue] = useState<number>(0)
 

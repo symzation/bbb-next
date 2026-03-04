@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { getAuthSession } from '@/actions/sessionActions'
+import { GetAuthSession } from '@/actions/sessionActions'
 import { ENUM_ROLE } from '@/types/enums'
 export { auth } from "@/lib/auth"
 
@@ -16,7 +16,7 @@ const protectedRoutes: Record<string, string[]> = {
 }
 
 export default async function proxy(request: NextRequest) {
-  const session: any = await getAuthSession()
+  const session: any = await GetAuthSession()
   const userRole: ENUM_ROLE = session?.user?.role
   const { pathname } = request.nextUrl
   

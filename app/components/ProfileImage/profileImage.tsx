@@ -2,7 +2,7 @@
 import Image from "next/image"
 import { styles } from "@/utils/constants"
 import { cn } from "@/utils"
-import { useAuthSession } from "@/providers/AuthSessionProvider"
+import { GetAuthSession } from "@/providers/AuthSessionProvider"
 
 type ProfileImageProps = {
   avatarImgClassName?: string
@@ -11,7 +11,7 @@ type ProfileImageProps = {
 export default function ProfileImage(
   { avatarImgClassName }: ProfileImageProps
 ) {
-  const { session, isAuthenticated } = useAuthSession()
+  const { session, isAuthenticated } = GetAuthSession()
   const profileImgUrl = session?.user?.image ?? "/default-avatar.png"
   
   return (

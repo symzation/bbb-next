@@ -1,10 +1,9 @@
-
 "use client"
 
 import { useActionState, useEffect, useRef, useState } from "react"
 import { styles } from "@/utils/constants"
 import { cn } from "@/utils"
-import { useAuthSession } from "@/providers/AuthSessionProvider"
+import { GetAuthSession } from "@/providers/AuthSessionProvider"
 import {
   Dialog,
   DialogContent,
@@ -20,14 +19,16 @@ import { useRouter } from "next/navigation"
 
 type DeleteAccountFormProps = {
   deleteTerm: string
-  isDeleteForm: boolean
+  deleteFormOpen: boolean
+  deleteFormOpenFunc: (open: boolean) => void
 }
 
 export default function DeleteAccountForm({
   deleteTerm,
-  isDeleteForm,
+  deleteFormOpen,
+  deleteFormOpenFunc
 }: DeleteAccountFormProps) {
-  const [open, setOpen] = useState(isDeleteForm)
+  //const [open, setOpen] = useState(deleteFormOpen)
   const [isDeleteTermValid, setIsDeleteTermValid] = useState<boolean>(false)
   const [formState, formAction, isPending] = useActionState(deleteAccountAction, undefined)
 
@@ -37,11 +38,12 @@ export default function DeleteAccountForm({
   const siteName = process.env.NEXT_PUBLIC_SITENAME ?? ""
   
   const router = useRouter()
-  const session = useAuthSession()
+  const session = GetAuthSession()
+  const sessionEmail = session?.session?.user?.email ?? ""
 
   useEffect(() => {
     if (formState && formState?.success) {
-      setOpen(false)
+      deleteFormOpenFunc(false)
       redirectDeletedUser()
     }
   }, [formState])
@@ -61,7 +63,7 @@ export default function DeleteAccountForm({
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={deleteFormOpen} onOpenChange={deleteFormOpenFunc}>
       <DialogOverlay className="bg-primary/90"/>
       <DialogContent className="w-min-[450px] bg-white py-6">
         <DialogHeader>
@@ -80,7 +82,7 @@ export default function DeleteAccountForm({
             <input 
               type="hidden" 
               name="userEmail" 
-              defaultValue={session?.user?.email ?? ""} 
+              defaultValue={sessionEmail} 
             />
           <div className="flex flex-col">
             <label htmlFor="deleteInputTerm" className="text-sm font-bold tracking-wide pb-2">
@@ -105,7 +107,7 @@ export default function DeleteAccountForm({
               variant="default"
               disabled={isPending}
               className={cn("bg-white text-warning hover:bg-white hover:text-warning border border-warning disabled:bg-error/50  tracking-wider py-5 px-12 ring-0 focus:ring-0 ring-offset-0 focus:ring-offset-0 focus-visible:ring-0 outline-none cursor-pointer data-[state=open]:bg-transparent w-full md:w-fit px-5", isPending && "opacity-7 cursor-not-allowed")}
-              onClick={() => setOpen(false)}
+              onClick={() => deleteFormOpenFunc(false)}
             >
               Cancel
             </Button>

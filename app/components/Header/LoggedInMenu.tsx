@@ -8,7 +8,7 @@ import {
   Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger,
 } from "@/components/ui/sheet"
 import { Separator } from "@/components/ui/separator"
-import { useAuthSession } from "@/providers/AuthSessionProvider"
+import { GetAuthSession } from "@/providers/AuthSessionProvider"
 import { RiEdit2Line } from "react-icons/ri"
 import { AiOutlineQuestionCircle, AiOutlineSetting } from "react-icons/ai"
 import { MdOutlineRateReview, MdOutlineDashboard } from "react-icons/md"
@@ -21,7 +21,7 @@ import { UserDataProps } from "@/types/types"
 
 export default function LoggedInMenu() {
   const router = useRouter()
-  const { session } = useAuthSession()
+  const { session } = GetAuthSession()
   //console.log("LoggedInMenu - Session:", session)
 
   const [isOpen, setIsOpen] = useState(false)

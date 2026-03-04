@@ -1,3 +1,5 @@
+
+import { useEffect, useState } from "react"
 import { styles } from "@/utils/constants"
 import { cn } from "@/utils"
 import usePlacesAutocomplete, {
@@ -5,6 +7,7 @@ import usePlacesAutocomplete, {
   getLatLng,
 } from 'use-places-autocomplete'
 import { useLoadScript, type Libraries } from '@react-google-maps/api'
+import { Link } from "lucide-react"
 
 const libraries: Libraries = ['places']
 
@@ -12,13 +15,11 @@ async function getMapsKeyCode() {
   return process.env.GOOGLE_MAPS_API_KEYCODE
 }
 
-export default async function AddressAutocomplete() {
-  const apiKey = await getMapsKeyCode()
-
-  if (!apiKey) return <div>Missing Google Maps API key</div>
-
+export default function AddressAutocomplete() {
+  const [apiKey, setApiKey] = useState<string | null>(null)
+  
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: apiKey,
+    googleMapsApiKey: apiKey ?? "",
     libraries,
   })
 
@@ -34,6 +35,17 @@ export default async function AddressAutocomplete() {
     },
     debounce: 300,
   })
+
+  useEffect(() => {
+    const fetchApiKey = async () => {
+      const key = await getMapsKeyCode()
+      setApiKey(key ?? null)
+    }
+    fetchApiKey()
+  }, [])
+
+  if (!apiKey) return <div>Missing Google Maps API key</div>
+
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value)
@@ -66,14 +78,15 @@ export default async function AddressAutocomplete() {
         className={cn(styles.formInput, 'p-[4px]')}
       />
       {status === 'OK' && (
-        <ul style={{ listStyleType: 'none', padding: 0, margin: 0 }}>
+        <ul className="list-none p-0 m-0">
           {data.map(({ place_id, description }) => (
             <li
               key={place_id}
-              onClick={() => handleSelect(description)}
               className={cn('p-[4px] cursor-pointer border-b border-gray-300')}
             >
-              {description}
+              <Link className="inline-block mr-1.5 text-lg text-secondary no-underline hover:no-underline">
+                {description}
+              </Link>
             </li>
           ))}
         </ul>

@@ -1,4 +1,4 @@
-import type { Metadata } from "next"
+import { Metadata } from "next"
 import { Inter, Fraunces, Merriweather_Sans } from "next/font/google"
 import { styles } from "@/utils/constants"
 import { cn } from "@/utils"
@@ -27,8 +27,23 @@ const merriweatherSans = Merriweather_Sans({
 })
 
 export const metadata: Metadata = {
-  title: 'Bourbon Brew & Bites',
-  description: 'Explore the world of Bourbon Brew & Bites, where we blend the finest bourbons with delicious bites. Join us for a unique culinary experience that tantalizes your taste buds.',
+  metadataBase: new URL("https://example.com"),
+  title: {
+    default: `${process.env.NEXT_PUBLIC_SITENAME}`,
+    template: `%s | ${process.env.NEXT_PUBLIC_SITENAME}`,
+  },
+  description: `Explore the world of ${process.env.NEXT_PUBLIC_SITENAME}, where you can discover honest opinions and immersive storytelling from our community of reviewers. Join us for a unique experience that tantalizes your taste buds.`,
+  openGraph: {
+    type: "website",
+    siteName: `${process.env.NEXT_PUBLIC_SITENAME}`,
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
 }
 
 export default function RootLayout({

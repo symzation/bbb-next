@@ -77,17 +77,17 @@ export default function DateOfBirth({
           onChange={handleMonthSelection}
         >
           {getMonths().map((month, index) => (
-            <option key={index} value={index}>{month}</option>
+            <option key={month} value={index}>{month}</option>
           ))}
         </select>
         <select name="dobDay" className={cn(styles.formInput)} value={selectedDay} onChange={handleDaySelection}>
-          {getMonthDays(selectedMonthIdx).map((days, index) => (
-            <option key={index} value={days}>{days}</option>
+          {getMonthDays(selectedMonthIdx).map((days) => (
+            <option key={days} value={days}>{days}</option>
           ))}
         </select>
         <select name="dobYear" className={cn(styles.formInput)} value={selectedYear} onChange={handleYearSelection}>
-          {getYears().map((year, index) => (
-            <option key={index} value={year}>{year}</option>
+          {getYears().map((year) => (
+            <option key={year} value={year}>{year}</option>
           ))}
         </select>
         <input type="hidden" name="dateOfBirth" value={`${selectedYear}-${(selectedMonthIdx + 1).toString().padStart(2, '0')}-${selectedDay.toString().padStart(2, '0')}`} />
