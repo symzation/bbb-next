@@ -49,7 +49,7 @@ export default function LoginRegisterForms({
         ref={loginLinkRef}
         id="loginLinkRef"
         variant="link"
-        className={cn(styles.secondaryNavClass, 'mt-[5px] font-bold')}
+        className={cn(styles.secondaryNavClass, 'text-base md:text-xl mt-[5px] font-bold')}
         onClick={() => setIsLoginOpen(true)}
       >
         <Image
@@ -59,7 +59,7 @@ export default function LoginRegisterForms({
           height={64}
           className={cn("-mt-1 hidden")}
         />
-        <div> Login / Register</div>
+        <div>Login / Register</div>
       </Button>
       <Login
         isOpen={isLoginOpen}

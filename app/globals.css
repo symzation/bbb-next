@@ -84,6 +84,7 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-fraunces);
+  text-wrap: balance;
 }
 
 .fontFraunces {
@@ -183,4 +184,24 @@ h1, h2, h3, h4, h5, h6 {
   animation: scrollRotateLeft linear;
   animation-timeline: view();
   animation-range: entry 0 cover 30%;
+}
+
+@keyframes scrollFadeInSlam {
+  0% { 
+    opacity: 0; 
+    scale: 0;
+  }
+  50% {
+    scale: 1.2;
+  }
+  100% { 
+    opacity: 1; 
+    scale: 1;
+  }
+}
+
+.scrollFadeInSlam {
+  animation: scrollFadeInSlam linear;
+  animation-timeline: view();
+  animation-range: entry 0 cover 40%;
 }

@@ -5,13 +5,13 @@ import { cn } from "@/utils"
 import { Button } from "@/components/ui/button"
 import { logout } from "@/actions/loginActions"
 import {
-  Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger,
+  Sheet, SheetContent, SheetClose, SheetHeader, SheetTitle, SheetTrigger,
 } from "@/components/ui/sheet"
 import { Separator } from "@/components/ui/separator"
 import { GetAuthSession } from "@/providers/AuthSessionProvider"
 import { RiEdit2Line } from "react-icons/ri"
 import { AiOutlineQuestionCircle, AiOutlineSetting } from "react-icons/ai"
-import { MdOutlineRateReview, MdOutlineDashboard } from "react-icons/md"
+import { MdOutlineRateReview, MdOutlineDashboard, MdOutlineClose } from "react-icons/md"
 import { GrResources } from "react-icons/gr"
 import { LuNotebookText } from "react-icons/lu"
 import { GoSignOut } from "react-icons/go"
@@ -96,10 +96,17 @@ export default function LoggedInMenu() {
           <ProfileImage />
         </div>
       </SheetTrigger>
-      <SheetContent side="right" className="bg-white text-primary w-64 gap-4">
+      <SheetContent 
+        side="right" 
+        className="bg-white text-primary w-64 gap-4 [&>button:first-of-type]:hidden"
+      >
         <SheetHeader className="h-1 p-0 m-0">
           <SheetTitle></SheetTitle>
-          <SheetDescription></SheetDescription>
+          <SheetClose asChild>
+            <MdOutlineClose 
+              className="w-6 h-6 text-primary font-bold cursor-pointer absolute top-2 right-2"
+            />
+          </SheetClose>
         </SheetHeader>
         <div className="flex justify-start items-center font-bold px-2">
           <div 

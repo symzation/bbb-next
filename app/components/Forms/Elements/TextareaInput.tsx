@@ -8,13 +8,10 @@ type TextareaInputProps = {
   blurFunc?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void
   defaultValue?: string
   inputClassName?: string
-  inputErrors?: {
-    [key: string]: any
-  }
+  inputErrors?: { [key: string]: any }
   inputName: string
   labelName: string
   placeholderText?: string
-  orientation?: "horizontal" | "vertical" | "responsive"
 }
 
 export default function TextareaInput({
@@ -26,7 +23,6 @@ export default function TextareaInput({
   inputName,
   labelName,
   placeholderText = "",
-  orientation = "horizontal",
 }: TextareaInputProps) {
   const [inputValue, setInputValue] = useState<string>("")
 

@@ -5,38 +5,43 @@ import Link from "next/link"
 import { styles } from "@/utils/constants"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import {
-  Field,
-  FieldContent,
-  FieldDescription,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-  FieldLegend,
-  FieldSeparator,
-  FieldSet,
-} from "@/components/ui/field"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import TextareaInput from "@/components/Forms/Elements/TextareaInput"
 import { AuthorFormAction } from "@/components/Author/AuthorFormAction"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { HiOutlineQuestionMarkCircle } from "react-icons/hi2";
 import { GetAuthSession } from "@/providers/AuthSessionProvider"
-import { ENUM_ROLE } from "@/types/enums"
+import { ENUM_CHECK_STATE, ENUM_ROLE } from "@/types/enums"
+import SearchInput from "@/components/Search/SearchInput"
+import { validatePenName } from "@/utils/helpers"
 
+export function validate(penName: string) {
+  console.log('+++++++++++++++++++++++++++++++++++')
+  console.log('Validating pen name: ', penName)
+  console.log('Pen name length: ', penName.length)
+
+  if (penName.length === 0) {
+    return { ok: false, state: ENUM_CHECK_STATE.IDLE as const }
+  }
+
+  if (!validatePenName(penName)) {
+    return { ok: false, state: ENUM_CHECK_STATE.INVALID as const }
+  }
+  
+  return { ok: true, state: ENUM_CHECK_STATE.CHECKING as const }
+}
 
 export default function AuthorForm() {
   const [termsCheckedValue, setTermsCheckedValue] = useState<boolean>(false)
   const [whyReviewerValue, setWhyReviewerValue] = useState<string>("")
+  const [penName, setPenName] = useState('');
   const [formState, formAction, isPending] = useActionState(AuthorFormAction, undefined)
-  //const [showSuccess, setShowAuthorForm] = useState<boolean>(true)
+  const [showSuccess, setShowSuccess] = useState<boolean>(false)
   
   const showAuthorFormBtn = useRef<HTMLButtonElement>(null)
   
   const session = GetAuthSession()
-  console.log('Session in AuthorForm: ', session)
+  //console.log('Session in AuthorForm: ', session)
   // If 'role' is not part of User, you may need to use a different property or extend the type.
   // Example: If you have a custom user object with 'role', use a type assertion:
   const userRole = (session?.session?.user as { role?: string })?.role
@@ -44,8 +49,30 @@ export default function AuthorForm() {
 
   useEffect(() => {
     if (formState && formState?.success) {
+      setShowSuccess(true)
+      setTimeout(() => {
+        setShowSuccess(false)
+        if (showAuthorFormBtn.current) {
+          showAuthorFormBtn.current.click()
+        }
+      }, 4000)
     }
   }, [formState])
+
+  const handlePenNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    return e.target.value
+  }
+  
+  const handleValidate = (value: string) => {
+    return validate(value)
+  }
+
+  const handlePenNameBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const target = e.target as HTMLInputElement
+    const penName = target?.dataset.state === ENUM_CHECK_STATE.AVAILABLE ? 
+      target.value : ''
+    setPenName(penName)
+  }
 
   return (
     <>
@@ -64,31 +91,31 @@ export default function AuthorForm() {
             blurFunc={(e) => setWhyReviewerValue(e.target.value)}
           />
           <div className="flex flex-col justify-start items-start w-full gap-1">
-            <label 
-              htmlFor="penName" 
-              className={cn(
-                styles.formLabel, 
-                "flex flex-row justify-start items-center text-primary font-bold pb-1 pl-1"
+            <SearchInput 
+              apiUrl="/api/check/penname?penname="
+              handleChange={handlePenNameChange}
+              handleBlur={handlePenNameBlur}
+              inputName="penName"
+              label={(
+                <div 
+                  className="flex flex-row justify-start items-center gap-1 p-1 pt-0"
+                >
+                  <span>Pen Name</span>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <HiOutlineQuestionMarkCircle />
+                    </TooltipTrigger>
+                    <TooltipContent side="right" className="w-2/6 md:w-4/6">
+                      <div className="flex items-center gap-2 text-white">
+                        A fictitious name adopted by an author to publish works instead of using their legal name. 
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
               )}
-            >
-              <span>Pen Name</span>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <HiOutlineQuestionMarkCircle />
-                </TooltipTrigger>
-                <TooltipContent side="right" className="w-2/6 md:w-4/6">
-                  <div className="flex items-center gap-2 text-white">
-                    A fictitious name adopted by an author to publish works instead of using their legal name. 
-                  </div>
-                </TooltipContent>
-              </Tooltip>
-            </label>
-            <input 
-              type="text" 
-              name="penName" 
-              defaultValue=""
-              placeholder="Pen Name" 
-              className={styles.formInput}
+              labelClass="flex flex-row justify-start items-center [&>span:last-of-type]:relative [&>span:last-of-type]:-top-0.5"
+              placeholder="Pen Name"
+              validate={handleValidate}
             />
             {formState?.errors && typeof formState.errors === "object" && !Array.isArray(formState.errors) && "penName" in formState.errors && (<div className="text-error text-sm italic mt-1">{formState.errors.penName}</div>)}
           </div>
@@ -106,7 +133,7 @@ export default function AuthorForm() {
                 className={cn(styles.formLabel, "text-sm text-primary")}
               >
                 By checking this box, you have read and accepted {process.env.NEXT_PUBLIC_SITENAME}&apos; <Link 
-                  href="/autthor-terms"
+                  href="/author-terms"
                   target="_blank" 
                   rel="noopener noreferrer" 
                   className="text-sm underline hover:no-underline"

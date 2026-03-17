@@ -7,11 +7,13 @@ import { cn } from "@/utils"
 import { Button } from "@/components/ui/button"
 import ProfileImage from "@/components/ProfileImage/profileImage"
 import { profileFormAction } from "@/components/Settings/ProfileFormAction"
-import { getImageDimensions, formatUsername} from "@/utils/helpers"
+import { getImageDimensions } from "@/utils/helpers"
 import { ENUM_CHECK_STATE } from "@/types/enums"
 import { useRouter } from 'next/navigation'
 import { GetAuthSession } from "@/providers/AuthSessionProvider"
 import { UserDataProps } from "@/types/types"
+import SearchInput from "@/components/Search/SearchInput"
+import { validateUsername } from "@/utils/helpers"
 
 type ProfileFormProps = {
   onProfileInfoClose?: (open: boolean) => void
@@ -22,19 +24,12 @@ type ImageDimensions = {
   height: number
 } | { error?: string }
 
-function normalizeUsername(raw: string) {
-  return raw.trim().toLowerCase()
-}
-
-function validate(username: string) {
+export function validate(username: string) {
   if (username.length === 0) {
     return { ok: false, state: ENUM_CHECK_STATE.IDLE as const }
   }
 
-  if (!/^[a-z0-9_]+$/.test(username) ||
-    username.length < Number(process.env.NEXT_PUBLIC_USERNAME_LENGTH_MIN) || 
-    username.length > Number(process.env.NEXT_PUBLIC_USERNAME_LENGTH_MAX) 
-  ) {
+  if (!validateUsername(username)) {
     return { ok: false, state: ENUM_CHECK_STATE.INVALID as const }
   }
   
@@ -54,12 +49,11 @@ export default function ProfileForm({
   const [inputUsername, setInputUsername] = useState<string>("")
   const [inputEmail, setInputEmail] = useState<string>("")
   const [inputProfileImage, setInputProfileImage] = useState<File | null>(null)
-  const [state, setState] = useState<ENUM_CHECK_STATE>()
-  const [hasChanged, setHasChanged] = useState<boolean>(false)
 
-  const fileInputRef = useRef<HTMLInputElement | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
   const prevImageUrl = userData?.image ?? ""
-  const abortRef = useRef<AbortController | null>(null)
+  const defaultUsername = userData?.username ?? ""
 
   useEffect(() => {
     if (formState && formState?.success && onProfileInfoClose) {
@@ -67,48 +61,6 @@ export default function ProfileForm({
       onFormSave()
     }
   }, [formState])
-
-  useEffect(() => {
-    if (!hasChanged) return
-
-    const u = normalizeUsername(inputUsername)
-    const v = validate(u)
-
-    // reset/cancel if invalid or empty
-    abortRef.current?.abort()
-    abortRef.current = null
-
-    if (!v.ok) {
-      setState(v.state)
-      return
-    }
-
-    setState(ENUM_CHECK_STATE.CHECKING)
-    const timer = userNameChecker(u)
-    return () => window.clearTimeout(timer)
-  }, [inputUsername])
-
-  const userNameChecker = (u: string) => {
-    return window.setTimeout(async () => {
-      const controller = new AbortController()
-      abortRef.current = controller
-
-      try {
-        const res = await fetch(`/api/username/check?username=${encodeURIComponent(u)}`, {
-          signal: controller.signal,
-          cache: "no-store",
-        })
-
-        if (!res.ok) throw new Error("Request failed")
-
-        const data: { available: boolean } = await res.json()
-        setState(data.available ? ENUM_CHECK_STATE.AVAILABLE : ENUM_CHECK_STATE.TAKEN)
-      } catch (err: any) {
-        if (err?.name === "AbortError") return // expected
-        setState(ENUM_CHECK_STATE.ERROR)
-      }
-    }, 600) // <-- debounce delay
-  }
 
   const addProfileImg = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     e.preventDefault()
@@ -172,10 +124,25 @@ export default function ProfileForm({
   }
 
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newUsername = formatUsername(e.target.value)
-    setHasChanged(newUsername !== "" || newUsername !== userData?.username ? true : false)
-    e.target.value = newUsername
-    setInputUsername(newUsername)
+    const target = e.target
+    const parentElement = target.parentElement
+
+    if (target.value.length === 0) {
+      parentElement?.querySelector("label")?.querySelector("span:last-of-type ")
+        ?.classList.add("hidden")
+      target.setAttribute("data-state", ENUM_CHECK_STATE.IDLE) 
+    }
+  }
+
+  const handleValidate = (value: string) => {
+    return validate(value)
+  }
+
+  const handleUsernameBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const target = e.target as HTMLInputElement
+    const username = target?.dataset.state === ENUM_CHECK_STATE.AVAILABLE ? 
+      target.value : ''
+    setInputUsername(username)
   }
 
   const onFormSave = async () => {
@@ -224,28 +191,16 @@ export default function ProfileForm({
           {formState?.errors && typeof formState.errors === "object" && !Array.isArray(formState.errors) && "name" in formState.errors && (<div className="text-error text-sm italic mt-1">{(formState.errors as { name?: string }).name}</div>)}
         </div>
         <div className="relative flex flex-col items-start mt-3.5">
-          <label htmlFor="username" className="absolute -top-6.5 left-1 text-sm font-bold tracking-wide">
-            <span className="pr-1">Username</span>
-            {state === ENUM_CHECK_STATE.IDLE && <></>}
-            {state === ENUM_CHECK_STATE.INVALID && 
-              <span className="text-sm text-error">- Invalid</span>
-            }
-            {state === ENUM_CHECK_STATE.CHECKING && 
-              <span className="text-sm font-bold">- Checking…</span>
-            }
-            {state === ENUM_CHECK_STATE.AVAILABLE && 
-              <span className="text-sm text-success">- ✅Available</span>
-            }
-            {state === ENUM_CHECK_STATE.TAKEN && 
-              <span className="text-sm text-error">- ❌ Taken</span>
-            }
-            {state === ENUM_CHECK_STATE.ERROR && 
-              <span className="text-sm text-error">Something went wrong. Try again.</span>
-            }
-          </label>
-          <input type="text" name="username" defaultValue={userData.username ?? ""}
-            placeholder="Username" className={cn(styles.formInput)}
-            onChange={(e) => handleUsernameChange(e)}
+          <SearchInput
+            apiUrl="/api/check/username?username="
+            defaultValue={defaultUsername}
+            handleChange={handleUsernameChange}
+            handleBlur={handleUsernameBlur}
+            inputName="username"
+            label="Username"
+            labelClass="absolute -top-6.5 left-1 text-sm font-bold tracking-wide"
+            placeholder="Username"
+            validate={handleValidate}
           />
           {formState?.errors && typeof formState.errors === "object" && !Array.isArray(formState.errors) && "username" in formState.errors && (<div className="text-error text-sm italic mt-1">{(formState.errors as { username?: string[] }).username}</div>)}
         </div>

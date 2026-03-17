@@ -3,6 +3,7 @@ import { NextResponse } from "next/server"
 import { db } from "@/lib/db" // your drizzle client
 import { users } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
+import { validateUsername } from "@/utils/helpers"
 
 function normalizeUsername(raw: string) {
   return raw.trim().toLowerCase()
@@ -11,13 +12,17 @@ function normalizeUsername(raw: string) {
 export async function GET(req: Request) {
   const url = new URL(req.url)
   const usernameRaw = url.searchParams.get("username") ?? ""
-  const username = normalizeUsername(usernameRaw)
+  const username = normalizeUsername(decodeURIComponent(usernameRaw))
 
   // Basic guardrails (match your UI rules)
-  if (username.length < 3 || username.length > 32) {
+  if (
+    username.length < Number(process.env.NEXT_PUBLIC_USERNAME_LENGTH_MIN) || 
+    username.length > Number(process.env.NEXT_PUBLIC_USERNAME_LENGTH_MAX)
+  ) {
     return NextResponse.json({ available: false, reason: "invalid_length" }, { status: 200 })
   }
-  if (!/^[a-z0-9_]+$/.test(username)) {
+  
+  if (!validateUsername(username)) {
     return NextResponse.json({ available: false, reason: "invalid_chars" }, { status: 200 })
   }
 

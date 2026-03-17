@@ -55,7 +55,7 @@ export default function StepsToJoin() {
         {stepsData.map((step, idx) => (
           <div 
             key={step.name}
-            className="group relative inline-grid place-items-center w-full md:max-w-[300px] p-1 overflow-hidden hover:cursor-pointer hover:translate-y-[-4px] transition-all duration-300 ease-in-out rounded-xl scrollRotateLeft"
+            className="group relative inline-grid place-items-center w-full md:max-w-[300px] p-1 overflow-hidden hover:cursor-pointer hover:translate-y-[-4px] transition-all duration-300 ease-in-out rounded-xl scrollFadeInSlam"
           >
             <div 
               className="absolute inset-0 group-hover:bg-[conic-gradient(from_0deg,var(--color-fourth),var(--color-caution),var(--color-warning),var(--color-fourth))] w-full h-full rounded-xlopacity-0 group-hover:opacity-100 animate-none group-hover:animate-[ringPulse_2s_linear_infinite] group-hover:transition-all group-hover:duration-300 group-hover:ease-in-out"
