@@ -34,7 +34,7 @@ export function SettingsItemsList({
   const itemDescriptionClass = "text-sm text-gray-500"
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex flex-col w-full border-1 border-red-500 sticky top-20">
       {itemsList.map((item: ItemType) => (
         <Item 
           key={item.name}
@@ -48,7 +48,7 @@ export function SettingsItemsList({
             className={cn(itemHeader, activeSection === item.name ? itemActiveHeaderClass : "")} 
           />
           <ItemContent>
-            <ItemTitle>{item.name}</ItemTitle>
+            <ItemTitle>{item.name.replaceAll("-", " ")}</ItemTitle>
             <ItemDescription className={itemDescriptionClass}>
               {item.description}
             </ItemDescription>

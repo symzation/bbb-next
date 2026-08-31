@@ -5,24 +5,20 @@ import { cn } from "@/utils"
 import { Button } from "@/components/ui/button"
 import { logout } from "@/actions/loginActions"
 import {
-  Sheet, SheetContent, SheetClose, SheetHeader, SheetTitle, SheetTrigger,
+  Sheet, SheetContent, SheetClose, SheetHeader, SheetTitle, SheetTrigger
 } from "@/components/ui/sheet"
 import { Separator } from "@/components/ui/separator"
 import { GetAuthSession } from "@/providers/AuthSessionProvider"
-import { RiEdit2Line } from "react-icons/ri"
 import { AiOutlineQuestionCircle, AiOutlineSetting } from "react-icons/ai"
-import { MdOutlineRateReview, MdOutlineDashboard, MdOutlineClose } from "react-icons/md"
-import { GrResources } from "react-icons/gr"
-import { LuNotebookText } from "react-icons/lu"
+import { MdOutlineClose } from "react-icons/md"
 import { GoSignOut } from "react-icons/go"
 import { useRouter } from "next/navigation"
 import ProfileImage from "@/components/ProfileImage/profileImage"
-import { UserDataProps } from "@/types/types"
+import SessionLinks from "@/components/Header/SessionLinks"
 
 export default function LoggedInMenu() {
   const router = useRouter()
   const { session } = GetAuthSession()
-  //console.log("LoggedInMenu - Session:", session)
 
   const [isOpen, setIsOpen] = useState(false)
   
@@ -34,52 +30,6 @@ export default function LoggedInMenu() {
     router.push(url)
   }
 
-  const getSessionLinks = (user: UserDataProps) => {
-    let links
-
-    if (user?.role === 'ADMIN') {
-      links = 
-        <Link href="#" className={styles.profileMenuLink} 
-          onClick={(e) => assignLink(e, '/dashboard')}
-        >
-          <MdOutlineDashboard className={styles.profileMenuLinkIcon} /> Dashboard
-        </Link>
-    } else if (user?.role === 'AUTHOR') {
-      links = 
-        <>
-          <Link href="#" className={styles.profileMenuLink} 
-            onClick={(e) => assignLink(e, '/compose')}
-          >
-            <RiEdit2Line className={styles.profileMenuLinkIcon} /> Write
-          </Link>
-          <Link href="#" className={styles.profileMenuLink} 
-            onClick={(e) => assignLink(e, '/guide')}
-          >
-            <LuNotebookText className={styles.profileMenuLinkIcon} /> Guide
-          </Link>
-          <Link href="#" className={styles.profileMenuLink} 
-            onClick={(e) => assignLink(e, '/resources')}
-          >
-            <GrResources className={styles.profileMenuLinkIcon} /> Resources
-          </Link>
-        </>
-    } else if (user?.role === 'AUTHOR_WAITING_APPROVAL') {
-      links = 
-        <div className="text-error text-sm italic px-3">
-          Author account is pending approval
-        </div>
-    } else if (user?.role === 'USER') {
-      links =
-        <Link href="/author" className={styles.profileMenuLink} 
-          onClick={(e) => assignLink(e, '/author')}
-        >
-          <MdOutlineRateReview className={styles.profileMenuLinkIcon} /> Become a Reviewer
-        </Link>
-    }
-    
-    return links
-  }
-
   const userLogout = async () => {
     setIsOpen(false)
     await logout(false, '/')
@@ -89,7 +39,7 @@ export default function LoggedInMenu() {
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger>
         <div 
-          className="flex justify-center items-center rounded-full mt-1 mx-4 ring-none ring-offset-0 hover:ring-0 cursor-pointer transition-all duration-150 ease-in-out" 
+          className="flex justify-center items-center rounded-full mt-3 mx-4 ring-none ring-offset-0 hover:ring-0 cursor-pointer transition-all duration-150 ease-in-out" 
           aria-label="User menu"
         >
           <span className="sr-only">Open user menu</span>
@@ -122,10 +72,7 @@ export default function LoggedInMenu() {
             }
           </div>
         </div>
-        <Separator className={seporatorClass} />
-        <div className="flex flex-col">
-          {getSessionLinks(session?.user as UserDataProps)}
-        </div>
+        <SessionLinks assignLink={assignLink} seporatorClass={seporatorClass} />
         <Separator className={seporatorClass} />
         <div className="flex flex-col">
           <Link href="#" className={styles.profileMenuLink} onClick={(e) => assignLink(e, '/settings')}>

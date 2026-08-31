@@ -6,7 +6,7 @@ import { styles } from "@/utils/constants"
 import { cn } from "@/utils"
 import { notFound } from 'next/navigation'
 import CategoryView from "@/components/Reviews/CategoryView"
-import ReviewView from "@/components/Reviews/ReviewView"
+import ReviewView from "@/components/Reviews/ReviewList"
 
 //import { BlogPostPageProps } from "@/types/types"
 import BlogPost from "@/components/Blog/BlogPost"

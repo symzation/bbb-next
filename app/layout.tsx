@@ -7,6 +7,7 @@ import { AuthSessionProvider } from "@/providers/AuthSessionProvider"
 import Header from "@/components/Header/Header"
 import Footer from "@/components/Footer/Footer"
 import AgeConsent from "@/components/AgeConsent/AgeConsent"
+import StoreInitializer from "@/components/Store/StoreInitializer"
 import { Toaster } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import "./variables.css"
@@ -54,6 +55,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${fraunces.variable} ${merriweatherSans.variable}`}>
       <body className={cn(styles.body, inter.className)}>
+        <StoreInitializer />
         <Toaster 
           position="top-center" 
           expand={true} 

@@ -18,9 +18,7 @@ const nextConfig: NextConfig = {
     ]
   },
   logging: {
-    fetches: {
-      hmrRefreshes: true,
-    },
+    browserToTerminal: true,
   },
   webpack: (config, { isServer }) => {
     // Only configure this for the client-side bundle

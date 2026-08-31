@@ -8,9 +8,11 @@ import { Button } from "@/components/ui/button"
 import Login from "@/components/Forms/Login/Login"
 import Register from "@/components/Forms/Register/Register"
 import ForgotPassword from "@/components/Forms/ForgotPassword/ForgotPassword"
+import { FaUserPlus, FaSignInAlt } from "react-icons/fa"
 
 type LoginRegisterFormsProps = {
   loginLinkRef: React.RefObject<HTMLButtonElement | null>
+  posValue?: number
 }
 
 export const openLoginMenu = () => {
@@ -21,7 +23,8 @@ export const openLoginMenu = () => {
 }
 
 export default function LoginRegisterForms({
-  loginLinkRef
+  loginLinkRef,
+  posValue
 }: LoginRegisterFormsProps) {
   const [isLoginOpen, setIsLoginOpen] = useState(false)
   const [isRegisterOpen, setIsRegisterOpen] = useState(false)
@@ -49,17 +52,16 @@ export default function LoginRegisterForms({
         ref={loginLinkRef}
         id="loginLinkRef"
         variant="link"
-        className={cn(styles.secondaryNavClass, 'text-base md:text-xl mt-[5px] font-bold')}
+        className={cn(
+          styles.secondaryNavClass, 
+          'text-base md:text-xl mt-3 mr-5 font-bold text-primary hover:text-white hover:no-underline transition-all duration-300 ease-in-out',
+          (posValue ?? 0) > 0 ? 'text-secondary hover:text-white' : ''
+        )}
         onClick={() => setIsLoginOpen(true)}
       >
-        <Image
-          src="/default-avatar.png"
-          alt="User Avatar"
-          width={64}
-          height={64}
-          className={cn("-mt-1 hidden")}
-        />
-        <div>Login / Register</div>
+        <div className={cn("flex items-center", (posValue ?? 0) > 0 ? "-mt-0.5" : "mt-0.5")}>
+          Login
+        </div>
       </Button>
       <Login
         isOpen={isLoginOpen}

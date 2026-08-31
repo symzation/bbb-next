@@ -13,7 +13,7 @@ import {
   PaginationEllipsis,
 } from "@/components/ui/pagination"
 import { ProductTypeDataProps, UserDataProps } from "@/types/types"
-import { getProductTypes } from "@/lib/db/actions/index"
+//import { getProductTypes } from "@/lib/db/actions/index"
 import ProductTypesList from "@/components/Dashboard/ProductTypes/List"
 import ProductTypesForm from "@/components/Dashboard/ProductTypes/Form"
 

@@ -26,10 +26,10 @@ export default function Home() {
       <WhatMatters />
       {/* Latest Review - May replace What Matters Section */}
       <DiscoverFlavors />
-      <FeaturedShop/>
-      <StepsToJoin />
+      {/* <FeaturedShop/> */}
+      {/* <StepsToJoin /> */}
       <StayInTheLoop />
-      <Faq />
+      {/* <Faq /> */}
       {/* How to Join */}
       {/* Ready To Share Your Palate - isAuthenticated and user role === "User" to show */}
       {/* Stay In The Loop ???? */}

@@ -1,39 +1,106 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { styles } from "@/utils/constants"
 import { cn } from "@/utils"
+//import { useParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue
+} from "@/components/ui/select"
+import { CategoryDataProps, CategoryTypeDataProps, ReviewDataProps } from "@/types/types"
+import ReviewForm from "@/components/Forms/Review/ReviewForm"
+import { useCategoryStore } from "@/store/store"
+import { useShallow } from "zustand/react/shallow"
 
-export default function BecomeReviewer() {
-  const [showForm, setShowForm] = useState(false)
+export default function ComposeReview() {
+  /* const params = useParams<{ slug?: string }>()
+  const slug = Array.isArray(params.slug) ? params.slug[0] : params.slug ?? "" */
+
+  const [reviewTypeSelected, setReviewTypeSelected] = useState<string | undefined>(undefined)
+  const [reviewCategoryTypeSelected, setReviewCategoryTypeSelected] = useState<string | undefined>(undefined)
+  
+  const { categories, categoryTypes } = useCategoryStore(
+    useShallow(state => ({
+      categories: state.categories,
+      categoryTypes: state.categoryTypes,
+    }))
+  )
+
+  const categoryName = categories.find((category: CategoryDataProps) => category.id === Number(reviewTypeSelected))?.name
+
+  console.log('categoryName:', categoryName)
+
+  const getCategoryTypesForSelected = () => {
+    return categoryTypes.filter((type: CategoryTypeDataProps) => type.categoryId === Number(reviewTypeSelected))
+  }
 
   return (
     <div className={cn(styles.pageClass, "px-10")}>
-      <h1 className="text-3xl font-bold mb-4">Want To Become A Reviewer</h1>
+      <h1 className="text-3xl font-bold mb-4">Compose Your Review</h1>
       <p className={styles.paragraph}>
-        Becoming a reviewer for Bourbon Brew & Bites is easier than pouring your first glass. With just a few simple steps, you can join a growing community of enthusiasts who share their love for bourbon, beer, coffee, and delicious small bites from around the country. Whether you're a seasoned taster or someone who simply enjoys a great pour and good company, your voice matters. The process is designed to be effortless — sign up, create your reviewer profile, and start writing reviews about your favorite local spots, distilleries, breweries, coffee shops, or hidden gems in your city or state.
+        Craft your review using the form below. Provide thoughtful observations, detailed insights, and an honest assessment of your experience. Take a moment to review your content for accuracy and completeness before submitting for publication.
       </p>
-      <p className={styles.paragraph}>
-        As a reviewer, you’ll have the chance to spotlight the rich flavors, craftsmanship, and atmosphere that make your local experiences unique. Share tasting notes, personal stories, or recommendations that help others discover the best sips and bites near them. Each review adds value to the community — guiding newcomers, highlighting local businesses, and celebrating the artistry behind every roast, brew, and pour.
-      </p>
-      <p className={styles.paragraph}>
-        Whether you’re writing about a smooth single barrel bourbon, a small-batch coffee roast, a craft IPA, or a perfectly paired plate of bites, Bourbon Brew & Bites gives you the stage to express your passion. So grab your glass, take that first sip, and let your tastebuds tell the story — your journey as a reviewer begins with just a few easy steps.
-      </p>
-      <div className="mt-4 text-xl font-bold tracking-wide uppercase">Registration Coming Soon...</div>
-      <div className="hidden">
-        <Button
-          variant="outline"
-          className={cn("mt-4", !showForm ? "" : "hidden")}
-          onClick={() => setShowForm(true)}
+      <div className="mb-2">Select the type of review you want to compose</div>
+      {/* Review Categories Select */}
+      <div className="mb-4">
+        <Select 
+          name="reviewType" 
+          value={reviewTypeSelected ?? undefined} 
+          onValueChange={(value) => setReviewTypeSelected(value)}
         >
-          Sign Up
-        </Button>
-        <form className={cn("mt-10", showForm ? "" : "hidden")}>
-          {/* Spacer to push footer to bottom */}
-          <h2>Register to be a Reviewer Form</h2>
-        </form>
+          <SelectTrigger className="">
+            <SelectValue placeholder="Review Type" />
+          </SelectTrigger>
+          <SelectContent className="bg-white">
+              <SelectItem value="">Review Type</SelectItem>
+              {categories.map((category: CategoryDataProps) => (
+                <SelectItem key={category.name} value={`${category.id}`}>
+                  {category.name}
+                </SelectItem>
+              ))}
+          </SelectContent>
+        </Select>
       </div>
+      
+      {/* Review Category Types Select */}
+      <div className={cn("mb-4", reviewTypeSelected ? "" : "hidden")}>
+        <Select 
+          name="reviewCategoryType" 
+          value={reviewCategoryTypeSelected ?? undefined} 
+          onValueChange={(value) => setReviewCategoryTypeSelected(value ?? undefined)}
+        >
+          <SelectTrigger className="">
+            <SelectValue placeholder="Review Category Type" />
+          </SelectTrigger>
+          <SelectContent className="bg-white">
+              <SelectItem value="">Review Category Type</SelectItem>
+              {getCategoryTypesForSelected().map((categoryType: CategoryTypeDataProps) => (
+                <SelectItem key={categoryType.name} value={categoryType.name}>
+                  {categoryType.name}
+                </SelectItem>
+              ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+
+      <div className={cn("", reviewCategoryTypeSelected ? "" : "hidden")}>
+        <h2 className="text-2xl font-bold mb-2">
+          Showing {`${reviewTypeSelected} - ${categoryName}`} Review Form
+        </h2>
+        <h2 className="text-2xl font-bold mb-2">
+          Showing {reviewCategoryTypeSelected} Review Category
+        </h2>
+      </div>
+    
+      {reviewTypeSelected && reviewCategoryTypeSelected && (
+        <>
+          
+
+          {/* <ReviewForm slug={slug} /> */}
+        </>
+      )}
     </div>
   )
 }

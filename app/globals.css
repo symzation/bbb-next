@@ -13,6 +13,8 @@
   --color-caution: #f0ad4e;
   --color-warning: #bb2124;
   --color-facebook-blue: #1877F2;
+  --color-links: #c7393e;
+  --color-gray: #464242;
 
   --animate-shake: shake 2s linear infinite;
   @keyframes shake {
@@ -150,22 +152,22 @@ h1, h2, h3, h4, h5, h6 {
   animation-range: entry 0 cover 40%;
 }
 
-@keyframes rotateScaleBounce {
+@keyframes scaleBounce {
   0% { 
     opacity: 0; 
     scale: 0;
   }
   50% {
     opacity: 1; 
-    scale: 1.2;
+    scale: 1.05;
   }
   100% { 
     scale: 1;
   }
 }
 
-.rotateScaleBounce {
-  animation: rotateScaleBounce linear;
+.scaleBounce {
+  animation: scaleBounce linear;
   animation-timeline: view();
   animation-range: entry 0 cover 40%;
 }
@@ -187,15 +189,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @keyframes scrollFadeInSlam {
-  0% { 
+  from { 
     opacity: 0; 
-    scale: 0;
+    translate: 0 3rem;
+    scale: 0.5;
   }
-  50% {
-    scale: 1.2;
-  }
-  100% { 
+  to { 
     opacity: 1; 
+    translate: 0 0;
     scale: 1;
   }
 }
@@ -205,3 +206,50 @@ h1, h2, h3, h4, h5, h6 {
   animation-timeline: view();
   animation-range: entry 0 cover 40%;
 }
+
+/************************
+ *   Handdrawn Circle   *
+ ***********************/
+
+.hand-drawn-ellipse {
+  position: relative;
+  display: inline-block;
+  padding: 2px 8px;
+}
+
+.hand-drawn-ellipse::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: -10px;
+  right: -10px;
+  bottom: -5px;
+  
+  /* Creates an imperfect, organic oval shape */
+  border: 3px solid var(--color-third);
+  border-radius: 40% 60% 60% 40% / 60% 40% 60% 40%;
+  
+  /* Rotates it slightly to simulate a human hand stroke angle */
+  transform: rotate(-1.5deg);
+  pointer-events: none;
+}
+
+/**********************
+ *   Editor styles    *
+ *********************/
+
+.editor {
+  border: 1px solid var(--color-warning);
+  border-radius: 10px;
+}
+
+.editor .fr-second-toolbar {
+  height: 8px;
+}
+
+.editor .fr-second-toolbar > * {
+  visibility: hidden;
+}
+
+
+

@@ -1,5 +1,7 @@
 import { Metadata } from "next"
-import Rankings from "@/components/Rankings/Rankings"
+import { styles } from "@/utils/constants"
+import { cn } from "@/utils"
+import RankingsList from "@/components/Rankings/RankingsList"
 
 export const metadata: Metadata = {
   title: 'Rankings',
@@ -8,8 +10,9 @@ export const metadata: Metadata = {
 
 export default async function RankingsPage() {
   return (
-    <div className="flex flex-col">
-      <Rankings />
+    <div className={cn(styles.pageClass)}>
+      <h1 className={styles.pageHeading}>Rankings</h1>
+      <RankingsList />
     </div>
   )
 }

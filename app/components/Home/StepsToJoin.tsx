@@ -13,9 +13,9 @@ import {
 } from "@/components/ui/accordion"
 
 import heroBg from "../../../public/categoriesImage.jpg"
-import { getProductTypes } from "@/lib/db/actions"
+//import { getProductTypes } from "@/lib/db/actions"
 
-type ProductTypesResult = Awaited<ReturnType<typeof getProductTypes>>
+//type ProductTypesResult = Awaited<ReturnType<typeof getProductTypes>>
 
 export default function StepsToJoin() {
   //const productTypesData = await getProductTypes()

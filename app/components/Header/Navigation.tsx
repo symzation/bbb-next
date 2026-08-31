@@ -1,6 +1,9 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { styles } from '@/utils/constants'
 import { cn } from '@/utils'
+
+import Logo from "../../../public/BNBLogoWht.png"
 
 type NavigationProps = {
   navLinkClass?: string
@@ -16,9 +19,9 @@ export default function Navigation({
 
   const linkClass = cn(
 		styles.linkClass,
-		"text-xl font-bold text-primary no-underline hover:text-white tracking-wide transistion-all duration-300 ease-in-out",
-    navLinkClass,
-		posValue > 0 ? "text-secondary hover:text-white" : ""
+		"text-xl font-bold text-secndary no-underline hover:text-white tracking-wide transition-all duration-300 ease-in-out",
+		(posValue ?? 0) > 0 ? "text-secondary hover:text-white" : "-mt-2.5",
+    navLinkClass
   )
 
   return (
@@ -27,14 +30,20 @@ export default function Navigation({
       navigationClass
       )}
     >
-      <Link href='/' className={linkClass}>
-        [Logo]
+      <Link href='/' 
+        className={cn(
+          'w-full h-full drop-shadow-xl/50', 
+          posValue > 0 ? 'drop-shadow-none' : ''
+        )}
+      >
+        <Image
+          src={Logo}
+          alt="Bourbon N' Brews Logo"
+          className={cn('duration-300 ease-in-out', posValue > 0 ? "w-10 h-10" : "w-15 h-15")}
+        />
       </Link>
       <Link href='/reviews' className={linkClass}>
         Reviews
-      </Link>
-      <Link href='/events' className={linkClass}>
-        Events
       </Link>
       <Link href='/rankings' className={linkClass}>
         Rankings
@@ -42,9 +51,9 @@ export default function Navigation({
       <Link href='/about' className={linkClass}>
         About
       </Link>
-      <Link href='/contact' className={linkClass}>
+      {/* <Link href='/contact' className={linkClass}>
         Contact
-      </Link>
+      </Link> */}
     </div>
   )
 }

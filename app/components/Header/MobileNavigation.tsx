@@ -1,4 +1,5 @@
 
+import { cn } from "@/utils"
 import {
   Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger,
 } from "@/components/ui/sheet"
@@ -15,11 +16,15 @@ export default function MobileNavigation({ posValue }: MobileNavigationProps) {
     <Sheet>
       <SheetTrigger asChild>
         <div
-          className="p-3 block md:hidden cursor-pointer ring-none ring-offset-0 hover:ring-0 cursor-pointer transition-all duration-150 ease-in-out" 
+          className={cn(
+            "p-3 block md:hidden cursor-pointer ring-none ring-offset-0 hover:ring-0 cursor-pointer transition-all duration-150 ease-in-out"
+          )} 
           aria-label="Mobile navigation menu"
         >
           <GiHamburgerMenu 
-            className="w-6 h-6 text-primary font-bold cursor-pointer"
+            className={cn(
+              "w-6 h-6 font-bold cursor-pointer",
+              posValue > 0 ? "text-secondary" : "text-primary")} 
           />
           <span className="sr-only">Open navigation menu</span>
         </div>
@@ -36,7 +41,8 @@ export default function MobileNavigation({ posValue }: MobileNavigationProps) {
         </SheetClose>
         <Navigation 
           posValue={posValue} 
-          navigationClass="w-full flex flex-col gap-4 mt-8" 
+          navLinkClass="text-primary hover:text-primary"
+          navigationClass="w-full flex flex-col gap-4 mt-8"
         />
       </SheetContent>
     </Sheet>

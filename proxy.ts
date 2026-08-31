@@ -1,18 +1,19 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
-import { GetAuthSession } from '@/actions/sessionActions'
-import { ENUM_ROLE } from '@/types/enums'
+import { NextResponse } from "next/server"
+import type { NextRequest } from "next/server"
+import { GetAuthSession } from "@/actions/sessionActions"
+import { ENUM_ROLE } from "@/types/enums"
+import { ROLE_GROUPS } from "@/lib/roles"
 export { auth } from "@/lib/auth"
 
 const protectedRoutes: Record<string, string[]> = {
   //'/articles': ['ADMIN', 'AUTHOR', 'AUTHOR_WAITING_APPROVAL', 'USER'],
-  '/author': ['ADMIN', 'USER'],
-  '/dashboard': ['ADMIN'],
-  '/compose': ['AUTHOR', 'ADMIN'],
-  '/events': ['ADMIN', 'AUTHOR', 'AUTHOR_WAITING_APPROVAL', 'USER'],
+  '/author': ROLE_GROUPS.CAN_CREATE_POST,
+  '/dashboard': ROLE_GROUPS.ADMIN_ONLY,
+  '/compose': ROLE_GROUPS.CAN_CREATE_POST,
+  //'/events': ROLE_GROUPS.LOGGED_IN,
   //'/rankings': ['ADMIN', 'AUTHOR', 'AUTHOR_WAITING_APPROVAL', 'USER'],
   //'/reviews': ['ADMIN', 'AUTHOR', 'AUTHOR_WAITING_APPROVAL', 'USER'],
-  '/settings': ['ADMIN', 'AUTHOR', 'AUTHOR_WAITING_APPROVAL', 'USER'],
+  '/settings': ROLE_GROUPS.LOGGED_IN,
 }
 
 export default async function proxy(request: NextRequest) {

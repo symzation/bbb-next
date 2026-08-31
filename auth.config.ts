@@ -76,6 +76,7 @@ export const authConfig = {
     Google({
       clientId: process.env.AUTH_GOOGLE_ID!,
       clientSecret: process.env.AUTH_GOOGLE_SECRET!,
+       allowDangerousEmailAccountLinking: false, // Prevents linking accounts with the same email
       authorization: {
         params: { 
           prompt: "consent", 
@@ -105,16 +106,13 @@ export const authConfig = {
       }
     })
   ],
-  /* pages: {
-    signIn: "/",
-    error: "/",
-    newUser: "/settings", 
-    //signIn: "/auth/signin", // Path to your custom sign-in page
-    // You can also define other custom pages here:
-    // signOut: "/auth/signout",
-    // error: "/auth/error",
-    // newUser: "/auth/new-user",
-  }, */
+  // Path to your custom sign-in page (optional)
+  pages: {
+    signIn: "/auth/error", 
+    signOut: "/",
+    error: "/auth/error",
+    newUser: "/",
+  },
   session: { 
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, 

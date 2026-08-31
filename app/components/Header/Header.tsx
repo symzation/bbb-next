@@ -5,9 +5,7 @@ import Link from "next/link"
 import { styles } from "@/utils/constants"
 import { cn } from "@/utils"
 import { GetAuthSession } from "@/providers/AuthSessionProvider"
-//import { redirect } from "next/navigation"
 import { setupWindowObservers } from "@/utils/helpers"
-//import AnnouncementsBanner from "@/components/Header/AnnouncementsBanner"
 import Navigation from "@/components/Header/Navigation"
 import MobileNavigation from "@/components/Header/MobileNavigation"
 import LoginRegisterForms from "@/components/Forms/LoginRegisterForms"
@@ -44,14 +42,14 @@ export default function Login() {
 			ref={headerRef}
 			className={cn(styles.header, posValue > 0 ? styles.headerScrolled : "")}
 		>
-			{/* <AnnouncementsBanner /> */}
 			<div className="flex flex-row justify-between items-start">
 				<MobileNavigation posValue={posValue} />
 				<div className="hidden md:block">
 					<Navigation posValue={posValue} />
 				</div>
 				{isAuthenticated ? 
-					<LoggedInMenu /> : <LoginRegisterForms loginLinkRef={loginLinkRef} />
+					<LoggedInMenu /> : 
+					<LoginRegisterForms loginLinkRef={loginLinkRef} posValue={posValue} />
 				}
 			</div>
 		</div>

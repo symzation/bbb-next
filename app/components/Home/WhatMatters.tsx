@@ -19,10 +19,10 @@ export default function WhatMatters() {
     >
       <div className="justify-self-end w-full md:w-1/2">
         <h2 className="text-6xl font-bold tracking-wide">
-          Taste what matters, read what's honest
+          Taste what matters, read what&apos;s honest
         </h2>
         <p className={styles.paragraph}>
-          Find real reviews of bourbon, coffee, beers and food from people who know the difference. Share your own palate experiences, discover new favorites and join a community that values the craft.
+          Find real reviews of bourbon, coffee and beers from people who know the difference. Share your own palate experiences, discover new favorites and join a community that values the craft.
         </p>
         <div className="flex justify-start items-center space-x-4">
           <Button className="bg-third text-white rounded p-0">

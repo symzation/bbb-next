@@ -10,6 +10,38 @@ export function formatCamelCaseString(str: string) {
   return str.replace(/([A-Z])/g, ' $1').trim()
 }
 
+export function formatPhoneNumber(phone: string) {
+  let digits = phone.replace(/\D/g, "").substring(0, 10)
+  // Format with regex
+  if (digits.length > 6) {
+    digits = digits.replace(/^(\d{3})(\d{3})(\d{1,4})$/, "($1) $2-$3")
+  } else if (digits.length > 3) {
+    digits = digits.replace(/^(\d{3})(\d{1,3})$/, "($1) $2")
+  } else if (digits.length > 0) {
+    digits = digits.replace(/^(\d{1,3})$/, "($1)")
+  }
+  return digits
+}
+
+export function getErrorMessage(error?: string) {
+  switch (error) {
+    case "OAuthSignin":
+      return "There was a problem starting the sign-in process."
+    case "OAuthCallbackError":
+      return "The provider returned an invalid response during sign-in."
+    case "OAuthAccountNotLinked":
+      return "That email is already linked to another sign-in method."
+    case "CredentialsSignin":
+      return "The email or password you entered is incorrect."
+    case "AccessDenied":
+      return "You do not have permission to sign in."
+    case "Verification":
+      return "That sign-in link is invalid or has expired."
+    default:
+      return "Something went wrong while signing you in."
+  }
+}
+
 export async function getImageDimensions(file: File) {
   return new Promise((resolve, reject) => {
     const img = new Image()

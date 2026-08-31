@@ -3,7 +3,8 @@
 import { z } from "zod"
 import { GetAuthSession, updateAuthSession } from "@/actions/sessionActions"
 import { updateUser } from "@/lib/db/actions/users"
-import { profileImageUpload } from "@/actions/profileImageActions"
+//import { profileImageUpload } from "@/actions/profileImageActions"
+import { uploadProfileGCSImage } from "@/actions/gcsImageActions"
 import { validateBio, validateUsername} from "@/utils/helpers"
 
 
@@ -99,11 +100,8 @@ export async function profileFormAction(prevState: any, formData: FormData) {
     
     const profileImage = formData.get("profileImage")
     if (profileImage instanceof File && profileImage.size > 0) {
-      const imgUpload = await profileImageUpload(profileImage)
-      if (imgUpload?.data?.filename) {
-        const folder = process.env.PROFILE_IMAGE_FOLDER
-        formEntries.image = `${folder?.replace("public", "")}${imgUpload.data.filename}`
-      }
+      //const imgUpload = await profileImageUpload(profileImage)
+      const imgUpload = await uploadProfileGCSImage(profileImage)
     }
     
     delete formEntries.profileId

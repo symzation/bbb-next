@@ -1,10 +1,9 @@
 "use client"
 
-import { createCookie, getCookie } from "@/lib/cookies"
 import { useEffect, useState } from "react"
-import { styles } from "@/utils/constants"
+import { createCookie, getCookie } from "@/lib/cookies"
+import Image from "next/image"
 import { cn } from "@/utils"
-import { Button } from "@/components/ui/button"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,6 +16,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { useRouter } from "next/navigation"
+
+import Logo from "../../../public/BNBLogoWht.png"
 
 export default function AgeConsent() {
   const [isAgeConsentOpen, setIsAgeConsentOpen] = useState(false)
@@ -32,15 +33,22 @@ export default function AgeConsent() {
     router.replace("https://www.responsibility.org/")
   }
 
-  const checkConsent = async () => {
-    const consent = await getCookie('age-consent')
-    if (consent === null || consent?.value !== 'true') {
-      setIsAgeConsentOpen(true)
-    }
-  }
-
   useEffect(() => {
-    checkConsent()
+    let isMounted = true
+
+    void (async () => {
+      const consent = await getCookie('age-consent')
+
+      if (!isMounted) return
+
+      if (consent === null || consent?.value !== 'true') {
+        setIsAgeConsentOpen(true)
+      }
+    })()
+
+    return () => {
+      isMounted = false
+    }
   }, [])
 
   return (
@@ -48,7 +56,13 @@ export default function AgeConsent() {
       <AlertDialogOverlay className="bg-primary/90"/>
       <AlertDialogContent className="bg-white text-primary border-4 border-secondary rounded-none px-2">
         <AlertDialogHeader>
-          <div className="flex justify-center items-center mt-4 mb-8">[Logo Goes Here]</div>
+          <div className="flex justify-center items-center mb-2">
+            <Image
+              src={Logo}
+              alt="Bourbon N' Brews Logo"
+              className="w-[40%] h-auto"
+            />
+          </div>
           <AlertDialogTitle className="mb-4 text-4xl font-bold text-center uppercase tracking-wide">
             Age Verification
           </AlertDialogTitle>

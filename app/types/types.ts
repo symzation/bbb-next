@@ -14,7 +14,7 @@ export type AccountDataProps = {
   session_state: string
 }
 
-export type AddressDataProps = {
+/* export type AddressDataProps = {
   id: number
   address: string
   address2: string
@@ -26,7 +26,7 @@ export type AddressDataProps = {
   phone: number
   createdAt: Date
   updatedAt: Date
-}
+} */
 
 export type AuthContextProps = {
   user?: {
@@ -65,7 +65,7 @@ export type Award = {
   updatedAt?: Date
 }
 
-export type ProductDataProps = {
+/* export type ProductDataProps = {
   id: number
   productTypeId: number
   shopId: number
@@ -76,17 +76,40 @@ export type ProductDataProps = {
   rating: number
   createdAt: Date
   updatedAt: Date
-}
+} */
 
-export type ProductTypeDataProps = {
+export type CategoryDataProps = {
   id: number
   name: string
+  description: string 
+  tagline: string 
+  intro: string 
+  createdAt: Date
+  updatedAt: Date
+}
+
+export type CategoryTypeDataProps = {
+  id: number
+  name: string
+  categoryId: number
   createdAt: Date
   updatedAt: Date
 }
 
 export type ReviewDataProps = {
-  userId: number
+  id: number
+  title: string
+  slug: string
+  // store rich text content as text
+  content: string
+  excerpt: string
+  batchNumber: number
+  flavor: string
+  rating: number
+  isDraft: boolean
+  readyToPublish: boolean
+  isPublished: boolean
+  publishedAt: Date
 } & Record<string, any>
 
 export type SessionDataProps = {
@@ -104,14 +127,14 @@ export type SessionUser = {
   username?: string
 }
 
-export type ShopTypesDataProps = {
+/* export type ShopTypesDataProps = {
   id: number
   name: string
   createdAt: Date
   updatedAt: Date
-}
+} */
 
-export type ShopDataProps = {
+/* export type ShopDataProps = {
   id: number
   name: string | null
   shopTypeId: number
@@ -121,7 +144,7 @@ export type ShopDataProps = {
   rating: number
   createdAt: Date
   updatedAt: Date
-}
+} */
 
 export type UserDataProps = {
   id?: number

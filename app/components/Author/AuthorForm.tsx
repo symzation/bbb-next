@@ -10,16 +10,12 @@ import TextareaInput from "@/components/Forms/Elements/TextareaInput"
 import { AuthorFormAction } from "@/components/Author/AuthorFormAction"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { HiOutlineQuestionMarkCircle } from "react-icons/hi2";
-import { GetAuthSession } from "@/providers/AuthSessionProvider"
+//import { GetAuthSession } from "@/providers/AuthSessionProvider"
 import { ENUM_CHECK_STATE, ENUM_ROLE } from "@/types/enums"
 import SearchInput from "@/components/Search/SearchInput"
 import { validatePenName } from "@/utils/helpers"
 
 export function validate(penName: string) {
-  console.log('+++++++++++++++++++++++++++++++++++')
-  console.log('Validating pen name: ', penName)
-  console.log('Pen name length: ', penName.length)
-
   if (penName.length === 0) {
     return { ok: false, state: ENUM_CHECK_STATE.IDLE as const }
   }
@@ -40,12 +36,12 @@ export default function AuthorForm() {
   
   const showAuthorFormBtn = useRef<HTMLButtonElement>(null)
   
-  const session = GetAuthSession()
+  /* const session = GetAuthSession()
   //console.log('Session in AuthorForm: ', session)
   // If 'role' is not part of User, you may need to use a different property or extend the type.
   // Example: If you have a custom user object with 'role', use a type assertion:
   const userRole = (session?.session?.user as { role?: string })?.role
-  let showForm = userRole === ENUM_ROLE.USER ? true : false
+  let showForm = userRole === ENUM_ROLE.USER ? true : false */
 
   useEffect(() => {
     if (formState && formState?.success) {
@@ -59,10 +55,6 @@ export default function AuthorForm() {
     }
   }, [formState])
 
-  const handlePenNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    return e.target.value
-  }
-  
   const handleValidate = (value: string) => {
     return validate(value)
   }
@@ -76,7 +68,7 @@ export default function AuthorForm() {
 
   return (
     <>
-      {showForm ? (
+      {!showSuccess ? (
         <form 
           action={formAction} 
           className="flex flex-col justify-start items-center gap-4 w-full"
@@ -93,7 +85,6 @@ export default function AuthorForm() {
           <div className="flex flex-col justify-start items-start w-full gap-1">
             <SearchInput 
               apiUrl="/api/check/penname?penname="
-              handleChange={handlePenNameChange}
               handleBlur={handlePenNameBlur}
               inputName="penName"
               label={(
@@ -132,13 +123,13 @@ export default function AuthorForm() {
                 htmlFor="reviewerTerms" 
                 className={cn(styles.formLabel, "text-sm text-primary")}
               >
-                By checking this box, you have read and accepted {process.env.NEXT_PUBLIC_SITENAME}&apos; <Link 
+                I have read and agree <Link 
                   href="/author-terms"
                   target="_blank" 
                   rel="noopener noreferrer" 
                   className="text-sm underline hover:no-underline"
                 >
-                  Author Terms
+                  {process.env.NEXT_PUBLIC_SITENAME} Author Terms
                 </Link>.
               </label>
             </div>
@@ -150,15 +141,13 @@ export default function AuthorForm() {
               disabled={isPending}
               className={cn("w-full md:w-40 py-5 px-12 text-white tracking-wider ring-0 focus:ring-0 ring-offset-0 focus:ring-offset-0 focus-visible:ring-0 outline-none cursor-pointer data-[state=open]:bg-transparent", isPending && "opacity-70 cursor-not-allowed")}
             >
-              {isPending ? "Submitting.." : "Register"}
+              {isPending ? "Submitting.." : "Apply"}
             </Button>
           </div>
         </form>
       ) : (
-        <div className="text-center text-primary">
-          {userRole === ENUM_ROLE.AUTHOR_WAITING_APPROVAL ? 
-            "Your author account is under review." : "Please log in to register as a reviewer."
-          }
+        <div className="px-4 text-primary border border-primary rounded-md">
+          Your application has been successfully submitted and is under review. We will notify you via email once a decision has been made. Thank you for your interest in becoming a reviewer!
         </div>
       )}
     </>
