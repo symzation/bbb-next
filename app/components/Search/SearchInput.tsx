@@ -2,6 +2,7 @@ import { ChangeEvent, FocusEvent, ReactNode, RefObject, useEffect, useRef, useSt
 import { cn } from "@/utils"
 import { styles } from "@/utils/constants"
 import { ENUM_CHECK_STATE } from "@/types/enums"
+import SearchInputState from "@/components/Search/SearchInputState"
 
 type SearchInputProps = {
   apiUrl: string
@@ -15,7 +16,7 @@ type SearchInputProps = {
   label: string | ReactNode
   labelClass?: string
   placeholder?: string
-  validate: (value: string) => { ok: boolean, state: ENUM_CHECK_STATE }
+  validate?: (value: string) => { ok: boolean, state: ENUM_CHECK_STATE }
 }
 
 export default function SearchInput({
@@ -30,7 +31,7 @@ export default function SearchInput({
   label,
   labelClass,
   placeholder,
-  validate,
+  validate
 }: SearchInputProps) {
   const [inputValue, setInputValue] = useState<string>("")
   const [state, setState] = useState<ENUM_CHECK_STATE>()
@@ -58,7 +59,8 @@ export default function SearchInput({
   }, [inputValue])
 
   const valueChecker = (value: string) => {
-    return window.setTimeout(async () => {
+    console.log("Checking value:", value)
+    return setTimeout(async () => {
       const controller = new AbortController()
       abortRef.current = controller
 
@@ -92,22 +94,7 @@ export default function SearchInput({
         className={cn(styles.formLabel, labelClass ?? "")}
       >
         {typeof label === "string" ? <span className="pr-1">{label}</span> : label}
-        {state === ENUM_CHECK_STATE.IDLE && <></>}
-        {state === ENUM_CHECK_STATE.INVALID && 
-          <span className="text-sm text-error">- Invalid</span>
-        }
-        {state === ENUM_CHECK_STATE.CHECKING && 
-          <span className="text-sm font-bold">- Checking…</span>
-        }
-        {state === ENUM_CHECK_STATE.AVAILABLE && 
-          <span className="text-sm text-success">- ✅Available</span>
-        }
-        {state === ENUM_CHECK_STATE.TAKEN && 
-          <span className="text-sm text-error">- ❌ Taken</span>
-        }
-        {state === ENUM_CHECK_STATE.ERROR && 
-          <span className="text-sm text-error">Something went wrong. Try again.</span>
-        }
+        <SearchInputState state={state as ENUM_CHECK_STATE} />
       </label>
       <input 
         type="text" 

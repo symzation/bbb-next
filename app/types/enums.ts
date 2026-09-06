@@ -5,6 +5,7 @@ export enum ENUM_CHECK_STATE {
   IDLE = "",
   INVALID = "invalid",
   TAKEN = "taken",
+  UNAVAILABLE = "unavailable",
 }
 
 export enum ENUM_ROLE {

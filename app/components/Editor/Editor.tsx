@@ -1,6 +1,8 @@
 "use client"
 
 import { useRef, useState } from "react"
+import { styles } from "@/utils/constants"
+import { cn } from "@/utils"
 import { EditorContent, useEditor } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 import Image from "@tiptap/extension-image"
@@ -461,7 +463,7 @@ export default function Editor({
 
       <EditorContent
         editor={editor}
-        className="review-editor"
+        className={cn("review-editor")}
       />
     </div>
   )

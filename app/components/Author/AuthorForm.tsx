@@ -45,13 +45,14 @@ export default function AuthorForm() {
 
   useEffect(() => {
     if (formState && formState?.success) {
-      setShowSuccess(true)
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         setShowSuccess(false)
         if (showAuthorFormBtn.current) {
           showAuthorFormBtn.current.click()
         }
       }, 4000)
+      setShowSuccess(true)
+      return () => clearTimeout(timer)
     }
   }, [formState])
 

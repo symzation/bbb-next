@@ -1,4 +1,3 @@
-
 export async function createUsername(email: string) {
   if (!email || email === "") return ""
   const randomString = Math.random().toString(36).substring(4, 12)
@@ -170,3 +169,15 @@ export function validateUsername(username: string) {
   const usernameRegEx = new RegExp(`^[A-Za-z0-9_]{${minLength},${maxLength}}$`)
   return usernameRegEx.test(username) && username.length >= minLength && username.length <= maxLength
 }
+
+export function validateSlug(slug: string) {
+  const minLength = Number(process.env.NEXT_PUBLIC_SLUG_LENGTH_MIN) || 3
+  const maxLength = Number(process.env.NEXT_PUBLIC_SLUG_LENGTH_MAX) || 255
+  const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
+  return slugRegex.test(slug) && slug.length >= minLength && slug.length <= maxLength
+}
+
+export function validateBatchNumber(batchNumber: string) {
+  const reviewBatchNumberRegEx = /^\d+$/g
+  return reviewBatchNumberRegEx.test(batchNumber)
+} 
