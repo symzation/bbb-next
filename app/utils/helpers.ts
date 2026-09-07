@@ -177,7 +177,13 @@ export function validateSlug(slug: string) {
   return slugRegex.test(slug) && slug.length >= minLength && slug.length <= maxLength
 }
 
-export function validateBatchNumber(batchNumber: string) {
-  const reviewBatchNumberRegEx = /^\d+$/g
-  return reviewBatchNumberRegEx.test(batchNumber)
+export function validateFloatingNumber(floatingNumber: string) {
+  const floatingNumberRegEx = /^\d+\.\d+$/
+  return floatingNumberRegEx.test(floatingNumber)
 } 
+
+export function isValidRating(value: string, min = 0, max = 10 ): boolean {
+  if (!validateFloatingNumber(value)) return false
+  const rating = Number(value)
+  return rating >= min && rating <= max
+}

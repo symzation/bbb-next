@@ -116,8 +116,11 @@ export const reviews = mysqlTable("reviews", {
   // store rich text content as text
   content: text("content"),
   excerpt: text("excerpt"),
-  batchNumber: int("batchNumber"),
+  batch: int("batch"),
+  proof: int("proof"),
   flavor: varchar("flavor", { length: 100 }),
+  abv: int("abv"),
+  ibv: int("ibv"),
   rating: float("rating").default(0.0),
   isDraft: boolean("isDraft").notNull().default(true),
   readyToPublish: boolean("readyToPublish").notNull().default(false),
