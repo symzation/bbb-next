@@ -30,5 +30,8 @@ export const styles = {
   rankingsWrapper: "flex flex-col md:flex-row justify-between items-center space-x-0 md:space-x-4 space-y-4 md:space-y-0 mt-4 px-6",
   secondaryNavClass: "text-md text-primary hover:text-primary font-normal no-underline hover:underline tracking-wide block transistion-all duration-300 ease-in-out cursor-pointer",
   sectionTitle: "text-primary text-md md:text-2xl font-bold my-2 tracking-wide underline underline-offset-4",
+  selectTriggerClass: "placeholder:text-muted-foreground h-10 min-w-[240px] rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none md:text-sm focus-visible:ring-[0px]",
+  selectContentClass: "bg-white",
+  selectItemClass: "hover:bg-gray-200 hover:text-gray-800 hover:font-bold",
 }
   

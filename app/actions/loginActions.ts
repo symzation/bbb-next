@@ -33,7 +33,8 @@ export async function logout(
 ) {
   const session = await GetAuthSession() 
   if (session?.user) {
-    await deleteDbSessions(Number(session.user.id))
+    const deletedSessions = await deleteDbSessions(Number(session.user.id))
+    console.log(`Deleted ${deletedSessions} sessions for user ${session.user.id}`)
   }
 
   if (useRedirect) {

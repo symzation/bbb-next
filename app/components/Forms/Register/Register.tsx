@@ -11,6 +11,7 @@ import {
 import FormButtonLink from "@/components/Forms/FormButtonLink"
 import SocialLoginButtons from "@/components/Forms/SocialLoginButtons"
 import RegisterForm from "@/components/Forms/Register/RegisterForm"
+import LoginDisclaimer from "@/components/Disclaimer/LoginDisclaimer"
 
 type RefgisterProps = {
   isOpen: boolean
@@ -35,7 +36,7 @@ export default function Register({
       >
         <DialogHeader>
           <DialogTitle className="text-2xl text-left font-bold mt-2">
-            Join Bourbon Brew &amp; Bites!
+            {`Join ${process.env.NEXT_PUBLIC_SITENAME}!`}
           </DialogTitle>
           <DialogDescription className="text-base text-black text-left -mt-2.5 mb-1">
             Your seat at the tasting table awaits.
@@ -57,9 +58,7 @@ export default function Register({
           onTransitionFunc={onTransitionToLogin}
           buttonVariant="link"
         />
-        <div className="text-xs text-gray-500 hidden">
-          By clicking "Login", you accept Bourbon Brew &apos; Bites's <Link href="#" target="_blank" rel="noopener noreferrer" className="underline hover:no-underline">Terms of Service</Link> and <Link href="#" target="_blank" rel="noopener noreferrer" className="underline hover:no-underline">Privacy Policy</Link>.
-        </div>
+        <LoginDisclaimer actionLabel={`Signing up or clicking "Continue"`} />
       </DialogContent>
     </Dialog >
   )

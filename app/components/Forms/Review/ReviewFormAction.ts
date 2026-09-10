@@ -3,17 +3,52 @@
 import { z } from "zod"
 
 const reviewFormSchema = z.object({
-  firstName: z.string().min(1, { message: "First name is required." }).trim(),
-  lastName: z.string().min(1, { message: "Last name is required." }).trim(),
-  email: z.email({ message: "Invalid email address." }).trim(),
-  phone: z.string()
-    .min(1, { message: "Phone number is required." })
-    .max(10, { message: "Phone number is too long." })
-    .trim(),
-  message: z.string()
-    .min(1, { message: "Message is required." })
-    .max(500, { message: "Message is too long." })
-    .trim(),
+  title: z.string().min(1, { message: "Title is required." }).trim(),
+  slug: z.string().min(1, { message: "Slug is required." }).trim(),
+  // store rich text content as text
+  content: z.string().min(1, { message: "Content is required." }).trim(),
+  batch: z.number({
+    message: "Batch must be a valid number",
+  })
+  .min(0, "Batch must be a positive number.")
+  .refine(
+    (value) => Number.isInteger(value * 10),
+    "Batch can only have one decimal place"
+  )
+  .optional(),
+  proof: z.number({
+    message: "Proof must be a valid number",
+  })
+  .min(0, "Proof must be a positive number.")
+  .refine(
+    (value) => Number.isInteger(value * 10),
+    "Proof can only have one decimal place"
+  )
+  .optional(),
+  abv: z.number({
+    message: "ABV must be a valid number",
+  })
+  .min(0, "ABV must be a positive number.")
+  .refine(
+    (value) => Number.isInteger(value * 10),
+    "ABV can only have one decimal place"
+  ).optional(),
+  ibu: z.number({
+    message: "IBU must be a valid number",
+  })
+  .min(0, "IBU must be a positive number.")
+  .refine(
+    (value) => Number.isInteger(value * 10),
+    "IBU can only have one decimal place"
+  ).optional(),
+  rating: z.number({
+    message: "Rating must be a valid number",
+  })
+  .min(0, "Rating must be a positive number.")
+  .refine(
+    (value) => Number.isInteger(value * 10),
+    "Rating can only have one decimal place"
+  ),
 })
 
 export async function ReviewFormAction(prevState: any, formData: FormData) {

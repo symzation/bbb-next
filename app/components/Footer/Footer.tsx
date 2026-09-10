@@ -1,7 +1,7 @@
 import { FC } from "react"
 import { styles } from "@/utils/constants"
 import { cn } from "@/utils"
-import Disclaimer from "@/components/Disclaimer/Disclaimer"
+import FooterDisclaimer from "@/components/Disclaimer/FooterDisclaimer"
 
 export default function Footer() {
 	const getCopyRightText = () => {
@@ -27,7 +27,11 @@ export default function Footer() {
 				<div>[LINKS GO HERE]</div>
 			</div>	
 			<div className="bg-fourth w-full h-[1px]" />
-			<Disclaimer className="text-white" titleClassName="text-white text-xs" textClassName="text-xs" />
+			<FooterDisclaimer 
+				className="text-white" 
+				titleClassName="text-white text-xs" 
+				textClassName="text-xs" 
+			/>
 		</footer>
 	)
 }

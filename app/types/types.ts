@@ -1,4 +1,5 @@
 import { ENUM_CHECK_STATE, ENUM_ROLE, ENUM_SUBSCRIPTION } from '@/types/enums'
+import { types } from 'util'
 
 export type AccountDataProps = {
   userId: number
@@ -44,13 +45,13 @@ export type AuthContextProps = {
   isAuthenticated?: boolean
 } | null
 
-export type AuthorDataType = {
+export type AuthorDataTypeProps = {
   id?: number
   userId?: number
   penName?: string
   bio?: string
   whyReviewer?: string
-  awards?: Award[]   
+  awards?: AwardDataProps[]
   authorApproved?: boolean
   authorApprovedAt?: Date
   approvedById?: number
@@ -58,7 +59,7 @@ export type AuthorDataType = {
   updatedAt?: Date
 } & Record<string, any>
 
-export type Award = {
+export type AwardDataProps = {
   id: number
   title: string
   createdAt?: Date
@@ -103,14 +104,26 @@ export type ReviewDataProps = {
   // store rich text content as text
   content: string
   excerpt: string
-  batchNumber: number
+  batch: number
+  proof: number
+  abv: number
+  ibv: number
   flavor: string
   rating: number
   isDraft: boolean
   readyToPublish: boolean
   isPublished: boolean
+  publishedBy: number
   publishedAt: Date
 } & Record<string, any>
+
+export type ReviewTypeDataProps = {
+  id: number
+  name: string
+  isActive: boolean
+  createdAt: Date
+  updatedAt: Date
+}
 
 export type SessionDataProps = {
   sessionToken: string
@@ -119,7 +132,7 @@ export type SessionDataProps = {
 } & Record<string, any>
 
 // Extend the User type to include 'username'
-export type SessionUser = {
+export type SessionUserDataProps = {
   id?: string
   name?: string
   email?: string

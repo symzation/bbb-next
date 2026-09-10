@@ -10,7 +10,7 @@
   --color-fifth: #606c38;
   --color-error: #c90707;
   --color-success: #16ab11;
-  --color-caution: #f0ad4e;
+  --color-caution: #f6a636;
   --color-warning: #bb2124;
   --color-facebook-blue: #1877F2;
   --color-links: #c7393e;
@@ -252,6 +252,6 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .inputError {
-  border: 1px solid red;
+  border: 2px solid var(--color-warning);
 }
 

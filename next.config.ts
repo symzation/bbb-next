@@ -1,6 +1,9 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
+/*   experimental: {
+    serverComponentsHmrCache: false, // Prevents caching during local file edits
+  }, */
   transpilePackages: ["next-auth"],
   /* config options here */
   images: {

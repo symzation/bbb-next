@@ -3,27 +3,34 @@
 
 import { useEffect, useRef } from "react"
 import { 
-  useCategoryStore, updateCategories, updateCategoryTypes
+  useCategoryStore, updateCategories, updateCategoryTypes, useReviewsStore,
+  updateReviewTypes
 } from "@/store/store"
-import { CategoryDataProps, CategoryTypeDataProps } from "@/types/types"
+import { 
+  CategoryDataProps, CategoryTypeDataProps, ReviewTypeDataProps 
+} from "@/types/types"
 import { getCategories } from "@/lib/db/actions/categories"
 import { getCategoryTypes } from "@/lib/db/actions/categoryTypes"
+//import { getReviews } from "@/lib/db/actions/reviews"
+import { getReviewTypes } from "@/lib/db/actions/reviewTypes"
 
-const days = 14
-const CACHE_TIME = days * 24 * 60 * 60 * 1000
+const defaultDays = 21
+const CACHE_TIME = defaultDays * 24 * 60 * 60 * 1000
 
 export default function StoreInitializer() {
-  const initialized = useRef(false)
+  const initializedCategories = useRef(false)
+  const initializedReviews = useRef(false)
 
   const categories = useCategoryStore((state) => state.categories)
   const categoryTypes = useCategoryStore((state) => state.categoryTypes)
+  const reviewTypes = useReviewsStore((state) => state.reviewTypes)
 
   useEffect(() => {
-    if (initialized.current) return
+    if (initializedCategories.current) return
 
-    initialized.current = true
+    initializedCategories.current = true
 
-    async function initializeStore() {
+    async function initializeCategoryStore() {
       const hasCategories = categories.length > 0
       const hasCategoryTypes = categoryTypes.length > 0
       const isFresh = Date.now() < CACHE_TIME
@@ -53,10 +60,48 @@ export default function StoreInitializer() {
       updateCategoryTypes(categoryTypesSort as CategoryTypeDataProps[])
     }
 
-    initializeStore().catch(console.error)
+    initializeCategoryStore().catch(console.error)
   }, [ 
     categories, categoryTypes 
   ])
 
+  useEffect(() => {
+    if (initializedReviews.current) return
+
+    initializedReviews.current = true
+
+    async function initializeReviewStore() {
+      //const hasReviews = reviews.length > 0
+      const hasReviewTypes = reviewTypes.length > 0
+      const isFresh = Date.now() < CACHE_TIME
+
+      // We already have persisted and reasonably fresh data.
+      if (hasReviewTypes && isFresh) return
+
+      // Otherwise refresh it.
+      /* const reviewsResponse = await getReviews()
+      const reviewsSort = reviewsResponse.sort((a, b) => (a?.name ?? "").localeCompare(b?.name ?? "")) */
+      
+      const reviewTypesResponse = await getReviewTypes()
+      const reviewTypesSort = reviewTypesResponse.sort((a, b) => (a?.name ?? "").localeCompare(b?.name ?? ""))
+
+      /* if (!reviewsResponse?.ok) {
+        throw new Error("Failed to load reviews")
+      }
+
+      if (!reviewTypesResponse?.ok) {
+        throw new Error("Failed to load review types")
+      } */
+
+      /* const reviewsData = await reviewsResponse.json()
+      const reviewTypesData = await reviewTypesResponse.json() */
+
+      updateReviewTypes(reviewTypesSort as ReviewTypeDataProps[])
+    }
+
+    initializeReviewStore().catch(console.error)
+  }, [ 
+    reviewTypes 
+  ])
   return null
 }

@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { CategoryDataProps, CategoryTypeDataProps } from "@/types/types"
+import { CategoryDataProps, CategoryTypeDataProps, ReviewTypeDataProps } from "@/types/types"
 
 type CategoryStoreProps = {
   categories: CategoryDataProps[]
@@ -25,4 +25,23 @@ export function updateCategories(categories: CategoryDataProps[]) {
 
 export function updateCategoryTypes(categoryTypes: CategoryTypeDataProps[]) {
   useCategoryStore.setState({ categoryTypes })
+}
+
+type ReviewStoreProps = {
+  reviewTypes: ReviewTypeDataProps[]
+}
+
+export const useReviewsStore = create<ReviewStoreProps>()(
+  persist(
+    () => {
+      return {
+        reviewTypes: [] as ReviewTypeDataProps[]
+      }
+    },
+    { name: "review-store" }
+  )
+)
+
+export function updateReviewTypes(reviewTypes: ReviewTypeDataProps[]) {
+  useReviewsStore.setState({ reviewTypes })
 }

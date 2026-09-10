@@ -8,7 +8,7 @@ import { useDebounce } from "@/hooks/useDebounce"
 import Editor from "@/components/Editor/Editor"
 import { ReviewFormAction } from "@/components/Forms/Review/ReviewFormAction"
 import {
-  Select, SelectContent, SelectItem, SelectLabel,SelectTrigger, SelectValue
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from "@/components/ui/select"
 import { CategoryDataProps, CategoryTypeDataProps, ReviewDataProps } from "@/types/types"
 import { useCategoryStore } from "@/store/store"
@@ -16,10 +16,12 @@ import { useShallow } from "zustand/react/shallow"
 import { ENUM_CHECK_STATE } from "@/types/enums"
 import { validateSlug, validateFloatingNumber } from "@/utils/helpers"
 import SearchInputState from "@/components/Search/SearchInputState"
+import { FaLongArrowAltDown, FaLongArrowAltRight } from "react-icons/fa"
+import WhiskeyStatsFormElements from "@/components/Forms/Review/WhiskeyStatsFormElements"
 
 /** TODOS
+ * - Complete image upload functionality for the Editor component
  * - Handle error messaging for invalid input validation for numeric fields
- * - Implement fetch logic for review content data
  * - Handle onSubmit validation with zod in form action
  */
 
@@ -35,26 +37,37 @@ export function validateSlugValue(value: string) {
   return { ok: true, state: ENUM_CHECK_STATE.CHECKING as const }
 }
 
-export default function ReviewForm({ slug }: { slug?: string }) {
+export default function ReviewForm({
+  reviewData = undefined,
+  reviewType,
+  slug = "", 
+}: { reviewData?: ReviewDataProps | undefined, reviewType: string, slug?: string }
+) {
   const [formState, formAction, isPending] = useActionState(ReviewFormAction, undefined)
   const [reviewCategorySelected, setReviewCategorySelected] = useState<string>("")
   const [reviewCategoryTypeSelected, setReviewCategoryTypeSelected] = useState<string>("")
   const [reviewTitle, setReviewTitle] = useState<string>("")
-  const [reviewSlug, setReviewSlug] = useState<string>("")
-  const [reviewSlugState, setReviewSlugState] = useState<ENUM_CHECK_STATE>(ENUM_CHECK_STATE.IDLE)
-  const [reviewContentData, setReviewContentData] = useState<ReviewDataProps | undefined>(undefined)
+  const [reviewSlug, setReviewSlug] = useState<string>(slug)
+  const [reviewSlugState, setReviewSlugState] =
+    useState<ENUM_CHECK_STATE>(ENUM_CHECK_STATE.IDLE)
   const [reviewAbv, setReviewAbv] = useState<number | null>(null)
   const [reviewIbu, setReviewIbu] = useState<number | null>(null)
-  const [reviewBatch, setReviewBatch] = useState<number | null>(null)
-  const [reviewProof, setReviewProof] = useState<number | null>(null)
+  
+  const [reviewDistillery, setReviewDistillery] = useState<string>("")
+  const [reviewDistilleryLocation, setReviewDistilleryLocation] = useState<string>("")
+  const [reviewBatch, setReviewBatch] = useState<string>("")
+  const [reviewAge, setReviewAge] = useState<string>("")
+  const [reviewProof, setReviewProof] = useState<string>("")
+  const [reviewMashBill, setReviewMashBill] = useState<string>("")
+  const [reviewBlend, setReviewBlend] = useState<string>("")
+  const [reviewFinish, setReviewFinish] = useState<string>("")
+  const [reviewIsLimitedRelease, setReviewIsLimitedRelease] = useState<boolean>(false)
+  const [reviewReleaseYear, setReviewReleaseYear] = useState<string>("")
+  const [reviewPrice, setReviewPrice] = useState<number | null>(null)
   const [rating, setRating] = useState<number | null>(null)
-
-  const abvInputRef = useRef<HTMLInputElement>(null)
-  /* const ibuInputRef = useRef<HTMLInputElement>(null)
-  const batchInputRef = useRef<HTMLInputElement>(null)
-  const proofInputRef = useRef<HTMLInputElement>(null) */
+  
   const abortRef = useRef<AbortController>(null) 
-
+  
   const debouncedReviewSlug = useDebounce(reviewSlug, 600)
   
   const { categories, categoryTypes } = useCategoryStore(
@@ -63,7 +76,7 @@ export default function ReviewForm({ slug }: { slug?: string }) {
       categoryTypes: state.categoryTypes,
     }))
   )
-
+  
   const categoryName = categories.find(
     (category: CategoryDataProps) => category.id === Number(reviewCategorySelected)
   )?.name
@@ -71,36 +84,74 @@ export default function ReviewForm({ slug }: { slug?: string }) {
   const categoryTypeName = categoryTypes.find(
     (categoryType: CategoryTypeDataProps) => categoryType.id === Number(reviewCategoryTypeSelected)
   )?.name
+  
+  const abvMin = Number(process.env.NEXT_PUBLIC_ABV_MIN ?? 0)
+  const abvMax = Number(process.env.NEXT_PUBLIC_ABV_MAX ?? 100)
+  const ibuMin = Number(process.env.NEXT_PUBLIC_IBU_MIN ?? 0)
+  const ibuMax = Number(process.env.NEXT_PUBLIC_IBU_MAX ?? 120)
+  const proofMin = Number(process.env.NEXT_PUBLIC_PROOF_MIN ?? 80)
+  const proofMax = Number(process.env.NEXT_PUBLIC_PROOF_MAX ?? 200)
+  const ratingMin = Number(process.env.NEXT_PUBLIC_RATING_MIN ?? 0)
+  const ratingMax = Number(process.env.NEXT_PUBLIC_RATING_MAX ?? 10)
+  
+  useEffect(() => {
+    if (formState && formState?.success) {
+      console.log("Form submission successful:", formState)
+    }
+  }, [formState])
 
-  const reviewPublisheStatus = slug ? "Published" : "Draft"
-  const reviewStatusClass = formState?.success ? "text-success" : "text-warning"
-  const categorySelectsClass = "placeholder:text-muted-foreground h-10 min-w-[240px] rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none md:text-sm focus-visible:ring-[0px]"
+  useEffect(() => {
+    if (!debouncedReviewSlug) return
 
-  /* useEffect(() => {
-    // Retrieve the review content data based on the slug
-    const fetchReviewContentData = async () => {
+    const validatedSlug = validateSlugValue(debouncedReviewSlug)
+    if (!validatedSlug.ok) return
+
+    let isActive = true
+    const controller = new AbortController()
+    abortRef.current = controller
+
+    const runSlugCheck = async () => {
+      setReviewSlugState(ENUM_CHECK_STATE.CHECKING)
+
       try {
-        const result = await getReviewBySlug(slug)
-        const data: ReviewDataProps | null = Array.isArray(result) ? (result[0] as ReviewDataProps) : result
+        const slugCheckRes = await fetch(
+          `/api/check/review-slug?slug=${encodeURIComponent(debouncedReviewSlug)}`,
+          { signal: controller.signal, cache: "no-store" }
+        )
 
-        if (!data) {
-          throw new Error("Failed to fetch review content data")
+        const slugCheckData: { available: boolean; reason?: string } = await slugCheckRes.json()
+
+        if (!isActive) return
+
+        if (!slugCheckRes.ok || !slugCheckData) {
+          setReviewSlugState(ENUM_CHECK_STATE.ERROR)
+          return
         }
-        setReviewContentData(data)
-        setReviewType(data.reviewType)
-        setReviewTitle(data.reviewTitle)
-      } catch (error) {
-        console.error(error)
+
+        if (!slugCheckData.available) {
+          setReviewSlugState(
+            slugCheckData.reason === "invalid" 
+            ? ENUM_CHECK_STATE.INVALID : ENUM_CHECK_STATE.TAKEN
+          )
+          return
+        }
+
+        setReviewSlugState(ENUM_CHECK_STATE.AVAILABLE)
+      } catch (err: any) {
+        if (!isActive) return
+        if (err?.name !== "AbortError") {
+        setReviewSlugState(ENUM_CHECK_STATE.ERROR)
+        }
       }
     }
 
-    fetchReviewContentData()
-  }, [slug]) */
+    void runSlugCheck()
 
-  useEffect(() => {
-    if (formState && formState?.success) {
+    return () => {
+      isActive = false
+      controller.abort()
     }
-  }, [formState])
+  }, [debouncedReviewSlug])
 
   const getCategoryTypesForSelected = () => {
     return categoryTypes.filter((type: CategoryTypeDataProps) => type.categoryId === Number(reviewCategorySelected))
@@ -147,72 +198,19 @@ export default function ReviewForm({ slug }: { slug?: string }) {
     setReviewSlugState(ENUM_CHECK_STATE.CHECKING)
   }
 
-  useEffect(() => {
-    if (!debouncedReviewSlug) return
-
-    const validatedSlug = validateSlugValue(debouncedReviewSlug)
-    if (!validatedSlug.ok) return
-
-    let isActive = true
-    const controller = new AbortController()
-    abortRef.current = controller
-
-    const runSlugCheck = async () => {
-      setReviewSlugState(ENUM_CHECK_STATE.CHECKING)
-
-      try {
-        const slugCheckRes = await fetch(
-          `/api/check/review-slug?slug=${encodeURIComponent(debouncedReviewSlug)}`,
-          { signal: controller.signal, cache: "no-store" }
-        )
-
-        const slugCheckData: { available: boolean; reason?: string } = await slugCheckRes.json()
-
-        if (!isActive) return
-
-        if (!slugCheckRes.ok || !slugCheckData) {
-          setReviewSlugState(ENUM_CHECK_STATE.ERROR)
-          return
-        }
-
-        if (!slugCheckData.available) {
-          setReviewSlugState(
-            slugCheckData.reason === "invalid" 
-            ? ENUM_CHECK_STATE.INVALID : ENUM_CHECK_STATE.TAKEN
-          )
-          return
-        }
-
-        setReviewSlugState(ENUM_CHECK_STATE.AVAILABLE)
-      } catch (err: any) {
-        if (!isActive) return
-        if (err?.name !== "AbortError") {
-          setReviewSlugState(ENUM_CHECK_STATE.ERROR)
-        }
-      }
-    }
-
-    void runSlugCheck()
-
-    return () => {
-      isActive = false
-      controller.abort()
-    }
-  }, [debouncedReviewSlug])
-
   const handleIntegerInput = (
     e: FocusEvent<HTMLInputElement>,
     setFunction: (value: number | null) => void,
     returnFloat: boolean = false,
+    decimalPlaces: number = 1,
     min?: number,
     max?: number,
   ) => {
     const num = parseFloat(String(e.target.value))
-    e.target.classList.remove("inputError")
 
     if (isNaN(num)) {
       console.warn(`Invalid number: ${num}`)
-      e.target.classList.add("inputError")
+      //e.target.classList.add("inputError")
       setFunction(null)
       return
     }
@@ -220,95 +218,102 @@ export default function ReviewForm({ slug }: { slug?: string }) {
     if (min !== undefined && max !== undefined) {
       if (num < min || num > max) {
         console.warn(`Number ${num} is out of the allowable range for this input`)
-        e.target.classList.add("inputError")
+        /* formState?.success = false
+        formState?.errors[inputName] = "Number is out of the allowable range for this input" */
+        //e.target.classList.add("inputError")
+        return
       }
     }
 
-    const normalizedValue = returnFloat ? Number.parseFloat(num.toFixed(1)) : Math.trunc(num)
+    const normalizedValue = returnFloat ? 
+      Number.parseFloat(num.toFixed(decimalPlaces)) : Math.trunc(num)
     setFunction(normalizedValue)
   }
 
   return (
-    <form action={formAction} className="flex flex-col space-y-4 w-full mx-auto mt-0 mb-2">
-      <div className="mb-4">
-        <span className="mr-2">Publish Status:</span> 
-        <span className={cn("font-bold", reviewStatusClass)}>{reviewPublisheStatus}</span>
+    <form action={formAction} className="flex flex-col space-y-4 w-full mx-auto my-4">
+      <div className="flex flex-col justify-start items-start md:items-center md:flex-row">
+        {/* Review Categories Select */}
+        <div className="flex flex-col mb-4">
+          <label className={cn(styles.formLabel, "text-sm font-bold tracking-wide")}>
+            <span className="text-error">*</span> Category 
+          </label>
+          <Select 
+            name="reviewCategory" 
+            value={reviewCategorySelected}
+            onValueChange={(value) => handleCategorySelected(value)}
+          >
+            <SelectTrigger className={styles.selectTriggerClass}>
+              <SelectValue placeholder="Category" />
+            </SelectTrigger>
+            <SelectContent className={styles.selectContentClass}>
+                <SelectItem value="">Category</SelectItem>
+                {categories.map((category: CategoryDataProps) => (
+                  <SelectItem 
+                    key={category.name} 
+                    value={`${category.id}`} 
+                    className={styles.selectItemClass}
+                  >
+                    {category.name}
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
+          {formState?.errors && typeof formState.errors === "object" && !Array.isArray(formState.errors) && "reviewCategory" in formState.errors && (
+            <span className="text-error text-sm italic mt-1">
+              {Array.isArray((formState.errors as any).reviewCategory)
+                ? (formState.errors as any).reviewCategory.join(", ")
+                : String((formState.errors as any).reviewCategory)
+              }
+            </span>
+          )}
+        </div>
+        {/* Review Category Types Select */}
+        <div className={cn("mx-4", reviewCategorySelected !== "" ? undefined : "hidden")}>
+          <FaLongArrowAltDown className="text-xl block md:hidden" />
+          <FaLongArrowAltRight className="text-xl hidden md:block" />
+        </div>
+        {/* Review Category Types Select */}
+        <div 
+          className={cn(
+            "flex flex-col mb-4 min-w-[200px]", 
+            reviewCategorySelected ? undefined : "hidden"
+          )}
+        >
+          <label className={cn(styles.formLabel, "text-sm font-bold tracking-wide")}>
+            <span className="text-error">*</span> Category Types 
+          </label>
+          <Select 
+            name="reviewCategoryType" 
+            value={reviewCategoryTypeSelected} 
+            onValueChange={(value) => setReviewCategoryTypeSelected(value)}
+          >
+            <SelectTrigger className={styles.selectTriggerClass}>
+              <SelectValue placeholder={`${categoryName} Types`} />
+            </SelectTrigger>
+            <SelectContent className={styles.selectContentClass}>
+                <SelectItem value="">{`${categoryName} Types`}</SelectItem>
+                {getCategoryTypesForSelected().map((categoryType: CategoryTypeDataProps) => (
+                  <SelectItem 
+                    key={categoryType.name} 
+                    value={`${categoryType.id}`} 
+                    className={styles.selectItemClass}
+                  >
+                    {categoryType.name}
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
+          {formState?.errors && typeof formState.errors === "object" && !Array.isArray(formState.errors) && "reviewCategoryType" in formState.errors && (
+            <span className="text-error text-sm italic mt-1">
+              {Array.isArray((formState.errors as any).reviewCategoryType)
+                ? (formState.errors as any).reviewCategoryType.join(", ")
+                : String((formState.errors as any).reviewCategoryType)
+              }
+            </span>
+          )}
+        </div>
       </div>
-      <div className="mb-2">Select the type of review you want to compose</div>
-      {/* Review Categories Select */}
-      <div className="flex flex-col mb-4">
-        <label 
-          htmlFor="reviewCategory" 
-          className={cn(styles.formLabel, "text-sm font-bold tracking-wide")}
-        >
-          <span className="text-error">*</span> Category 
-        </label>
-        <Select 
-          name="reviewCategory" 
-          value={reviewCategorySelected}
-          onValueChange={(value) => handleCategorySelected(value)}
-        >
-          <SelectTrigger className={cn(categorySelectsClass)}>
-            <SelectValue placeholder="Category" />
-          </SelectTrigger>
-          <SelectContent className="bg-white">
-              <SelectItem value="">Category</SelectItem>
-              {categories.map((category: CategoryDataProps) => (
-                <SelectItem key={category.name} value={`${category.id}`}>
-                  {category.name}
-                </SelectItem>
-              ))}
-          </SelectContent>
-        </Select>
-        {formState?.errors && typeof formState.errors === "object" && !Array.isArray(formState.errors) && "reviewCategory" in formState.errors && (
-          <span className="text-error text-sm italic mt-1">
-            {Array.isArray((formState.errors as any).reviewCategory)
-              ? (formState.errors as any).reviewCategory.join(", ")
-              : String((formState.errors as any).reviewCategory)
-            }
-          </span>
-        )}
-      </div>
-      {/* Review Category Types Select */}
-      <div 
-        className={cn(
-          "flex flex-col mb-4 min-w-[200px]", 
-          reviewCategorySelected ? undefined : "hidden"
-        )}
-      >
-        <label 
-          htmlFor="reviewCategoryType" 
-          className={cn(styles.formLabel, "text-sm font-bold tracking-wide")}
-        >
-          <span className="text-error">*</span> Category Types 
-        </label>
-        <Select 
-          name="reviewCategoryType" 
-          value={reviewCategoryTypeSelected} 
-          onValueChange={(value) => setReviewCategoryTypeSelected(value)}
-        >
-          <SelectTrigger className={cn(categorySelectsClass)}>
-            <SelectValue placeholder={`${categoryName} Types`} />
-          </SelectTrigger>
-          <SelectContent className="bg-white">
-              <SelectItem value="">{`${categoryName} Types`}</SelectItem>
-              {getCategoryTypesForSelected().map((categoryType: CategoryTypeDataProps) => (
-                <SelectItem key={categoryType.name} value={`${categoryType.id}`}>
-                  {categoryType.name}
-                </SelectItem>
-              ))}
-          </SelectContent>
-        </Select>
-        {formState?.errors && typeof formState.errors === "object" && !Array.isArray(formState.errors) && "reviewCategoryType" in formState.errors && (
-          <span className="text-error text-sm italic mt-1">
-            {Array.isArray((formState.errors as any).reviewCategoryType)
-              ? (formState.errors as any).reviewCategoryType.join(", ")
-              : String((formState.errors as any).reviewCategoryType)
-            }
-          </span>
-        )}
-      </div>
-
       <div
         className={
           reviewCategorySelected !== "" && reviewCategoryTypeSelected !== "" ? "" : "hidden"
@@ -316,10 +321,7 @@ export default function ReviewForm({ slug }: { slug?: string }) {
       >
         {/* Review Title */}
         <div className="flex flex-col mb-4">
-          <label 
-            htmlFor="reviewTitle" 
-            className={cn(styles.formLabel, "text-sm font-bold tracking-wide")}
-          >
+          <label className={cn(styles.formLabel, "text-sm font-bold tracking-wide")}>
             <span className="text-error">*</span> Title 
           </label>
           <input type="text" name="reviewTitle" defaultValue={reviewTitle} 
@@ -353,16 +355,13 @@ export default function ReviewForm({ slug }: { slug?: string }) {
         >
           {/* Product ABV */}
           <div className={"flex flex-col items-start mb-4"}>
-            <label 
-              htmlFor="reviewAbv" 
-              className={cn(styles.formLabel, "text-sm font-bold tracking-wide")}
-            >
+            <label className={cn(styles.formLabel, "text-sm font-bold tracking-wide")}>
               <span className="text-error">*</span> ABV (Alcohol by Volume)
             </label>
             <div className="flex items-center">
-              <input type="text" name="reviewAbv" ref={abvInputRef} defaultValue={reviewAbv ?? ""}
+              <input type="text" name="reviewAbv" defaultValue={reviewAbv ?? ""}
                 className={cn(styles.formInput, "w-full md:w-32")}
-                onBlur={(e) => handleIntegerInput(e, setReviewAbv, true, 0, 100)}
+                onBlur={(e) => handleIntegerInput(e, setReviewAbv, true, abvMin, abvMax)}
               />
               <span className="ml-2">%</span>
             </div>
@@ -375,69 +374,55 @@ export default function ReviewForm({ slug }: { slug?: string }) {
               reviewCategorySelected !== "3" && "hidden"
             )}
           >
-            <label 
-              htmlFor="reviewIbu" 
-              className={cn(styles.formLabel, "text-sm font-bold tracking-wide")}
-            >
+            <label className={cn(styles.formLabel, "text-sm font-bold tracking-wide")}>
               <span className="text-error">*</span> IBU (International Bitterness Units)
             </label>
             <input type="text" name="reviewIbu" defaultValue={reviewIbu ?? ""}
               className={cn(styles.formInput, "w-full md:w-32")}
-              onBlur={(e) => handleIntegerInput(e, setReviewIbu, false, 0, 120)}
+              onBlur={(e) => handleIntegerInput(e, setReviewIbu, true, ibuMin, ibuMax)}
             />
             {formState?.errors && typeof formState.errors === "object" && !Array.isArray(formState.errors) && "reviewIbu" in formState.errors && (<div className="text-error text-sm italic mt-1">{(formState.errors as { reviewIbu?: string }).reviewIbu}</div>)}
           </div>
         </div>
         
         {/* Whiskey Details Section */}
-        <div 
-          className={cn(
-            "flex flex-col items-start", 
-            reviewCategorySelected !== "1" && "hidden"
-          )}
-        >
-          {/* Product Batch Number */}
-          <div className="flex flex-col items-start mb-4">
-            <label 
-              htmlFor="reviewBatchNumber" 
-              className={cn(styles.formLabel, "text-sm font-bold tracking-wide")}
-            >
-              <span className="text-error">*</span> Batch Number
-            </label>
-            <input type="text" name="reviewBatch" defaultValue={reviewBatch ?? ""}
-              className={cn(styles.formInput)}
-              onBlur={(e) => handleIntegerInput(e, setReviewBatch)}
-            />
-            {formState?.errors && typeof formState.errors === "object" && !Array.isArray(formState.errors) && "reviewBatchNumber" in formState.errors && (<div className="text-error text-sm italic mt-1">{(formState.errors as { reviewBatchNumber?: string }).reviewBatchNumber}</div>)}
-          </div>
-          {/* Product Proof*/}
-          <div className="flex flex-col items-start mb-4">
-            <label 
-              htmlFor="reviewProof" 
-              className={cn(styles.formLabel, "text-sm font-bold tracking-wide")}
-            >
-              <span className="text-error">*</span> Proof
-            </label>
-            <input type="text" name="reviewProof" inputMode="decimal" defaultValue={reviewProof ?? ""}
-              className={cn(styles.formInput)}
-              onBlur={(e) => handleIntegerInput(e, setReviewProof, true, 80, 200)}
-            />
-            {formState?.errors && typeof formState.errors === "object" && !Array.isArray(formState.errors) && "reviewProof" in formState.errors && (<div className="text-error text-sm italic mt-1">{(formState.errors as { reviewProof?: string }).reviewProof}</div>)}
-          </div>
-        </div>
+        <WhiskeyStatsFormElements
+          reviewCategorySelected={reviewCategorySelected}
+          reviewDistillery={reviewDistillery}
+          setReviewDistillery={setReviewDistillery}
+          reviewDistilleryLocation={reviewDistilleryLocation}
+          setReviewDistilleryLocation={setReviewDistilleryLocation}
+          reviewBatch={reviewBatch}
+          setReviewBatch={setReviewBatch}
+          reviewAge={reviewAge}
+          setReviewAge={setReviewAge}
+          reviewProof={reviewProof}
+          setReviewProof={setReviewProof}
+          reviewMashBill={reviewMashBill}
+          setReviewMashBill={setReviewMashBill}
+          reviewBlend={reviewBlend}
+          setReviewBlend={setReviewBlend}
+          reviewFinish={reviewFinish}
+          setReviewFinish={setReviewFinish}
+          reviewIsLimitedRelease={reviewIsLimitedRelease}
+          setReviewIsLimitedRelease={setReviewIsLimitedRelease}
+          reviewReleaseYear={reviewReleaseYear}
+          setReviewReleaseYear={setReviewReleaseYear}
+          reviewPrice={reviewPrice}
+          setReviewPrice={setReviewPrice}
+          handleIntegerInput={handleIntegerInput}
+          formState={formState}
+        />
 
         {/* Rating */}
         <div className="flex flex-col items-start mb-4">
-          <label 
-            htmlFor="rating" 
-            className={cn(styles.formLabel, "text-sm font-bold tracking-wide")}
-          >
+          <label className={cn(styles.formLabel, "text-sm font-bold tracking-wide")}>
             <span className="text-error">*</span> Rating
           </label>
           <div className="flex items-center">
             <input type="text" name="rating" defaultValue={rating ?? ""}
               className={cn(styles.formInput, "w-full md:w-32")}
-              onBlur={(e) => handleIntegerInput(e, setRating, true, 0, 10)}
+              onBlur={(e) => handleIntegerInput(e, setRating, true, ratingMin, ratingMax)}
             />
             <span className="ml-2">/ 10</span>
           </div>
@@ -446,13 +431,10 @@ export default function ReviewForm({ slug }: { slug?: string }) {
 
         {/* Review Content */}
         <div className="flex flex-col mb-4">
-          <label 
-            htmlFor="reviewContent" 
-            className={cn(styles.formLabel, "text-sm font-bold tracking-wide")}
-          >
+          <label className={cn(styles.formLabel, "text-sm font-bold tracking-wide")}>
             <span className="text-error">*</span>Review 
           </label>
-          <Editor value={reviewContentData?.content || ""} />
+          <Editor value={reviewData?.content || ""} />
           {/* {formState?.errors && typeof formState.errors === "object" && !Array.isArray(formState.errors) && "content" in formState.errors && (
             <span className="text-error text-sm italic mt-1">
               {Array.isArray((formState.errors as any).content)

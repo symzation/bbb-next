@@ -13,6 +13,7 @@ import {
 import FormButtonLink from "@/components/Forms/FormButtonLink"
 import SocialLoginButtons from "@/components/Forms/SocialLoginButtons"
 import LoginForm from "@/components/Forms/Login/LoginForm"
+import LoginDisclaimer from "@/components/Disclaimer/LoginDisclaimer"
 
 type LoginProps = {
   isOpen: boolean
@@ -64,9 +65,7 @@ export default function Login({
           onTransitionFunc={onTransitionToRegister}
           buttonVariant="link"
         />
-        <div className="text-xs text-gray-500 hidden">
-          By clicking "Login", you accept Bourbon Brew &apos Bites's <Link href="#" target="_blank" rel="noopener noreferrer" className="underline hover:no-underline">Terms of Service</Link> and <Link href="#" target="_blank" rel="noopener noreferrer" className="underline hover:no-underline">Privacy Policy</Link>.
-        </div>
+        <LoginDisclaimer actionLabel={`Signing in or clicking "Continue"`} />
       </DialogContent>
     </Dialog>
   )

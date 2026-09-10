@@ -37,6 +37,7 @@ export async function GET(req: Request) {
       regionCode,
       // You can add locationBias / locationRestriction here if needed
     }),
+    cache: "no-store",
   });
 
   if (!resp.ok) {

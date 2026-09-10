@@ -6,9 +6,11 @@ const fixedAuthConfig = {
   ...authConfig,
   session: {
     ...authConfig.session,
-    strategy: (authConfig.session?.strategy === "jwt" || authConfig.session?.strategy === "database"
-      ? authConfig.session.strategy
-      : "jwt") as "jwt" | "database" // default to "jwt" if not set correctly
+    strategy: (
+      authConfig.session?.strategy === "jwt" || 
+      authConfig.session?.strategy === "database" 
+        ? authConfig.session.strategy
+        : "jwt") as "jwt" | "database" // default to "jwt" if not set correctly
   }
 }
 

@@ -113,25 +113,68 @@ export const reviews = mysqlTable("reviews", {
   title: varchar("title", { length: 255 }).notNull(),
   slug: varchar("slug", { length: 255 }).notNull()
     .unique("reviews_slug_unique"),
+  authorId: int("authorId").notNull()
+    .references(() => authors.id, { onDelete: "cascade" }),
+  reviewTypeId: int("reviewTypeId").notNull()
+    .references(() => reviewTypes.id, { onDelete: "cascade" }),
   // store rich text content as text
+  categoryId: int("categoryId").notNull()
+  .references(() => categories.id, { onDelete: "cascade" }),
+  categoryTypesId: int("categoryTypesId").notNull()
+    .references(() => categoryTypes.id, { onDelete: "cascade" }),
   content: text("content"),
   excerpt: text("excerpt"),
+
+  // Whiskey Details Section
+  distillery: varchar("distillery", { length: 200 }),
+  location: varchar("location", { length: 255 }),
+  age: varchar("age", { length: 100 }),
+  blend: varchar("blend", { length: 255 }),
+  mashBill: varchar("mashBill", { length: 255 }),
+  finish: varchar("finish", { length: 255 }),
+  finishingCasks: varchar("finishingCasks", { length: 255 }),
   batch: int("batch"),
   proof: int("proof"),
-  flavor: varchar("flavor", { length: 100 }),
+  limited: boolean("limited"),
+  release: varchar("release", { length: 255 }),
+  
+  // Beer Details Section
   abv: int("abv"),
-  ibv: int("ibv"),
-  rating: float("rating").default(0.0),
+  ibu: int("ibu"),
+  
+  // Coffee Details Section
+  roastLevel: varchar("roastLevel", { length: 100 }),
+  aroma: varchar("aroma", { length: 100 }),
+  tastingNotes: varchar("tastingNotes", { length: 255 }),
+
+  /* processing: int("processingId").notNull()
+    .references(() => processings.id, { onDelete: "cascade" }),
+  beeanGrade: int("beeanGradeId").notNull()
+    .references(() => beeanGrades.id, { onDelete: "cascade" }),
+  originId: int("originId").notNull()
+    .references(() => origins.id, { onDelete: "cascade" }),
+  coffeeTypeId: int("coffeeTypeId").notNull()
+    .references(() => coffeeTypes.id, { onDelete: "cascade" }), */
+  
+  
+  price: int("price"),
+  rating: float("rating").notNull().default(0.0),
   isDraft: boolean("isDraft").notNull().default(true),
   readyToPublish: boolean("readyToPublish").notNull().default(false),
   isPublished: boolean("isPublished").notNull().default(false),
   publishedAt: timestamp("publishedAt", { mode: "date", fsp: 3}),
-  userId: int("userId").notNull()
+  publishedByUserId: int("publishedByUserId")
     .references(() => users.id, { onDelete: "cascade" }),
-  categoryId: int("categoryId").notNull()
-    .references(() => categories.id, { onDelete: "cascade" }),
-  categoryTypesId: int("categoryTypesId").notNull()
-      .references(() => categoryTypes.id, { onDelete: "cascade" }),
+  createdAt: timestamp("createdAt", { mode: "date", fsp: 3}).defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updatedAt", { mode: "date", fsp: 3}).defaultNow()
+    .onUpdateNow().notNull(),
+})
+
+export const reviewTypes = mysqlTable("reviewTypes", {
+  id: int("id").primaryKey().autoincrement(),
+  name: varchar("name", { length: 255 }).notNull().unique("reviewTypes_name_unique"),
+  isActive: boolean("isActive").notNull().default(true),
   createdAt: timestamp("createdAt", { mode: "date", fsp: 3}).defaultNow()
     .notNull(),
   updatedAt: timestamp("updatedAt", { mode: "date", fsp: 3}).defaultNow()
